@@ -3896,3 +3896,83 @@
 			}
 
 	}
+body.dark { background: #0f0f14; color: #cfcfd6; }
+/* ...rest of the dark CSS I gave you... */
+
+/* Forced dark theme */
+body.dark {
+  background: #0f0f14;
+  color: #cfcfd6;
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+  color: #f2f2f7;
+}
+
+body.dark a {
+  color: #9adfff;
+  border-bottom-color: rgba(154, 223, 255, 0.3);
+}
+
+body.dark .box {
+  background: #1a1a22;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+body.dark #header {
+  background: #141419;
+  color: #d0d0d5;
+}
+
+body.dark #footer {
+  background: #111117;
+  color: #a6a6ad;
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: #1c1c25;
+  color: #f2f2f7;
+  border: 1px solid #2b2b36;
+}
+
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus {
+  border-color: #7fcdb8;
+  box-shadow: 0 0 0 2px rgba(127, 205, 184, 0.4);
+}
+
+body.dark .button,
+body.dark input[type="submit"],
+body.dark input[type="button"] {
+  background: #7fcdb8;
+  color: #0b0b10;
+}
+
+body.dark .button.primary {
+  background: #e26f5b;
+}
+
+body.dark table tbody tr:nth-child(2n + 1) {
+  background-color: #1a1a22;
+}
+
+body.dark code,
+body.dark pre {
+  background: #161622;
+  border-color: #2a2a3d;
+  color: #e0e0ff;
+}
+
+body.dark #banner {
+  background-color: #141419;
+  color: #f2f2f7;
+}

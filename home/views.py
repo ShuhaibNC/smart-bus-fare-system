@@ -6,3 +6,6 @@ def index(request):
 
 def base(request):
     return render(request, 'base.html')
+
+def signup(request):
+    return render(request, 'signup.html')

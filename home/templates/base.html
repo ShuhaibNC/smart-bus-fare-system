@@ -17,23 +17,23 @@
         <nav id="nav">
           <ul>
             <li><a href="#">Home</a></li>
-            <li>
-              <a href="#" class="icon solid fa-angle-down">Services</a>
-              <ul>
-                <li><a href="generic.html">Generic</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="elements.html">Elements</a></li>
-                <li>
-                  <a href="#">Submenu</a>
-                  <ul>
-                    <li><a href="#">Option One</a></li>
-                    <li><a href="#">Option Two</a></li>
-                    <li><a href="#">Option Three</a></li>
-                    <li><a href="#">Option Four</a></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
+            <li><li>
+					<a href="#" class="icon solid fa-angle-down">Services</a>
+					<ul>
+						<li><a href="generic.html">Student Services</a></li>
+						<li><a href="contact.html">Support</a></li>
+						<li><a href="elements.html">System Overview</a></li>
+						<li>
+							<a href="#">Modules</a>
+							<ul>
+								<li><a href="#">NFC Card System</a></li>
+								<li><a href="#">Wallet Management</a></li>
+								<li><a href="#">Cloud Sync</a></li>
+								<li><a href="#">Admin Control</a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
             <li>{% block status %}<a href="#" class="button">Logout</a>{% endblock %}</li>
           </ul>
         </nav>
@@ -46,6 +46,8 @@
           <h2>Title</h2>
           <p>Title description.</p>
         </header>
+        {% endblock %}
+        {% block content %}
         {% endblock %}
     </div>
 
