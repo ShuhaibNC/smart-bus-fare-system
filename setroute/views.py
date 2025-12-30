@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def set_route(request):
+    return render(request, 'set_route.html')
