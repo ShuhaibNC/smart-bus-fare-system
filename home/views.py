@@ -1,16 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.hashers import make_password, check_password
+from .models import Login
 
-# Create your views here.
+
 def index(request):
     return render(request, 'index.html')
 
 def base(request):
     return render(request, 'base.html')
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.hashers import make_password
-from .models import Login
 
 def signup(request):
     if request.method == "POST":
@@ -46,10 +45,6 @@ def signup(request):
 
     return render(request, "signup.html")
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.hashers import check_password
-from .models import Login
 
 def student_login(request):
     if request.method == "POST":
