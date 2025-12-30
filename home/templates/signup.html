@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
-{% block status %}<a href="/" class="button">Logout</a>{% endblock %}
+{% block status %}<a href="/" class="button">Login</a>{% endblock %}
 
 {% block header %}
 <header>
   <h2>SIGN UP</h2>
   <p>Register Form for Student</p>
+  <style>
+    div{
+      margin:10px;
+    }
+  </style>
 </header>
 {% endblock %}
 {% block content %}
@@ -16,40 +21,35 @@
 
     <div class="field">
       <label for="first_name">First Name</label>
-      <input type="text" name="firstname" id="first_name" required>
+      <input type="text" name="firstname" id="first_name" placeholder="John" required>
     </div>
 
     <div class="field">
       <label for="last_name">Last Name</label>
-      <input type="text" name="lastname" id="last_name" required>
+      <input type="text" name="lastname" id="last_name" placeholder="Doe" required>
     </div>
 
     <div class="field">
       <label for="username">Username</label>
-      <input type="text" name="username" id="username" required>
+      <input type="text" name="username" id="username" placeholder="john" required>
     </div>
 
     <div class="field">
       <label for="email">Email</label>
-      <input type="email" name="email" id="email" required>
+      <input type="email" name="email" id="email" placeholder="john@example.com" required>
     </div>
 
     <div class="field">
       <label for="password">Password</label>
-      <input type="password" name="password" id="password" required>
+      <input type="password" name="password" id="password" placeholder="•••••••••••" required>
     </div>
 
     <div class="field">
       <label for="confirm_password">Confirm Password</label>
-      <input type="password" name="confirm_password" id="confirm_password" required>
+      <input type="password" name="confirm_password" id="confirm_password" placeholder="•••••••••••" required>
     </div>
-
-    <div class="links">
-      <a href="">Forgot password?</a>
-    </div>
-
-    <button type="submit" class="button primary">Sign Up</button>
-
+<div>
+    <button type="submit" class="button primary">Sign Up</button>  <p>{{ info }}</p>
     <p class="note">
       Already have an account?
       <a href="">Login</a>

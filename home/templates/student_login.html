@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Student Login{% endblock %}
+{% block status %}<a href="/signup" class="button">Student Sign Up</a>{% endblock %}
+
+{% block header %}
+<header>
+  <h2>STUDENT LOGIN</h2>
+  <p>Access your account</p>
+
+  <style>
+    div {
+      margin: 10px;
+    }
+  </style>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="row aln-center">
+  <div class="col-7">
+
+    <form method="post" class="form">
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="" required>
+      </div>
+
+      <div>
+        <button type="submit" class="button primary">Login</button>
+        <p>{{ info }}</p>
+      </div>
+
+      <div class="links">
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <p class="note">
+        Don't have an account?
+        <a href="/signup">Register</a>
+      </p>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
