@@ -109,7 +109,7 @@
 	}
 
 	body, input, select, textarea {
-		color: #777;
+		color: #bababa;
 		font-family: "Source Sans Pro", sans-serif;
 		font-size: 16pt;
 		font-weight: 300;
@@ -132,7 +132,7 @@
 		}
 
 	strong, b {
-		color: #646464;
+		color: #cdcdcd;
 		font-weight: 400;
 	}
 
@@ -145,7 +145,7 @@
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #646464;
+		color: #cdcdcd;
 		font-weight: 300;
 		line-height: 1em;
 		margin: 0 0 0.5em 0;
@@ -2069,7 +2069,7 @@
 	}
 
 	label {
-		color: #646464;
+		color: #c2c2c2;
 		display: block;
 		font-size: 0.9em;
 		font-weight: 300;
@@ -2691,7 +2691,7 @@
 		}
 
 		table th {
-			color: #646464;
+			color: #cdcdcd;
 			font-size: 0.9em;
 			font-weight: 300;
 			padding: 0 0.75em 0.75em 0.75em;
@@ -3099,7 +3099,7 @@
 				}
 
 	.dropotron {
-		background: #fff;
+		background: #242424;
 		border-radius: 6px;
 		box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.065), inset 0 -1px 0 0 #fff, inset 0 0 0 1px rgba(229, 229, 229, 0.5);
 		list-style: none;
@@ -3162,8 +3162,7 @@
 
 	#banner {
 		background-attachment: scroll,							fixed;
-		background-color: #666;
-		background-image: url("images/overlay.png"), url("../../images/banner.jpg");
+		background-color: #141419;
 		background-position: top left,						center center;
 		background-repeat: repeat,							no-repeat;
 		background-size: auto,							cover;
@@ -3902,7 +3901,7 @@ body.dark { background: #0f0f14; color: #cfcfd6; }
 /* Forced dark theme */
 body.dark {
   background: #0f0f14;
-  color: #cfcfd6;
+  color: #f0f0f0;
 }
 
 body.dark h1,
@@ -3911,7 +3910,7 @@ body.dark h3,
 body.dark h4,
 body.dark h5,
 body.dark h6 {
-  color: #f2f2f7;
+  color: #f2f2f2;
 }
 
 body.dark a {
@@ -3927,12 +3926,12 @@ body.dark .box {
 
 body.dark #header {
   background: #141419;
-  color: #d0d0d5;
+  color: #eaeaea;
 }
 
 body.dark #footer {
   background: #111117;
-  color: #a6a6ad;
+  color: #dbdbdb;
 }
 
 body.dark input,

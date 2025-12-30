@@ -70,7 +70,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sbfs',    # from phpMyAdmin
         'USER': 'root',   # from phpMyAdmin
-        'PASSWORD': '123', 
+        'PASSWORD': 'cms123', 
         'HOST': 'localhost',       # usually localhost
         'PORT': '3306',            # default MySQL port
     }
