@@ -1,43 +1,57 @@
-function addRoute() {
-    const routes = document.getElementById("routes");
+const routesDiv = document.getElementById("routes");
+const addBtn = document.getElementById("add-route-btn");
+const MAX_ROUTES = 4;
+
+/* Add Route */
+addBtn.addEventListener("click", () => {
+    if (routesDiv.children.length >= MAX_ROUTES) {
+        alert("Maximum 4 stops allowed");
+        return;
+    }
 
     const div = document.createElement("div");
     div.className = "route-box";
 
     div.innerHTML = `
-        <input type="text" placeholder="Enter Location / Stop">
-        <button class="icon-btn" onclick="getLocation(this)">📍</button>
-        <button class="icon-btn" onclick="openMaps()">🗺️</button>
+        <input type="text" placeholder="Enter Location">
+        <button type="button" class="icon-btn location-btn">📍</button>
+        <button type="button" class="icon-btn map-btn">🗺️</button>
+        <button type="button" class="icon-btn delete-btn">✖</button>
     `;
 
-    routes.appendChild(div);
-}
+    routesDiv.appendChild(div);
+});
 
-function getLocation(btn) {
-    const input = btn.previousElementSibling;
+/* Handle Clicks */
+routesDiv.addEventListener("click", (e) => {
 
-    if (navigator.geolocation) {
+    /* Delete */
+    if (e.target.classList.contains("delete-btn")) {
+        e.target.parentElement.remove();
+    }
+
+    /* Location */
+    if (e.target.classList.contains("location-btn")) {
+        const input = e.target.previousElementSibling;
+
         navigator.geolocation.getCurrentPosition(
-            position => {
+            pos => {
                 input.value =
-                    "Lat: " +
-                    position.coords.latitude.toFixed(4) +
-                    ", Lng: " +
-                    position.coords.longitude.toFixed(4);
+                    pos.coords.latitude.toFixed(5) +
+                    ", " +
+                    pos.coords.longitude.toFixed(5);
             },
             () => alert("Location access denied")
         );
-    } else {
-        alert("Geolocation not supported");
     }
-}
 
-function openMaps() {
-    window.open("https://www.google.com/maps", "_blank");
-}
+    /* Maps */
+    if (e.target.classList.contains("map-btn")) {
+        window.open("https://www.google.com/maps", "_blank");
+    }
+});
 
+/* Final Submit */
 function setRoute() {
     alert("Route set successfully!");
-    // Later:
-    // send data to backend using fetch/AJAX
 }

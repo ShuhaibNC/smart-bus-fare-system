@@ -2,48 +2,38 @@
 {% load static %}
 {% block header %}{% endblock header %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Bus Route Setup</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- External CSS -->
-    <link rel="stylesheet" href="{% static 'assets/css/set_route.css' %}">
-</head>
-
-<body>
-
-<div class="container">
+<div class="route-container">
     <h2>🚌 Set Your Bus Route</h2>
 
     <div id="routes">
         <div class="route-box">
             <input type="text" placeholder="Enter Location / Stop 1">
-            <button class="icon-btn" onclick="getLocation(this)">📍</button>
-            <button class="icon-btn" onclick="openMaps()">🗺️</button>
+            <button type="button" class="route-icon-btn location-btn">📍</button>
+            <button type="button" class="route-icon-btn map-btn">🗺️</button>
+            <button type="button" class="route-icon-btn delete-btn">✖</button>
         </div>
 
         <div class="route-box">
             <input type="text" placeholder="Enter Location / Stop 2">
-            <button class="icon-btn" onclick="getLocation(this)">📍</button>
-            <button class="icon-btn" onclick="openMaps()">🗺️</button>
+            <button type="button" class="route-icon-btn location-btn">📍</button>
+            <button type="button" class="route-icon-btn map-btn">🗺️</button>
+            <button type="button" class="route-icon-btn delete-btn">✖</button>
         </div>
     </div>
 
-    <button class="add-btn" onclick="addRoute()">➕ Add Another Stop</button>
+    <button id="add-route-btn" class="route-btn route-btn-secondary">
+        ➕ Add Another Stop
+    </button>
 
-    <button class="set-route" onclick="setRoute()">SET ROUTE</button>
+    <button class="route-btn route-btn-primary" onclick="setRoute()">
+        SET ROUTE
+    </button>
 
     <div class="note">
-        📍 Auto-detect | 🗺️ Google Maps | ➕ Multiple bus routes supported
+        📍 Auto-detect • 🗺️ Google Maps • Max 4 Stops
     </div>
 </div>
 
-<!-- External JS -->
 <script src="{% static 'assets/js/set_route.js' %}"></script>
-
-</body>
-</html>
 {% endblock content %}
