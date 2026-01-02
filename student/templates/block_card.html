@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+
+<section class="container" style="max-width:520px;margin-top:60px;">
+
+    <section class="box special">
+        <header class="major">
+            <h2>🚫 Block Lost NFC Card</h2>
+            <p>
+                If your NFC card is lost or stolen, block it immediately
+                to prevent unauthorized usage.
+            </p>
+        </header>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row gtr-50 gtr-uniform">
+                <div class="col-12">
+                    <label for="card_id"><strong>NFC Card ID</strong></label>
+                    <input
+                        type="text"
+                        name="card_id"
+                        id="card_id"
+                        placeholder="Enter your NFC Card ID"
+                        required
+                    />
+                </div>
+
+                <div class="col-12">
+                    <label for="reason"><strong>Reason</strong></label>
+                    <select name="reason" id="reason" required>
+                        <option value="">-- Select Reason --</option>
+                        <option value="lost">Card Lost</option>
+                        <option value="stolen">Card Stolen</option>
+                        <option value="damaged">Card Damaged</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label for="remarks"><strong>Additional Remarks</strong></label>
+                    <textarea
+                        name="remarks"
+                        id="remarks"
+                        rows="3"
+                        placeholder="Optional message"
+                    ></textarea>
+                </div>
+
+                <div class="col-12">
+                    <button
+                        type="submit"
+                        class="button primary fit"
+                        style="background:#c0392b;"
+                    >
+                        🚫 Block My Card
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <hr />
+
+        <p style="font-size:13px;color:#aaa;text-align:center;">
+            ⚠ Once blocked, the card cannot be used for bus travel.
+            Please contact admin for re-issue.
+        </p>
+
+    </section>
+
+</section>
+
+{% endblock content %}

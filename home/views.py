@@ -72,3 +72,4 @@ def student_login(request):
         return redirect("home")   # change to whatever page you want after login
 
     return render(request, "student_login.html")
+
