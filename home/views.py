@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.hashers import make_password, check_password
-from .models import Login
-
+from django.contrib.auth.hashers import make_password
+from student.models import Login
 
 def index(request):
     return render(request, 'index.html')
@@ -44,32 +43,4 @@ def signup(request):
         return render(request, "signup.html", {"info" : "Account created successfully."}) # change to your login view name
 
     return render(request, "signup.html")
-
-
-def student_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "")
-
-        # Find the user
-        try:
-            user = Login.objects.get(username=username)
-        except Login.DoesNotExist:
-            messages.error(request, "Invalid username or password.")
-            return render(request, "student_login.html", {"info": "Login failed"})
-
-        # Verify password
-        if not check_password(password, user.password_hash):
-            messages.error(request, "Invalid username or password.")
-            return render(request, "student_login.html", {"info": "Login failed"})
-
-        # Store session data
-        request.session["user_id"] = user.id
-        request.session["username"] = user.username
-        request.session["role"] = user.role
-
-        messages.success(request, "Login successful.")
-        return redirect("home")   # change to whatever page you want after login
-
-    return render(request, "student_login.html")
 

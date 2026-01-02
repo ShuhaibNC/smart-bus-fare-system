@@ -1,5 +1,4 @@
 from django.db import models
-from home.models import Login
 
 # Create your models here.
 class BusRoute(models.Model):

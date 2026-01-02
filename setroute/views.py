@@ -1,5 +1,4 @@
 from django.shortcuts import render,redirect
-from home.models import Login
 from .models import BusRoute
 
 def set_route(request):

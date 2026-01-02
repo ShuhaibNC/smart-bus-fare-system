@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.contrib import messages
+from .models import Login, StudentNFCCard
 
-from .models import StudentNFCCard
-
+def manage_card(request):
+    return render(request, 'manage_card.html')
 
 @login_required
 def block_card(request):
