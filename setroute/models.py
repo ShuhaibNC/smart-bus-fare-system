@@ -3,7 +3,7 @@ from home.models import Login
 
 # Create your models here.
 class BusRoute(models.Model):
-    user = models.ForeignKey(Login, on_delete=models.CASCADE)
+    user = models.CharField(max_length=255, null=True)
     stop1 = models.CharField(max_length=255, null=True)
     stop2 = models.CharField(max_length=255, blank=True, null=True)
     stop3 = models.CharField(max_length=255, blank=True, null=True)
