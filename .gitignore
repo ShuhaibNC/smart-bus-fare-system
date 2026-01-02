@@ -2,3 +2,8 @@ home/migrations
 setroute/migrations
 student/migrations
 system_admin/migrations
+home/pycache
+setroute/pycache
+student/pycache
+system_admin/pycache
+home/pycache
