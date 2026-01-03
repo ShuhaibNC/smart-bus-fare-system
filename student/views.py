@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.contrib import messages
 from .models import Login, StudentNFCCard
-
+from .models import StudentWallet
 def manage_card(request):
     return render(request, 'manage_card.html')
 
@@ -68,3 +68,9 @@ def student_login(request):
 
     return render(request, "student_login.html")
 
+
+def view_balance(request):
+    # wallet = StudentWallet.objects.filter(student=request.user).first()
+    return render(request, "wallet.html", {
+        "card": "wallet"
+    })
