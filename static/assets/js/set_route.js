@@ -2,37 +2,58 @@ const routesDiv = document.getElementById("routes");
 const addBtn = document.getElementById("add-route-btn");
 const MAX_ROUTES = 4;
 
-/* Add Route */
+/* Renumber stop labels */
+function renumberStops() {
+    const labels = routesDiv.querySelectorAll(".route-label");
+    labels.forEach((label, index) => {
+        label.textContent = `Stop ${index + 1}`;
+    });
+}
+
+/* Add new stop */
 addBtn.addEventListener("click", () => {
     if (routesDiv.children.length >= MAX_ROUTES) {
-        alert("Maximum 4 stops allowed");
+        alert("You can add up to 4 stops only");
         return;
     }
 
     const div = document.createElement("div");
-    div.className = "route-box";
+    div.className = "route-box modern-route";
 
     div.innerHTML = `
-        <input type="text" placeholder="Enter Location">
-        <button type="button" class="icon-btn location-btn">📍</button>
-        <button type="button" class="icon-btn map-btn">🗺️</button>
-        <button type="button" class="icon-btn delete-btn">✖</button>
+        <label class="route-label"></label>
+
+        <input
+            type="text"
+            name="stops[]"
+            placeholder="Enter location"
+            required
+            class="input-modern"
+        >
+
+        <div class="route-actions">
+            <button type="button" class="route-icon-btn location-btn">Current location</button>
+            <button type="button" class="route-icon-btn map-btn">Open map</button>
+            <button type="button" class="route-icon-btn delete-btn">Remove</button>
+        </div>
     `;
 
     routesDiv.appendChild(div);
+    renumberStops();
 });
 
-/* Handle Clicks */
+/* Button actions inside routes */
 routesDiv.addEventListener("click", (e) => {
 
-    /* Delete */
+    /* Remove stop */
     if (e.target.classList.contains("delete-btn")) {
-        e.target.parentElement.remove();
+        e.target.closest(".route-box").remove();
+        renumberStops();
     }
 
-    /* Location */
+    /* Fill with current GPS coordinates */
     if (e.target.classList.contains("location-btn")) {
-        const input = e.target.previousElementSibling;
+        const input = e.target.closest(".route-box").querySelector("input");
 
         navigator.geolocation.getCurrentPosition(
             pos => {
@@ -41,17 +62,17 @@ routesDiv.addEventListener("click", (e) => {
                     ", " +
                     pos.coords.longitude.toFixed(5);
             },
-            () => alert("Location access denied")
+            () => alert("Location permission denied")
         );
     }
 
-    /* Maps */
+    /* Open maps */
     if (e.target.classList.contains("map-btn")) {
         window.open("https://www.google.com/maps", "_blank");
     }
 });
 
-/* Final Submit */
+/* Optional hook */
 function setRoute() {
-    alert("Route set successfully!");
+    alert("Route saved successfully");
 }

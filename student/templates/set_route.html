@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+<style>
+/* Dark mode base */
+:root {
+    color-scheme: dark;
+
+    --bg-main: #0f1115;
+    --bg-card: #181b22;
+    --bg-input: #1f242d;
+
+    --border-soft: #2b3040;
+
+    --text-main: #e6e9ef;
+    --text-muted: #9aa0ac;
+
+    --primary: #4c7dff;
+    --primary-soft: rgba(76,125,255,0.12);
+
+    --danger: #ff5f6d;
+    --danger-soft: rgba(255,95,109,0.12);
+}
+
+/* Container */
+.modern-card {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    color: var(--text-main);
+}
+
+/* Headings */
+.title {
+    margin-bottom: 14px;
+    color: var(--text-main);
+}
+
+/* Route box */
+.modern-route {
+    margin-bottom: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-soft);
+}
+
+.route-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+    color: var(--text-muted);
+}
+
+/* Inputs */
+.input-modern {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-card);
+    color: var(--text-main);
+}
+
+.input-modern::placeholder {
+    color: #6e7685;
+}
+
+/* Action buttons inside each stop */
+.route-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.route-icon-btn {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-card);
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.route-icon-btn:hover {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+}
+
+/* Primary and secondary buttons */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    gap: 10px;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    {% comment %} padding: 10px 14px; {% endcomment %}
+    border: none;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    opacity: 0.9;
+}
+
+.secondary-btn {
+    background: var(--primary-soft);
+    color: var(--text-main);
+    border-radius: 10px;
+    {% comment %} padding: 10px 14px; {% endcomment %}
+    border: 1px solid var(--primary);
+    cursor: pointer;
+}
+
+.secondary-btn:hover {
+    background: rgba(76,125,255,0.2);
+}
+
+/* Danger button styling for delete */
+.delete-btn {
+    background: var(--danger-soft);
+    border: 1px solid var(--danger);
+    color: #ffb3b9;
+}
+
+.delete-btn:hover {
+    background: rgba(255,95,109,0.2);
+}
+
+</style>
+<form method="post" action="{% url 'add_route' %}">
+    {% csrf_token %}
+
+    <div class="route-container modern-card">
+
+        <h2 class="title">Set Bus Route</h2>
+
+        <div id="routes">
+
+            <div class="route-box modern-route">
+                <label class="route-label">Stop 1</label>
+                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern">
+
+                <div class="route-actions">
+                    <button type="button" class="route-icon-btn location-btn">Current location</button>
+                    <button type="button" class="route-icon-btn map-btn">Open map</button>
+                    <button type="button" class="route-icon-btn delete-btn">Remove</button>
+                </div>
+            </div>
+
+            <div class="route-box modern-route">
+                <label class="route-label">Stop 2</label>
+                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern">
+
+                <div class="route-actions">
+                    <button type="button" class="route-icon-btn location-btn">Current location</button>
+                    <button type="button" class="route-icon-btn map-btn">Open map</button>
+                    <button type="button" class="route-icon-btn delete-btn">Remove</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            {% if flag == "green" %}
+            <button id="add-route-btn" type="button" class="button secondary-btn">
+                Add stop
+            </button>
+            {% else %}
+            <button id="add-route-btn" type="button" class="button secondary-btn" disabled>
+                Add stop
+            </button>
+            {% endif %}
+            {% if flag == "green" %}
+            <button type="submit" class="button primary-btn">
+                Save route
+            </button>
+            {% else %}
+            <button type="submit" class="button primary-btn" disabled>
+                Save route
+            </button>
+            {% endif %}
+            {% if info == None %}
+            <p></p>
+            {% else %}
+            <p>{{ info }}</p>
+            {% endif %}
+            
+        </div>
+
+    </div>
+</form>
+
+<script src="{% static 'assets/js/set_route.js' %}"></script>
+{% endblock content %}
