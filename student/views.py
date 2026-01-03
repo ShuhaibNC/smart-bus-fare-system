@@ -8,10 +8,10 @@ from .models import Login, StudentNFCCard
 def manage_card(request):
     return render(request, 'manage_card.html')
 
-@login_required
+
 def block_card(request):
     try:
-        card = StudentNFCCard.objects.get(student=request.user)
+        card = StudentNFCCard.objects.get(student=request.session.get('user_id'))
     except StudentNFCCard.DoesNotExist:
         card = None
 
@@ -19,14 +19,17 @@ def block_card(request):
         card_id = request.POST.get("card_id")
         reason = request.POST.get("reason")
         remarks = request.POST.get("remarks")
+        print(request.POST.get("card_id"))
+        print(request.POST.get("reason"))
+        print(request.POST.get("remarks"))
 
         if not card or card.card_id != card_id:
-            messages.error(request, "Invalid NFC Card ID.")
-            return redirect("block_card")
+            print(request, "Invalid NFC Card ID.")
+            return redirect("home")
 
         if card.status == "BLOCKED":
-            messages.warning(request, "Your card is already blocked.")
-            return redirect("block_card")
+            print   (request, "Your card is already blocked.")
+            return redirect("home")
 
         card.status = "BLOCKED"
         card.block_reason = reason
@@ -37,7 +40,7 @@ def block_card(request):
         messages.success(request, "Your NFC card has been blocked successfully.")
         return redirect("/home")
 
-    return render(request, "block_card.html", {
+    return render(request, "manage_card.html", {
         "card": card
     })
 
