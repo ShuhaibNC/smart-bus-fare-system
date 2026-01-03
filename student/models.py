@@ -8,6 +8,7 @@ class Login(models.Model):
     email = models.EmailField(blank=True)
     password_hash = models.CharField(max_length=255)
     role = models.CharField(max_length=150, null=True, default="student")
+    test=models.CharField(max_length=150,default="test")
 
     def __str__(self):
         return self.username
@@ -62,6 +63,7 @@ class StudentNFCCard(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.card_id} ({self.status})"
+    
 class BusRoute(models.Model):
     user = models.CharField(max_length=255, null=True)
     stop1 = models.CharField(max_length=255, null=True)
@@ -75,3 +77,44 @@ class BusRoute(models.Model):
 
     def __str__(self):
         return f"Route {self.id}"
+    
+class StudentWallet(models.Model):
+    STATUS_CHOICES = [
+        ('HEALTHY', 'Healthy'),
+        ('LOW', 'Low Balance'),
+    ]
+
+    student = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="wallet"
+    )
+
+    card_id = models.CharField(
+        max_length=20,
+        unique=True
+    )
+
+    balance = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='LOW'
+    )
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def update_status(self):
+        if self.balance < 100:
+            self.status = 'LOW'
+        else:
+            self.status = 'HEALTHY'
+        self.save()
+
+    def __str__(self):
+        return f"{self.student.username} - ₹{self.balance}"

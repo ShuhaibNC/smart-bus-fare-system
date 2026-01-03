@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.contrib import messages
-from .models import Login, StudentNFCCard, BusRoute
+from .models import Login, StudentNFCCard, BusRoute, StudentWallet
 
 def manage_card(request):
     return render(request, 'manage_card.html')
@@ -112,3 +112,9 @@ def add_route(request):
         return redirect("add_route")
 
     return render(request, "set_route.html", {'info':'Routes added successfully'})
+
+def view_balance(request):
+    # wallet = StudentWallet.objects.filter(student=request.user).first()
+    return render(request, "wallet.html", {
+        "card": "wallet"
+    })
