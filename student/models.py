@@ -71,7 +71,7 @@ class BusRoute(models.Model):
     stop3 = models.CharField(max_length=255, blank=True, null=True)
     stop4 = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    # test = models.CharField(max_length=255, blank=True, null=True)
+    #test = models.CharField(max_length=255, blank=True, null=True)
 
 
 
