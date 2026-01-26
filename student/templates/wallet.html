@@ -84,7 +84,8 @@
                 ({{ card.get_block_reason_display }})
             {% endif %}
         </p>
-    {% elif card.balance < 100 %}
+    {% endif %}
+    {% if card.balance < 100 %}
         <p class="warning">Recharge required to continue travel</p>
     {% endif %}
 
