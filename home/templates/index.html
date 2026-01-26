@@ -9,33 +9,56 @@
 </head>
 <body class="landing is-preload dark">
 <div id="page-wrapper">
-
 	<header id="header" class="alt">
 		<h1><a href="index.html">SBFS</a></h1>
 		<nav id="nav">
 			<ul>
 				<li><a href="index.html">Home</a></li>
-
 				<li>
 					<a href="#" class="icon solid fa-angle-down">Services</a>
 					<ul>
+						{% if request.session.role == 'admin' %}
+					<li>
+						<a href="/managenfc/">
+							Manage NFC Applications
+						</a>
+					</li>
+
+					<li>
+						<a href="/managelostcard">
+							Manage Lost/Stolen Cards
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Learn More
+						</a>
+					</li>
+						{% else %}
 						<li><a href="/student_wallet/">View Balance</a></li>
+						<li><a href="/nfcview/">View my NFC Card</a></li>
 						<li><a href="#">Recharge Wallet</a></li>
 						<li><a href="#">Travel History</a></li>
 						<li><a href="#">Download Receipts</a></li>
 						<li><a href="#">Refund System</a></li>
 						<li><a href="/manage_card/">Block Lost Card</a></li>
+						{% endif %}
 					</ul>
 				</li>
-				<li><a href="#" class="button">Logout</a></li>
+				<li><a href="/" class="button">Logout</a></li>
 			</ul>
 		</nav>
 	</header>
 
 	<!-- Banner -->
 	<section id="banner">
+		{% if request.session.role == 'admin' %}
+		<h2>Admin Panel for {{ request.session.username }}</h2>
+		{% else %}
 		<h2>Hi, {{ request.session.username }}</h2>
 		<h2>Welcome to Smart Bus Fare System </h2>
+		{% endif %}
 		<p>
 			NFC-Based • Cashless • Secure  
 			<br />
@@ -44,6 +67,25 @@
 
 		<!-- ✅ UPDATED BUTTON AREA -->
 		<ul class="actions special">
+			{% if request.session.role == 'admin' %}
+			<li>
+				<a href="/managenfc/" class="button primary">
+					Manage NFC Applications
+				</a>
+			</li>
+
+			<li>
+				<a href="/managelostcard" class="button alt">
+					Manage Lost/Stolen Cards
+				</a>
+			</li>
+
+			<li>
+				<a href="#" class="button">
+					Learn More
+				</a>
+			</li>
+			{% else %}
 			<li>
 				<a href="/setroute/" class="button primary">
 					Apply for NFC Card
@@ -61,6 +103,7 @@
 					Learn More
 				</a>
 			</li>
+			{% endif %}
 		</ul>
 	</section>
 

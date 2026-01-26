@@ -6,24 +6,19 @@
 /* Dark mode base */
 :root {
     color-scheme: dark;
-
     --bg-main: #0f1115;
     --bg-card: #181b22;
     --bg-input: #1f242d;
-
     --border-soft: #2b3040;
-
     --text-main: #e6e9ef;
     --text-muted: #9aa0ac;
-
-    --primary: #4c7dff;
-    --primary-soft: rgba(76,125,255,0.12);
-
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --primary-soft: rgba(0,123,255,0.12);
     --danger: #ff5f6d;
     --danger-soft: rgba(255,95,109,0.12);
 }
 
-/* Container */
 .modern-card {
     max-width: 700px;
     margin: 0 auto;
@@ -34,13 +29,11 @@
     color: var(--text-main);
 }
 
-/* Headings */
 .title {
     margin-bottom: 14px;
     color: var(--text-main);
 }
 
-/* Route box */
 .modern-route {
     margin-bottom: 14px;
     padding: 12px;
@@ -56,7 +49,6 @@
     color: var(--text-muted);
 }
 
-/* Inputs */
 .input-modern {
     width: 100%;
     padding: 10px 12px;
@@ -70,7 +62,6 @@
     color: #6e7685;
 }
 
-/* Action buttons inside each stop */
 .route-actions {
     margin-top: 10px;
     display: flex;
@@ -84,6 +75,7 @@
     background: var(--bg-card);
     color: var(--text-main);
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .route-icon-btn:hover {
@@ -91,10 +83,10 @@
     border-color: var(--primary);
 }
 
-/* Primary and secondary buttons */
 .form-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-top: 16px;
     gap: 10px;
 }
@@ -102,101 +94,135 @@
 .primary-btn {
     background: var(--primary);
     color: #fff;
-    border-radius: 10px;
-    {% comment %} padding: 10px 14px; {% endcomment %}
+    border-radius: 8px;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
 .primary-btn:hover {
-    opacity: 0.9;
+    background: var(--primary-hover);
 }
 
-.secondary-btn {
-    background: var(--primary-soft);
+.primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.info-message {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Dropdown styling */
+.stop-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: var(--bg-card);
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    z-index: 1;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    margin-top: 4px;
+}
+
+.dropdown-content button {
     color: var(--text-main);
-    border-radius: 10px;
-    {% comment %} padding: 10px 14px; {% endcomment %}
-    border: 1px solid var(--primary);
+    padding: 10px 14px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-.secondary-btn:hover {
-    background: rgba(76,125,255,0.2);
+.dropdown-content button:first-child {
+    border-radius: 8px 8px 0 0;
 }
 
-/* Danger button styling for delete */
-.delete-btn {
-    background: var(--danger-soft);
-    border: 1px solid var(--danger);
-    color: #ffb3b9;
+.dropdown-content button:last-child {
+    border-radius: 0 0 8px 8px;
 }
 
-.delete-btn:hover {
-    background: rgba(255,95,109,0.2);
+.dropdown-content button:hover {
+    background: var(--bg-input);
 }
 
+.stop-dropdown.active .dropdown-content {
+    display: block;
+}
 </style>
+
 <form method="post" action="{% url 'add_route' %}">
     {% csrf_token %}
 
     <div class="route-container modern-card">
-
         <h2 class="title">Set Bus Route</h2>
 
         <div id="routes">
-
             <div class="route-box modern-route">
                 <label class="route-label">Stop 1</label>
-                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern">
-
+                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern" readonly>
                 <div class="route-actions">
-                    <button type="button" class="route-icon-btn location-btn">Current location</button>
+                    <div class="stop-dropdown">
+                        <button type="button" class="route-icon-btn choose-stop-btn" {% if flag != "green" %}disabled{% endif %}>Choose stop</button>
+                        <div class="dropdown-content">
+                            <button type="button" class="stop-option" data-stop="Bangalore Central Station">Bangalore Central Station</button>
+                            <button type="button" class="stop-option" data-stop="MG Road Metro">MG Road Metro</button>
+                            <button type="button" class="stop-option" data-stop="Indiranagar Bus Stand">Indiranagar Bus Stand</button>
+                            <button type="button" class="stop-option" data-stop="Koramangala 5th Block">Koramangala 5th Block</button>
+                            <button type="button" class="stop-option" data-stop="Electronic City">Electronic City</button>
+                            <button type="button" class="stop-option" data-stop="Whitefield Main Road">Whitefield Main Road</button>
+                        </div>
+                    </div>
                     <button type="button" class="route-icon-btn map-btn">Open map</button>
-                    <button type="button" class="route-icon-btn delete-btn">Remove</button>
                 </div>
             </div>
 
             <div class="route-box modern-route">
                 <label class="route-label">Stop 2</label>
-                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern">
-
+                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern" readonly>
                 <div class="route-actions">
-                    <button type="button" class="route-icon-btn location-btn">Current location</button>
+                    <div class="stop-dropdown">
+                        <button type="button" class="route-icon-btn choose-stop-btn" {% if flag != "green" %}disabled{% endif %}>Choose stop</button>
+                        <div class="dropdown-content">
+                            <button type="button" class="stop-option" data-stop="Bangalore Central Station">Bangalore Central Station</button>
+                            <button type="button" class="stop-option" data-stop="MG Road Metro">MG Road Metro</button>
+                            <button type="button" class="stop-option" data-stop="Indiranagar Bus Stand">Indiranagar Bus Stand</button>
+                            <button type="button" class="stop-option" data-stop="Koramangala 5th Block">Koramangala 5th Block</button>
+                            <button type="button" class="stop-option" data-stop="Electronic City">Electronic City</button>
+                            <button type="button" class="stop-option" data-stop="Whitefield Main Road">Whitefield Main Road</button>
+                        </div>
+                    </div>
                     <button type="button" class="route-icon-btn map-btn">Open map</button>
-                    <button type="button" class="route-icon-btn delete-btn">Remove</button>
                 </div>
             </div>
-
         </div>
 
         <div class="form-actions">
-            {% if flag == "green" %}
-            <button id="add-route-btn" type="button" class="button secondary-btn">
-                Add stop
-            </button>
-            {% else %}
-            <button id="add-route-btn" type="button" class="button secondary-btn" disabled>
-                Add stop
-            </button>
-            {% endif %}
-            {% if flag == "green" %}
-            <button type="submit" class="button primary-btn">
+            <button type="submit" class="primary-btn" {% if flag != "green" %}disabled{% endif %}>
                 Save route
             </button>
-            {% else %}
-            <button type="submit" class="button primary-btn" disabled>
-                Save route
-            </button>
-            {% endif %}
-            {% if info == None %}
-            <p></p>
-            {% else %}
-            <p>{{ info }}</p>
+            
+            {% if info %}
+            <p class="info-message">{{ info }}</p>
             {% endif %}
             
+            <button type="button" class="primary-btn" id="next-btn" {% if flag == "green" %}disabled{% endif %}>
+                Next
+            </button>
         </div>
-
     </div>
 </form>
 

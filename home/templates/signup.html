@@ -5,11 +5,20 @@
 {% block header %}
 <header>
   <h2>SIGN UP</h2>
+  {% if info %}
+  <p class="info">{{ info }}</p>
+  {% else %}
   <p>Register Form for Student</p>
+  {% endif %}
   <style>
     div{
       margin:10px;
     }
+    .info {
+    border: 1px solid var(--success);
+    color: var(--success);
+    border-radius: 9px;
+}
   </style>
 </header>
 {% endblock %}

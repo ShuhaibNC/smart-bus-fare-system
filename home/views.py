@@ -26,7 +26,6 @@ def signup(request):
 
         # Optional uniqueness check
         if Login.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken.")
             return render(request, "signup.html", {"info" : "Username already taken."})
 
         # Create the user

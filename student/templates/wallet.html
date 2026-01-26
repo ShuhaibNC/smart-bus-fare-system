@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block header %}
+<header></header>
+{% endblock header %}
+
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'assets/css/wallet.css' %}">
@@ -7,20 +12,35 @@
 <div class="wallet-page box">
 
     <h2 class="wallet-title">NFC Wallet</h2>
-    <p class="wallet-subtitle">
-        Your digital wallet linked with Smart Bus NFC Card
-    </p>
+
+    {% if card %}
 
     <!-- NFC CARD -->
-    <div class="nfc-card">
+    <div class="nfc-card
+        {% if card.status == 'BLOCKED' %}
+            low
+        {% elif card.balance < 100 %}
+            low
+        {% else %}
+            healthy
+        {% endif %}
+    ">
 
         <!-- NFC watermark -->
         <div class="nfc-watermark">NFC</div>
 
         <div class="nfc-content">
 
+            <!-- STUDENT NAME -->
+            {% if student_info %}
+                <h3>{{ student_info.get_full_name }}</h3>
+            {% else %}
+                <h3>{{ card.username }}</h3>
+            {% endif %}
+
             <p class="system-name">Smart Bus Fare System</p>
 
+            <!-- BALANCE -->
             <div class="balance-row">
                 <div>
                     <span class="label">Balance</span>
@@ -28,7 +48,11 @@
                 </div>
 
                 <div class="status">
-                    {% if card.balance >= 100 %}
+                    {% if card.status == 'BLOCKED' %}
+                        <span class="low-balance">BLOCKED</span>
+                    {% elif card.balance < 100 %}
+                        <span class="low-balance">LOW</span>
+                    {% else %}
                         <span class="ok-balance">HEALTHY</span>
                     {% else %}
                         <span class="low-balance">LOW BALANCE</span>
@@ -36,25 +60,29 @@
                 </div>
             </div>
 
-            <!-- CARD HOLDER NAME -->
+            <!-- CARD META -->
             <p class="cardholder-name">
-                {{ request.session.username|upper }}
+                CARD ID: {{ card.card_id }}
             </p>
 
         </div>
     </div>
 
-    <p class="min-info">
-        Minimum required balance: ₹100
-    </p>
+    <!-- INFO MESSAGES -->
+    <p class="min-info">Minimum balance required: ₹100</p>
 
-    {% if card.balance < 100 %}
+    {% if card.status == 'BLOCKED' %}
         <p class="warning">
-            Your wallet balance is low. Please recharge to continue travel.
+            Card is blocked
+            {% if card.block_reason %}
+                ({{ card.get_block_reason_display }})
+            {% endif %}
         </p>
+    {% elif card.balance < 100 %}
+        <p class="warning">Recharge required to continue travel</p>
     {% endif %}
 
-    <!-- ACTION BUTTONS -->
+    <!-- ACTIONS -->
     <div class="wallet-actions">
         <a href="/transactions/" class="btn-outline">
             View Transactions
@@ -64,6 +92,20 @@
             Recharge Wallet
         </a>
     </div>
+
+    {% else %}
+
+    <!-- NO CARD CASE -->
+    <div class="nfc-card low">
+        <div class="nfc-content">
+            <h3>No NFC Card Found</h3>
+            <p class="warning">
+                Your NFC card is not issued or not activated yet.
+            </p>
+        </div>
+    </div>
+
+    {% endif %}
 
 </div>
 

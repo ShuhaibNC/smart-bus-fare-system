@@ -1,78 +1,49 @@
 const routesDiv = document.getElementById("routes");
-const addBtn = document.getElementById("add-route-btn");
-const MAX_ROUTES = 4;
+const nextBtn = document.getElementById("next-btn");
 
-/* Renumber stop labels */
-function renumberStops() {
-    const labels = routesDiv.querySelectorAll(".route-label");
-    labels.forEach((label, index) => {
-        label.textContent = `Stop ${index + 1}`;
-    });
-}
-
-/* Add new stop */
-addBtn.addEventListener("click", () => {
-    if (routesDiv.children.length >= MAX_ROUTES) {
-        alert("You can add up to 4 stops only");
-        return;
-    }
-
-    const div = document.createElement("div");
-    div.className = "route-box modern-route";
-
-    div.innerHTML = `
-        <label class="route-label"></label>
-
-        <input
-            type="text"
-            name="stops[]"
-            placeholder="Enter location"
-            required
-            class="input-modern"
-        >
-
-        <div class="route-actions">
-            <button type="button" class="route-icon-btn location-btn">Current location</button>
-            <button type="button" class="route-icon-btn map-btn">Open map</button>
-            <button type="button" class="route-icon-btn delete-btn">Remove</button>
-        </div>
-    `;
-
-    routesDiv.appendChild(div);
-    renumberStops();
-});
-
-/* Button actions inside routes */
+/* Toggle dropdown */
 routesDiv.addEventListener("click", (e) => {
-
-    /* Remove stop */
-    if (e.target.classList.contains("delete-btn")) {
-        e.target.closest(".route-box").remove();
-        renumberStops();
+    /* Toggle dropdown when choose stop button is clicked */
+    if (e.target.classList.contains("choose-stop-btn")) {
+        const dropdown = e.target.closest(".stop-dropdown");
+        
+        // Close all other dropdowns
+        document.querySelectorAll(".stop-dropdown").forEach(d => {
+            if (d !== dropdown) d.classList.remove("active");
+        });
+        
+        // Toggle current dropdown
+        dropdown.classList.toggle("active");
     }
-
-    /* Fill with current GPS coordinates */
-    if (e.target.classList.contains("location-btn")) {
+    
+    /* Select stop from dropdown */
+    if (e.target.classList.contains("stop-option")) {
+        const stopName = e.target.getAttribute("data-stop");
         const input = e.target.closest(".route-box").querySelector("input");
-
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                input.value =
-                    pos.coords.latitude.toFixed(5) +
-                    ", " +
-                    pos.coords.longitude.toFixed(5);
-            },
-            () => alert("Location permission denied")
-        );
+        input.value = stopName;
+        
+        // Close dropdown
+        e.target.closest(".stop-dropdown").classList.remove("active");
     }
-
+    
     /* Open maps */
     if (e.target.classList.contains("map-btn")) {
         window.open("https://www.google.com/maps", "_blank");
     }
 });
 
-/* Optional hook */
-function setRoute() {
-    alert("Route saved successfully");
+/* Close dropdown when clicking outside */
+document.addEventListener("click", (e) => {
+    if (!e.target.closest(".stop-dropdown")) {
+        document.querySelectorAll(".stop-dropdown").forEach(d => {
+            d.classList.remove("active");
+        });
+    }
+});
+
+/* Next button handler */
+if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+        window.location.href = "/addinfo/";
+    });
 }

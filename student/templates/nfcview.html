@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+<style>
+/* Dark mode base */
+:root {
+    color-scheme: dark;
+    --bg-main: #0f1115;
+    --bg-card: #181b22;
+    --bg-input: #1f242d;
+    --border-soft: #2b3040;
+    --text-main: #e6e9ef;
+    --text-muted: #9aa0ac;
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --nfc-gradient-1: #667eea;
+    --nfc-gradient-2: #764ba2;
+    --nfc-accent: #ffd700;
+}
+
+body {
+    background: var(--bg-main);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.modern-card {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 32px 28px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    color: var(--text-main);
+}
+
+.title {
+    margin-bottom: 32px;
+    color: var(--text-main);
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* NFC Card Container */
+.nfc-container {
+    perspective: 1000px;
+    margin-bottom: 32px;
+}
+
+.nfc-card {
+    width: 100%;
+    aspect-ratio: 1.586;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    animation: cardFloat 6s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+    0%, 100% {
+        transform: translateY(0) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotateY(5deg);
+    }
+    50% {
+        transform: translateY(0) rotateY(0deg);
+    }
+    75% {
+        transform: translateY(-10px) rotateY(-5deg);
+    }
+}
+
+.nfc-card:hover {
+    animation-play-state: paused;
+    transform: rotateY(10deg) translateY(-10px);
+}
+
+.card-face {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--nfc-gradient-1) 0%, var(--nfc-gradient-2) 100%);
+    box-shadow: 
+        0 10px 30px rgba(102, 126, 234, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 0 60px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Animated background patterns */
+.card-face::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Card chip */
+.card-chip {
+    width: 50px;
+    height: 40px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.card-chip::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    background: repeating-linear-gradient(
+        90deg,
+        #c9a904 0px,
+        #c9a904 2px,
+        #ffd700 2px,
+        #ffd700 4px
+    );
+    border-radius: 2px;
+}
+
+/* NFC Wave Icon */
+.nfc-waves {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    z-index: 2;
+}
+
+.wave {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: waveExpand 2s ease-out infinite;
+}
+
+.wave:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.wave:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+@keyframes waveExpand {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Card content */
+.card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.card-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card-id {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-number {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Holographic effect */
+.holographic-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    background-size: 200% 200%;
+    animation: holographic 3s ease infinite;
+    pointer-events: none;
+    border-radius: 16px;
+    z-index: 1;
+}
+
+@keyframes holographic {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* Accept button */
+.button-container {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.accept-btn {
+    background: linear-gradient(135deg, var(--primary) 0%, #0056b3 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 40px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.accept-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.accept-btn:hover::before {
+    left: 100%;
+}
+
+.accept-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+.accept-btn:active {
+    transform: translateY(0);
+}
+
+.accept-btn.hidden {
+    display: none;
+}
+
+/* Info text */
+.card-info {
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+    margin-top: 16px;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .modern-card {
+        padding: 24px 20px;
+    }
+    
+    .card-name {
+        font-size: 18px;
+    }
+    
+    .card-number {
+        font-size: 14px;
+    }
+}
+</style>
+
+<div class="modern-card">
+    <h2 class="title">Your NFC Card</h2>
+    
+    <div class="nfc-container">
+        <div class="nfc-card">
+            <div class="card-face">
+                <!-- Holographic effect -->
+                <div class="holographic-layer"></div>
+                
+                <!-- NFC Waves -->
+                <div class="nfc-waves">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+                
+                <!-- Card chip -->
+                <div class="card-chip"></div>
+                
+                <!-- Card content -->
+                <div class="card-content">
+                    <div>
+                        <div class="card-label">Cardholder</div>
+                        <div class="card-name">
+                            {% for name in names %}
+                                {{ name.first_name }} {{ name.last_name }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-id">
+                        <div>
+                            <div class="card-label">Card ID</div>
+                            <div class="card-number">
+                                {% if card_id %}
+                                {% for id in card_id %}
+                                    {{ id.card_id }}
+                                {% endfor %}
+                                {% else %}
+                                    XXXX-XXXX-XXXX
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if request.session.username == "sysadmin" %}
+    <div class="button-container">
+        <button type="button" class="accept-btn {% if flag != 'green' %}hidden{% endif %}" onclick="acceptCard()">
+            Accept Card
+        </button>
+    </div>
+    {% else %}
+    {% endif %}
+    
+    <p class="card-info">
+        {% if flag == 'green' %}
+            Your NFC card is ready to be activated
+        {% else %}
+            Please complete your registration to activate your card
+        {% endif %}
+    </p>
+</div>
+
+<script>
+function acceptCard() {
+    // Add your accept logic here
+    if (confirm('Are you sure you want to accept this NFC card?')) {
+        // Submit to server or redirect
+        window.location.href = "{% url 'accept_card' %}";
+    }
+}
+
+// Add parallax effect on mouse move
+document.addEventListener('mousemove', (e) => {
+    const card = document.querySelector('.nfc-card');
+    const container = document.querySelector('.nfc-container');
+    
+    if (card && container) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
+});
+
+// Reset card position when mouse leaves
+document.querySelector('.nfc-container')?.addEventListener('mouseleave', () => {
+    const card = document.querySelector('.nfc-card');
+    if (card) {
+        card.style.transform = '';
+    }
+});
+</script>
+
+{% endblock content %}
