@@ -29,14 +29,6 @@
         <!-- NFC watermark -->
         <div class="nfc-watermark">NFC</div>
 
-        <!-- NFC RANGE ICON -->
-        <div class="nfc-range">
-            <span class="arc arc1"></span>
-            <span class="arc arc2"></span>
-            <span class="arc arc3"></span>
-        </div>
-
-        <!-- CARD CONTENT -->
         <div class="nfc-content">
 
             <!-- STUDENT NAME -->
@@ -62,6 +54,8 @@
                         <span class="low-balance">LOW</span>
                     {% else %}
                         <span class="ok-balance">HEALTHY</span>
+                    {% else %}
+                        <span class="low-balance">LOW BALANCE</span>
                     {% endif %}
                 </div>
             </div>
@@ -91,8 +85,12 @@
 
     <!-- ACTIONS -->
     <div class="wallet-actions">
-        <a href="/transactions/" class="button primary">
+        <a href="/transactions/" class="btn-outline">
             View Transactions
+        </a>
+
+        <a href="/recharge_wallet/" class="btn-primary">
+            Recharge Wallet
         </a>
     </div>
 
