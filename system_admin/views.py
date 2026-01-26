@@ -103,3 +103,20 @@ def update_nfc_card(request, id):
 
     messages.success(request, "NFC card updated successfully.")
     return redirect('manage_nfc')
+
+
+def write_nfc(request):
+    # user = request.session["username"]
+    user = "john"
+    # Check flag status (adjust this based on your flag logic)
+    # For example, check if user has completed registration
+    flag = 'green'
+    
+    names = InfoSubmit.objects.filter(user=user).values('first_name', 'last_name')
+    card_id = InfoSubmit.objects.filter(user=user).values('card_id')
+    context = {
+        'card_id': card_id,
+        'flag': flag,
+        'names' : names
+    }
+    return render(request, "write_nfc.html", context=context)
