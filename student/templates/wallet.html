@@ -1,37 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
-{% block header %}
-<header>
-</header>
-{% endblock header %}
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'assets/css/wallet.css' %}">
 
 <div class="wallet-page box">
 
-    <h2 class="wallet-title"> NFC Wallet</h2>
-
+    <h2 class="wallet-title">NFC Wallet</h2>
+    <p class="wallet-subtitle">
+        Your digital wallet linked with Smart Bus NFC Card
+    </p>
 
     <!-- NFC CARD -->
-    <div class="nfc-card {% if card.balance < 100 %}low{% else %}healthy{% endif %}">
+    <div class="nfc-card">
 
         <!-- NFC watermark -->
         <div class="nfc-watermark">NFC</div>
 
-        <!-- NFC RANGE ICON -->
-        <div class="nfc-range">
-            <span class="arc arc1"></span>
-            <span class="arc arc2"></span>
-            <span class="arc arc3"></span>
-        </div>
-
-        <!-- CARD CONTENT -->
         <div class="nfc-content">
 
-            <h3>{{ request.session.username }}</h3>
             <p class="system-name">Smart Bus Fare System</p>
-
 
             <div class="balance-row">
                 <div>
@@ -40,31 +28,40 @@
                 </div>
 
                 <div class="status">
-                    {% if card.balance < 100 %}
-                        <span class="low-balance">LOW</span>
-                    {% else %}
+                    {% if card.balance >= 100 %}
                         <span class="ok-balance">HEALTHY</span>
+                    {% else %}
+                        <span class="low-balance">LOW BALANCE</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- CARDHOLDER NAME -->
+            <!-- CARD HOLDER NAME -->
             <p class="cardholder-name">
-                {{ user.username|upper }}
+                {{ request.session.username|upper }}
             </p>
 
         </div>
     </div>
 
-    <p class="min-info">Minimum balance required: ₹100</p>
+    <p class="min-info">
+        Minimum required balance: ₹100
+    </p>
 
     {% if card.balance < 100 %}
-        <p class="warning">Recharge required to continue travel</p>
+        <p class="warning">
+            Your wallet balance is low. Please recharge to continue travel.
+        </p>
     {% endif %}
 
+    <!-- ACTION BUTTONS -->
     <div class="wallet-actions">
-        <a href="/transactions/" class="button primary">
+        <a href="/transactions/" class="btn-outline">
             View Transactions
+        </a>
+
+        <a href="/recharge_wallet/" class="btn-primary">
+            Recharge Wallet
         </a>
     </div>
 
