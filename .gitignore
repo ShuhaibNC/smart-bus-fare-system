@@ -10,3 +10,10 @@ staticfiles/
 # Virtualenv
 venv/
 .env
+student/migrations/0001_initial.py
+student/migrations/0009_remove_busroute_stop3_remove_busroute_stop4.py
+student/migrations/0010_infosubmit.py
+student/migrations/0011_infosubmit_card_accepted_at_and_more.py
+student/migrations/0012_remove_studentnfccard_student_and_more.py
+student/migrations/0013_studentnfccard_balance.py
+student/migrations/0014_alter_infosubmit_options_infosubmit_blood_group_and_more.py
