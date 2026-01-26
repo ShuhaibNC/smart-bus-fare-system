@@ -9,6 +9,8 @@ urlpatterns = [
     path('manage_card/', views.manage_card, name='manage_card'),
     path('', views.student_login, name='student_login'),
     path('student_wallet/', views.view_balance, name='student_wallet'),
-    
-
+    path('addinfo/', views.addinfo, name="addinfo"),
+    path('infosubmit/', views.infosubmit, name='infosubmit'),
+    path('nfcview/', views.nfcview, name='nfcview'),
+    path('accept-card/', views.accept_card, name='accept_card'),
 ]

@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+<style>
+/* Dark mode base */
+:root {
+    color-scheme: dark;
+    --bg-main: #0f1115;
+    --bg-card: #181b22;
+    --bg-input: #1f242d;
+    --border-soft: #2b3040;
+    --text-main: #e6e9ef;
+    --text-muted: #9aa0ac;
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+    --primary-soft: rgba(0,123,255,0.12);
+    --success: #28a745;
+    --danger: #ff5f6d;
+}
+
+body {
+    background: var(--bg-main);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.modern-card {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 32px 28px;
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    color: var(--text-main);
+}
+
+.title {
+    margin-bottom: 24px;
+    color: var(--text-main);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.form-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.field-label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.input-modern {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-input);
+    color: var(--text-main);
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+.input-modern::placeholder {
+    color: #6e7685;
+}
+
+/* Dark select dropdown fix */
+select.input-modern {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+/* Dropdown options */
+select.input-modern option {
+    background-color: var(--bg-input);
+    color: var(--text-main);
+}
+
+/* Disabled placeholder option */
+select.input-modern option:disabled {
+    color: var(--text-muted);
+}
+
+/* Hovered option (supported browsers only) */
+select.input-modern option:hover {
+    background-color: var(--bg-card);
+}
+
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 28px;
+    gap: 12px;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+.primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert-error {
+    background: rgba(255,95,109,0.12);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-success {
+    background: rgba(40,167,69,0.12);
+    border: 1px solid var(--success);
+    color: var(--success);
+}
+
+.info-message {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 14px;
+}
+
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .modern-card {
+        padding: 24px 20px;
+    }
+}
+</style>
+
+<form method="post" action="{% url 'infosubmit' %}">
+    {% csrf_token %}
+
+    <div class="modern-card">
+        <h2 class="title">Student Information</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-grid">
+            <div class="form-row">
+                <div class="form-field">
+                    <label class="field-label">First Name</label>
+                    <input type="text" name="first_name" placeholder="Enter first name" required class="input-modern" value="{% if existing_info %}{{ existing_info.first_name }}{% elif form_data %}{{ form_data.first_name }}{% endif %}">
+                </div>
+                <div class="form-field">
+                    <label class="field-label">Last Name</label>
+                    <input type="text" name="last_name" placeholder="Enter last name" required class="input-modern" value="{% if existing_info %}{{ existing_info.last_name }}{% elif form_data %}{{ form_data.last_name }}{% endif %}">
+                </div>
+            </div>
+<div class="form-row">
+            <div class="form-field">
+                <label class="field-label">Parent/Guardian Name</label>
+                <input type="text" name="guardian_name" placeholder="Enter parent or guardian name" required class="input-modern" value="{% if existing_info %}{{ existing_info.guardian_name }}{% elif form_data %}{{ form_data.guardian_name }}{% endif %}">
+            </div>
+            <div class="form-field">
+    <label class="field-label">Blood Group</label>
+    <select name="blood_group" required class="input-modern">
+        <option value="" disabled {% if not existing_info and not form_data %}selected{% endif %}>
+    Select blood group
+</option>
+
+
+        <option value="A+"  {% if existing_info and existing_info.blood_group == "A+" %}selected{% elif form_data and form_data.blood_group == "A+" %}selected{% endif %}>A+</option>
+        <option value="A-"  {% if existing_info and existing_info.blood_group == "A-" %}selected{% elif form_data and form_data.blood_group == "A-" %}selected{% endif %}>A−</option>
+
+        <option value="B+"  {% if existing_info and existing_info.blood_group == "B+" %}selected{% elif form_data and form_data.blood_group == "B+" %}selected{% endif %}>B+</option>
+        <option value="B-"  {% if existing_info and existing_info.blood_group == "B-" %}selected{% elif form_data and form_data.blood_group == "B-" %}selected{% endif %}>B−</option>
+
+        <option value="AB+" {% if existing_info and existing_info.blood_group == "AB+" %}selected{% elif form_data and form_data.blood_group == "AB+" %}selected{% endif %}>AB+</option>
+        <option value="AB-" {% if existing_info and existing_info.blood_group == "AB-" %}selected{% elif form_data and form_data.blood_group == "AB-" %}selected{% endif %}>AB−</option>
+
+        <option value="O+"  {% if existing_info and existing_info.blood_group == "O+" %}selected{% elif form_data and form_data.blood_group == "O+" %}selected{% endif %}>O+</option>
+        <option value="O-"  {% if existing_info and existing_info.blood_group == "O-" %}selected{% elif form_data and form_data.blood_group == "O-" %}selected{% endif %}>O−</option>
+    </select>
+</div>
+
+            </div>
+<div class="form-row">
+            <div class="form-field">
+                <label class="field-label">Address</label>
+                <input type="text" name="address" placeholder="Enter complete address" required class="input-modern" value="{% if existing_info %}{{ existing_info.address }}{% elif form_data %}{{ form_data.address }}{% endif %}">
+            </div>
+<div class="form-field">
+                    <label class="field-label">Pin Code</label>
+                    <input type="text" name="pin_code" placeholder="Enter pin code" required pattern="[0-9]{6}" maxlength="6" class="input-modern" value="{% if existing_info %}{{ existing_info.pin_code }}{% elif form_data %}{{ form_data.pin_code }}{% endif %}">
+                </div>
+                </div>
+            <div class="form-row">
+                
+                <div class="form-field">
+                    <label class="field-label">Phone Number</label>
+                    <input type="tel" name="phone_no" placeholder="Enter phone number" required pattern="[0-9]{10}" maxlength="10" class="input-modern" value="{% if existing_info %}{{ existing_info.phone_no }}{% elif form_data %}{{ form_data.phone_no }}{% endif %}">
+                </div>
+                <div class="form-field">
+                    <label class="field-label">Second Phone Number</label>
+                    <input type="tel" name="sphone_no" placeholder="Enter second phone number" required pattern="[0-9]{10}" maxlength="10" class="input-modern" value="{% if existing_info %}{{ existing_info.sphone_no }}{% elif form_data %}{{ form_data.sphone_no }}{% endif %}">
+                </div>
+            </div>
+
+            <div class="form-field full-width">
+                <label class="field-label">College Name</label>
+                <input type="text" name="college_name" placeholder="Enter college name" required class="input-modern" value="{% if existing_info %}{{ existing_info.college_name }}{% elif form_data %}{{ form_data.college_name }}{% endif %}">
+            </div>
+
+                <div class="form-field full-width">
+                    <label class="field-label">Aadhaar Number</label>
+                    <input type="text" name="aadhaar_no" placeholder="Enter Aadhaar number" required pattern="[0-9]{12}" maxlength="12" class="input-modern" value="{% if existing_info %}{{ existing_info.aadhaar_no }}{% elif form_data %}{{ form_data.aadhaar_no }}{% endif %}">
+                </div>
+        </div>
+
+        <div class="form-actions">
+            {% if info %}
+            <p class="info-message">{{ info }}</p>
+            {% endif %}
+            
+            <button type="submit" class="primary-btn">
+                {% if existing_info %}Update Information{% else %}Submit Information{% endif %}
+            </button>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

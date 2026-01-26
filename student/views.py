@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.contrib import messages
-from .models import Login, StudentNFCCard, BusRoute, StudentWallet
+from .models import Login, StudentNFCCard, BusRoute, InfoSubmit
+import uuid
 
 def manage_card(request):
     return render(request, 'manage_card.html')
 
+def addinfo(request):
+    return render(request, 'addinfo.html')
 
 def block_card(request):
     try:
@@ -65,8 +69,6 @@ def student_login(request):
         request.session["user_id"] = user.id
         request.session["username"] = user.username
         request.session["role"] = user.role
-
-        messages.success(request, "Login successful.")
         return redirect("home")   # change to whatever page you want after login
 
     return render(request, "student_login.html")
@@ -75,7 +77,6 @@ def set_route(request):
     info = None
     login_id = request.session.get("user_id")
     flag = "green"
-
     if login_id:
         login_user = Login.objects.get(id=login_id)
 
@@ -88,10 +89,16 @@ def set_route(request):
 
 def add_route(request):
     if request.method == "POST":
+        login_id = request.session.get("user_id")
+        if login_id:
+            login_user = Login.objects.get(id=login_id)
+            if BusRoute.objects.filter(user=login_user).exists():
+                info = "You already have routes saved for your account."
+                return render(request, "set_route.html", {'info':info})
         stops = request.POST.getlist("stops[]")
 
         # Keep only the first four and pad if fewer
-        stops = (stops + ["", "", "", ""])[:4]
+        stops = (stops + ["", ""])[:2]
 
         # Example login handling. Adjust if your session key is different
         login_id = request.session.get("user_id")
@@ -105,8 +112,6 @@ def add_route(request):
             user=login_user,
             stop1=stops[0],
             stop2=stops[1],
-            stop3=stops[2],
-            stop4=stops[3],
         )
 
         return redirect("add_route")
@@ -114,7 +119,170 @@ def add_route(request):
     return render(request, "set_route.html", {'info':'Routes added successfully'})
 
 def view_balance(request):
-    # wallet = StudentWallet.objects.filter(student=request.user).first()
+    user = request.session.get("username")
+
+    if not user:
+        return render(request, "wallet.html", {
+            "card": None,
+            "student_info": None
+        })
+
+    # Get student info (for name display)
+    student_info = InfoSubmit.objects.filter(user=user).first()
+
+    # Get NFC card (source of truth for balance & status)
+    card = StudentNFCCard.objects.filter(username=user).first()
+
     return render(request, "wallet.html", {
-        "card": "wallet"
+        "card": card,
+        "student_info": student_info,
     })
+
+
+def infosubmit(request):
+    existing_info = InfoSubmit.objects.filter(user=request.user).first()
+
+    if request.method == "POST":
+        user = request.session["username"]
+
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        guardian_name = request.POST.get("guardian_name", "").strip()
+        blood_group = request.POST.get("blood_group", "").strip()
+        address = request.POST.get("address", "").strip()
+        pin_code = request.POST.get("pin_code", "").strip()
+        phone_no = request.POST.get("phone_no", "").strip()
+        sphone_no = request.POST.get("sphone_no", "").strip()
+        college_name = request.POST.get("college_name", "").strip()
+        aadhaar_no = request.POST.get("aadhaar_no", "").strip()
+
+        if not all([
+            first_name, last_name, guardian_name, blood_group,
+            address, pin_code, phone_no, sphone_no,
+            college_name, aadhaar_no
+        ]):
+            messages.error(request, "All fields are required.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if not pin_code.isdigit() or len(pin_code) != 6:
+            messages.error(request, "Pin code must be 6 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if not phone_no.isdigit() or len(phone_no) != 10:
+            messages.error(request, "Primary phone number must be 10 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if not sphone_no.isdigit() or len(sphone_no) != 10:
+            messages.error(request, "Second phone number must be 10 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if not aadhaar_no.isdigit() or len(aadhaar_no) != 12:
+            messages.error(request, "Aadhaar number must be 12 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if InfoSubmit.objects.filter(aadhaar_no=aadhaar_no).exclude(user=request.user).exists():
+            messages.error(request, "This Aadhaar number is already registered.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if existing_info:
+            existing_info.first_name = first_name
+            existing_info.last_name = last_name
+            existing_info.guardian_name = guardian_name
+            existing_info.blood_group = blood_group
+            existing_info.address = address
+            existing_info.pin_code = pin_code
+            existing_info.phone_no = phone_no
+            existing_info.sphone_no = sphone_no
+            existing_info.college_name = college_name
+            existing_info.aadhaar_no = aadhaar_no
+            existing_info.save()
+            messages.success(request, "Information updated successfully.")
+        else:
+            InfoSubmit.objects.create(
+                user=user,
+                first_name=first_name,
+                last_name=last_name,
+                guardian_name=guardian_name,
+                blood_group=blood_group,
+                address=address,
+                pin_code=pin_code,
+                phone_no=phone_no,
+                sphone_no=sphone_no,
+                college_name=college_name,
+                aadhaar_no=aadhaar_no,
+                card_id=generate_card_id(user),
+            )
+            messages.success(request, "Information submitted successfully.")
+
+        return redirect("nfcview")
+
+    return render(request, "addinfo.html", {"existing_info": existing_info})
+
+
+def nfcview(request):
+    """
+    View function to display NFC card with user information
+    """
+    # Generate or retrieve unique card ID
+    # You can store this in a separate model or in InfoSubmit model
+    
+    user = request.session["username"]
+    # Check flag status (adjust this based on your flag logic)
+    # For example, check if user has completed registration
+    flag = 'green'
+    
+    names = InfoSubmit.objects.filter(user=user).values('first_name', 'last_name')
+    card_id = InfoSubmit.objects.filter(user=user).values('card_id')
+    context = {
+        'card_id': card_id,
+        'flag': flag,
+        'names' : names
+    }
+    
+    return render(request, 'nfcview.html', context)
+
+
+
+def accept_card(request):
+    """
+    View function to handle card acceptance
+    """
+    # Add your card acceptance logic here
+    # For example: activate card, update database, etc.
+    user = request.session["username"]
+    
+    try:
+        # Your acceptance logic
+        
+        # Example: Update a field in InfoSubmit or create a card record
+        if hasattr(user, 'info_submit'):
+            # Add your logic here
+            # user.info_submit.card_activated = True
+            # user.info_submit.save()
+            pass
+        
+        messages.success(request, 'NFC Card accepted successfully!')
+        return redirect('nfcview')  # Change to your desired redirect
+        
+    except Exception as e:
+        messages.error(request, f'Error accepting card: {str(e)}')
+        return redirect('nfcview')
+
+
+def generate_card_id(user):
+    """
+    Generate a unique card ID for the user
+    You can customize this format as needed
+    """
+    # Check if user already has a card ID stored
+    if hasattr(user, 'info_submit') and hasattr(user.info_submit, 'card_id'):
+        return user.info_submit.card_id
+    
+    # Generate new card ID in format: XXXX-XXXX-XXXX
+    unique_id = str(uuid.uuid4().hex[:12].upper())
+    formatted_id = f"{unique_id[:4]}-{unique_id[4:8]}-{unique_id[8:12]}"
+    if hasattr(user, 'info_submit'):
+        user.info_submit.card_id = formatted_id
+        user.info_submit.save()
+    
+    return formatted_id

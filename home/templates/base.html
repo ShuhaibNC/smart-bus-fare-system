@@ -9,6 +9,7 @@
       content="width=device-width, initial-scale=1, user-scalable=no"
     />
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+    {% block addstyle %}{% endblock addstyle %}
   </head>
   <body class="is-preload dark">
     <div id="page-wrapper">
@@ -20,15 +21,37 @@
             <li><li>
 					<a href="#" class="icon solid fa-angle-down">Services</a>
 					<ul>
-						<li><a href="student_wallet/">View Balance</a></li>
+						{% if request.session.role == 'admin' %}
+					<li>
+						<a href="/managenfc/">
+							Manage NFC Applications
+						</a>
+					</li>
+
+					<li>
+						<a href="/managelostcard">
+							Manage Lost/Stolen Cards
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Learn More
+						</a>
+					</li>
+						{% else %}
+						<li><a href="/student_wallet/">View Balance</a></li>
+						<li><a href="/nfcview/">View my NFC Card</a></li>
 						<li><a href="#">Recharge Wallet</a></li>
 						<li><a href="#">Travel History</a></li>
 						<li><a href="#">Download Receipts</a></li>
 						<li><a href="#">Refund System</a></li>
-						<li><a href="manage_card/">Block Lost Card</a></li>
+						<li><a href="/manage_card/">Block Lost Card</a></li>
+						{% endif %}
 					</ul>
 				</li>
             <li>{% block status %}<a href="/" class="button">Logout</a>{% endblock %}</li>
+            <li>{% block extranav %}{% endblock extranav %}</li>
           </ul>
         </nav>
       </header>

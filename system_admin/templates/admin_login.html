@@ -9,8 +9,12 @@
 
     <section class="box" style="max-width: 420px; margin: auto;">
         <header class="major">
-            <h2>🔐 Admin Login</h2>
-            <p>Authorized access only</p>
+            <h2>Admin Login</h2>
+            {% if info %}
+            <p>{{ info }}</p>
+            {% else %}
+            <p>admin access only</p>
+            {% endif %}
         </header>
 
         <form method="post">
@@ -20,7 +24,7 @@
                 <div class="col-12">
                     <input 
                         type="text" 
-                        name="admin_id" 
+                        name="username" 
                         placeholder="Admin ID" 
                         required
                     />
@@ -34,13 +38,6 @@
                         required
                     />
                 </div>
-
-                <div class="col-12" style="text-align:right;">
-                    <a href="#" style="font-size:13px;">
-                        Forgot Password?
-                    </a>
-                </div>
-
                 <div class="col-12">
                     <input 
                         type="submit" 

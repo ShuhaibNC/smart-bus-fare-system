@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header %}
+{% endblock header %}
+{% block addstyle %}
+<style>
+    select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: #121212;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px 36px 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+select option {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+button{
+    margin: 5px;
+}
+
+</style>
+{% endblock addstyle %}
+{% block content %}
+
+<div class="box">
+
+    <!-- ================= PENDING NFC REQUESTS ================= -->
+    <h3 class="wallet-title">Manage Pending NFC Card Requests</h3>
+
+    {% if pending_cards %}
+        <table class="nfc-table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Username</th>
+                    <th>Card ID</th>
+                    <th>College</th>
+                    <th>Requested On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for info in pending_cards %}
+                <tr>
+                    <td>{{ info.first_name }} {{ info.last_name }}</td>
+                    <td>{{ info.user }}</td>
+                    <td>{{ info.card_id }}</td>
+                    <td>{{ info.college_name }}</td>
+                    <td>{{ info.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'accept_nfc_card' info.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="button primary">
+                                Accept Card
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="min-info">No pending NFC card requests.</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- ================= ACTIVE / BLOCKED NFC CARDS ================= -->
+    <h3 class="wallet-title">Issued NFC Cards</h3>
+
+    {% if active_cards %}
+        <table class="nfc-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Card ID</th>
+                    <th>Status</th>
+                    <th>Blocked Reason</th>
+                    <th>Issued On</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for card in active_cards %}
+                <tr class="{% if card.status == 'BLOCKED' %}low{% else %}healthy{% endif %}">
+                    <td>{{ card.username }}</td>
+                    <td>{{ card.card_id }}</td>
+                    <td>
+                        {% if card.status == 'ACTIVE' %}
+                            <span class="ok-balance">ACTIVE</span>
+                        {% else %}
+                            <span class="low-balance">BLOCKED</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ card.get_block_reason_display|default:"—" }}</td>
+                    <td>{{ card.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_nfc_card' card.id %}">
+                            {% csrf_token %}
+                            <select name="status">
+                                <option value="ACTIVE" {% if card.status == 'ACTIVE' %}selected{% endif %}>Active</option>
+                                <option value="BLOCKED" {% if card.status == 'BLOCKED' %}selected{% endif %}>Blocked</option>
+                            </select>
+
+                            <select name="block_reason">
+                                <option value="">No Reason</option>
+                                <option value="lost">Lost</option>
+                                <option value="stolen">Stolen</option>
+                                <option value="damaged">Damaged</option>
+                            </select>
+
+                            <input type="text" name="remarks" placeholder="Remarks" value="{{ card.remarks }}">
+
+                            <button type="submit" class="button secondary">
+                                Update
+                            </button>
+                            <button class="button secondary">
+                                Write Data
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="min-info">No NFC cards issued yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

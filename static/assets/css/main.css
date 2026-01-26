@@ -3162,7 +3162,8 @@
 
 	#banner {
 		background-attachment: scroll,							fixed;
-		background-color: #141419;
+		/* background-color: #141419; */
+		background-image: url("images/overlay.png"), url("../../images/banner.jpg");
 		background-position: top left,						center center;
 		background-repeat: repeat,							no-repeat;
 		background-size: auto,							cover;
@@ -3895,9 +3896,6 @@
 			}
 
 	}
-body.dark { background: #0f0f14; color: #cfcfd6; }
-/* ...rest of the dark CSS I gave you... */
-
 /* Forced dark theme */
 body.dark {
   background: #0f0f14;
