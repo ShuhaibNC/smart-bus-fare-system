@@ -31,6 +31,20 @@ select option {
 button{
     margin: 5px;
 }
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 1;
+    min-height: 36px;
+
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
 
 </style>
 {% endblock addstyle %}
@@ -128,9 +142,7 @@ button{
                             <button type="submit" class="button secondary">
                                 Update
                             </button>
-                            <a href="/write_nfc/" class="button secondary">
-                                Write Data
-                            </a>
+                            <a href="{% url 'write_nfc' card.card_id %}" class="button secondary">Write Data</a>
                         </form>
                     </td>
                 </tr>
