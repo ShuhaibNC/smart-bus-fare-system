@@ -6,6 +6,7 @@ urlpatterns = [
     path('managenfc/', views.manage_nfc, name='manage_nfc'),
     path('managenfc/accept/<int:id>/', views.accept_nfc_card, name='accept_nfc_card'),
     path('managenfc/update/<int:id>/', views.update_nfc_card, name='update_nfc_card'),
-    path("write_nfc/", views.write_nfc, name="write_nfc"),
+    path("write_nfc/<str:card_id>/", views.write_nfc, name="write_nfc"),
+    path("nfcwriter/<str:card_id>/", views.nfcwriter, name="nfcwriter"),
     
 ]

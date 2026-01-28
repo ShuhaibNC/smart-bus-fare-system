@@ -3,6 +3,7 @@ from student.models import Login, StudentNFCCard, InfoSubmit
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
+from hardware.nfc_writer import NFCWriter
 
 def admin_login(request):
     if request.method == "POST":
@@ -104,19 +105,39 @@ def update_nfc_card(request, id):
     messages.success(request, "NFC card updated successfully.")
     return redirect('manage_nfc')
 
-
-def write_nfc(request):
-    # user = request.session["username"]
-    user = "john"
-    # Check flag status (adjust this based on your flag logic)
-    # For example, check if user has completed registration
+def write_nfc(request, card_id):
     flag = 'green'
-    
-    names = InfoSubmit.objects.filter(user=user).values('first_name', 'last_name')
-    card_id = InfoSubmit.objects.filter(user=user).values('card_id')
+    card = get_object_or_404(InfoSubmit, card_id=card_id)
+
     context = {
-        'card_id': card_id,
+        'card_id': card.card_id,
         'flag': flag,
-        'names' : names
+        'names': {
+            'first_name': card.first_name,
+            'last_name': card.last_name,
+        }
     }
-    return render(request, "write_nfc.html", context=context)
+    return render(request, "write_nfc.html", context)
+
+def nfcwriter(request, card_id):
+    # Hardware code
+    mynfc = NFCWriter()
+    mynfc.send_cmd()
+    mynfc.check_card()
+    mynfc.delete_card()
+    mynfc.write_card()
+    mynfc.close()
+    
+    card = get_object_or_404(InfoSubmit, card_id=card_id)
+    return render(
+        request,
+        "write_nfc.html",
+        {
+            "card_id": card_id,
+            "write_status": "reading",
+            'names': {
+            'first_name': card.first_name,
+            'last_name': card.last_name,
+        }
+        }
+    )

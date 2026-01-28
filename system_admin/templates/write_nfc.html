@@ -227,30 +227,46 @@ body {
 <div class="modern-card">
     <h2 class="title">Write NFC Card Data</h2>
 
+    <form method="post" action="{% url 'nfcwriter' card_id %}">
+    {% csrf_token %}
+
     <table class="input-table">
         <tr>
             <th>Card Holder Full Name</th>
             <td>
-                {% for name in names %}
-                <input type="text" id="cardName" placeholder="new" value="{{ name.first_name }} {{ name.last_name }}">
-                 {% endfor %}
+                <input
+                    type="text"
+                    name="card_name"
+                    id="cardName"
+                    value="{{ names.first_name }} {{ names.last_name }}"
+                    required
+                >
             </td>
         </tr>
+
         <tr>
-            <th>Unique ID</th>
+            <th>CARD ID</th>
             <td>
                 {% if card_id %}
-                {% for id in card_id %}
-                <input type="text" id="cardUID" placeholder="new" value="{{ id.card_id }}" disabled>
-                {% endfor %}
+                    <input
+                        type="text"
+                        name="card_uid"
+                        id="cardUID"
+                        value="{{ card_id }}"
+                        readonly
+                    >
+                {% else %}
+                    XXXX-XXXX-XXXX
                 {% endif %}
             </td>
         </tr>
     </table>
 
-    <button class="write-btn" onclick="startWrite()">
+    <button type="submit" class="write-btn">
         WRITE DATA
     </button>
+</form>
+
 
     <div class="write-section" id="writeSection">
         <div class="nfc-container">
@@ -274,18 +290,14 @@ body {
             <div class="card-content">
                 <div>
                     <div class="card-name" id="cardNamePreview">
-                        {% for name in names %}
-                            {{ name.first_name }} {{ name.last_name }}
-                        {% endfor %}
+                            {{ names.first_name }} {{ names.last_name }}
                     </div>
                 </div>
 
                 <div>
                     <div class="card-number" id="cardUIDPreview">
                         {% if card_id %}
-                        {% for id in card_id %}
-                            {{ id.card_id }}
-                        {% endfor %}
+                            {{ card_id }} 
                         {% else %}
                             XXXX-XXXX-XXXX
                         {% endif %}
@@ -303,11 +315,12 @@ body {
     </div>
 </div>
 
-<script>
-function startWrite() {
-    // dummy trigger for now
-    document.getElementById("writeSection").style.display = "block";
-}
+    {% if write_status == "reading" %}
+        <script>
+            document.getElementById("writeSection").style.display = "block";
+        </script>
+    {% endif %}
+
 </script>
 
 {% endblock content %}
