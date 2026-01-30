@@ -3,7 +3,7 @@ from student.models import Login, StudentNFCCard, InfoSubmit
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
-from hardware.nfc_writer import write_nfc
+from hardware.nfc_writer import rfidwrite
 from django.http import JsonResponse
 
 def admin_login(request):
@@ -122,7 +122,8 @@ def write_nfc(request, card_id):
 def nfcwriter(request, card_id):
     #hardware
     card = get_object_or_404(InfoSubmit, card_id=card_id)
-    write_nfc(card_id, card.first_name + card.last_name)
+    fullname = card.first_name + card.last_name
+    rfidwrite(card_id, fullname)
     return render(
         request,
         "write_nfc.html",

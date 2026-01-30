@@ -5,7 +5,7 @@ PORT = "COM12"
 BAUD = 115200
 
 
-def write_nfc(uid, name, delete=False):
+def rfidwrite(uid, name, delete=False):
     """
     Controls ESP32 RFID logic from Django
     """
