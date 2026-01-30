@@ -3,7 +3,8 @@ from student.models import Login, StudentNFCCard, InfoSubmit
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
-from hardware.nfc_writer import NFCWriter
+from hardware.nfc_writer import write_nfc
+from django.http import JsonResponse
 
 def admin_login(request):
     if request.method == "POST":
@@ -66,11 +67,9 @@ def accept_nfc_card(request, id):
         card_id=info.card_id,
         status='ACTIVE',
         balance=0
-    )
-
+)
     # Activate in InfoSubmit
     info.activate_card()
-
     messages.success(request, "NFC card accepted and activated successfully.")
     return redirect('manage_nfc')
 
@@ -117,18 +116,13 @@ def write_nfc(request, card_id):
             'last_name': card.last_name,
         }
     }
+    
     return render(request, "write_nfc.html", context)
 
 def nfcwriter(request, card_id):
-    # Hardware code
-    mynfc = NFCWriter()
-    mynfc.send_cmd()
-    mynfc.check_card()
-    mynfc.delete_card()
-    mynfc.write_card()
-    mynfc.close()
-    
+    #hardware
     card = get_object_or_404(InfoSubmit, card_id=card_id)
+    write_nfc(card_id, card.first_name + card.last_name)
     return render(
         request,
         "write_nfc.html",
