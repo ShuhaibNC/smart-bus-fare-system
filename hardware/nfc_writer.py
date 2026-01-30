@@ -1,52 +1,115 @@
 import serial
 import time
 
-PORT = "COM12"
-BAUD = 115200
+# ===============================
+# CONFIG
+# ===============================
+SERIAL_PORT = "COM12"     # ✅ confirmed from Device Manager
+BAUD_RATE = 115200
+TIMEOUT = 5               # seconds
 
 
-def rfidwrite(uid, name, delete=False):
-    """
-    Controls ESP32 RFID logic from Django
-    """
+# ===============================
+# SERIAL HANDLER
+# ===============================
+class NFCWriter:
+    def __init__(self):
+        self.ser = serial.Serial(
+            SERIAL_PORT,
+            BAUD_RATE,
+            timeout=1
+        )
+        time.sleep(2)  # allow ESP32 reset
+        self._wait_for_ready()
 
-    ser = serial.Serial(PORT, BAUD, timeout=1)
-    time.sleep(2)
+    def _wait_for_ready(self):
+        """Wait for ESP32 to say READY"""
+        start = time.time()
+        while time.time() - start < TIMEOUT:
+            line = self._read()
+            if line == "READY":
+                return
+        raise RuntimeError("ESP32 not responding")
 
-    ser.write(b"START\n")
+    def _read(self):
+        """Read one line from ESP32"""
+        if self.ser.in_waiting:
+            return self.ser.readline().decode().strip()
+        return None
 
-    start = time.time()
-    old_data = None
+    def _send(self, msg):
+        """Send command to ESP32"""
+        self.ser.write((msg + "\n").encode())
 
-    while time.time() - start < 20:
-        if ser.in_waiting:
-            msg = ser.readline().decode().strip()
-            print("ESP32:", msg)
+    # ===============================
+    # PUBLIC FUNCTIONS (USE THESE)
+    # ===============================
 
-            if msg == "PLACE_CARD":
-                return {"status": "waiting"}
+    def write_card(self, student_id, name):
+        """
+        WRITE:<ID>:<NAME>
+        """
+        self._send(f"WRITE:{student_id}:{name}")
 
-            if msg.startswith("CARD_HAS_DATA"):
-                _, old_id, old_name = msg.split(",", 2)
-                old_data = {"id": old_id, "name": old_name}
-                return {"status": "exists", "data": old_data}
+        while True:
+            resp = self._read()
+            if not resp:
+                continue
 
-            if msg == "CARD_EMPTY":
-                break
+            # ---- ESP32 responses ----
+            if resp == "PLACE_CARD":
+                return {"status": "place_card"}
 
-    if delete:
-        ser.write(b"DELETE\n")
-        time.sleep(1)
+            if resp.startswith("EXISTING:"):
+                _, cid, cname = resp.split(":", 2)
+                return {
+                    "status": "existing",
+                    "card_id": cid,
+                    "name": cname
+                }
 
-    ser.write(f"WRITE,{uid},{name}\n".encode())
-
-    start = time.time()
-    while time.time() - start < 15:
-        if ser.in_waiting:
-            msg = ser.readline().decode().strip()
-            if msg == "WRITE_SUCCESS":
-                ser.close()
+            if resp == "WRITE_OK":
                 return {"status": "success"}
 
-    ser.close()
-    return {"status": "failed"}
+    def delete_card(self):
+        """
+        DELETE
+        """
+        self._send("DELETE")
+
+        while True:
+            resp = self._read()
+            if not resp:
+                continue
+
+            if resp == "PLACE_CARD":
+                return {"status": "place_card"}
+
+            if resp == "DELETED":
+                return {"status": "deleted"}
+
+    def close(self):
+        self.ser.close()
+
+
+# ===============================
+# SIMPLE FUNCTION WRAPPERS
+# (easy to call from Django)
+# ===============================
+
+def write_nfc(student_id, name):
+    nfc = NFCWriter()
+    result = nfc.write_card(student_id, name)
+    nfc.close()
+    return result
+
+
+def delete_nfc():
+    nfc = NFCWriter()
+    result = nfc.delete_card()
+    nfc.close()
+    return result
+
+nfc = NFCWriter()
+result = nfc.write_card("2565464", "rajeevan")
+nfc.close()
