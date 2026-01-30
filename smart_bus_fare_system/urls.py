@@ -8,6 +8,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path('' , include ('system_admin.urls')),
     path('', include ('student.urls')),
+    
 
 
 
@@ -15,3 +16,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
+
