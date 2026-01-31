@@ -227,7 +227,7 @@ body {
 <div class="modern-card">
     <h2 class="title">Write NFC Card Data</h2>
 
-    <form method="post" action="{% url 'nfcwriter' card_id %}">
+    <form method="post" action="{% url 'nfcwriter' card_id %}" id="writeForm">
     {% csrf_token %}
 
     <table class="input-table">
@@ -262,9 +262,10 @@ body {
         </tr>
     </table>
 
-    <button type="submit" class="write-btn">
-        WRITE DATA
-    </button>
+    <button type="submit" class="write-btn" id="writeBtn">
+    WRITE DATA
+</button>
+
 </form>
 
 
@@ -315,12 +316,22 @@ body {
     </div>
 </div>
 
-    {% if write_status == "reading" %}
+    {% comment %} {% if write_status == "reading" %}
         <script>
             document.getElementById("writeSection").style.display = "block";
         </script>
-    {% endif %}
+    {% endif %} {% endcomment %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const writeBtn = document.getElementById("writeBtn");
+    const writeSection = document.getElementById("writeSection");
 
+    if (!writeBtn || !writeSection) return;
+
+    writeBtn.addEventListener("click", function () {
+        writeSection.style.display = "block";
+    });
+});
 </script>
 
 {% endblock content %}
