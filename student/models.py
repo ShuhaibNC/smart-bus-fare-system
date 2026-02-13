@@ -75,12 +75,8 @@ class BusRoute(models.Model):
     stop2 = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     #test = models.CharField(max_length=255, blank=True, null=True)
-
-
-
     def __str__(self):
         return f"Route {self.id}"
-    
 
 class InfoSubmit(models.Model):
     BLOOD_GROUP_CHOICES = [

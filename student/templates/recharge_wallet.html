@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block header %}
+<header></header>
+{% endblock header %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'assets/css/wallet.css' %}">
+
+<div class="wallet-page box">
+
+    <h2 class="wallet-title">Recharge Wallet</h2>
+
+    {% if card %}
+
+    <!-- NFC CARD (SAME GRAPHICS AS WALLET) -->
+    <div class="nfc-card
+        {% if card.status == 'BLOCKED' %}
+            low
+        {% elif card.balance < 100 %}
+            low
+        {% else %}
+            healthy
+        {% endif %}
+    ">
+
+        <div class="nfc-watermark">NFC</div>
+
+        <div class="nfc-content">
+
+            <!-- TOP BLOCK -->
+            <div>
+                {% if student_info %}
+                    <h3>{{ student_info.get_full_name }}</h3>
+                {% else %}
+                    <h3>{{ card.username }}</h3>
+                {% endif %}
+
+                <p class="system-name">Smart Bus Fare System</p>
+            </div>
+
+            <!-- BALANCE BLOCK -->
+            <div class="balance-row">
+                <div>
+                    <span class="label">Current Balance</span>
+                    <span class="amount">₹ {{ card.balance }}</span>
+                </div>
+
+                <div class="status">
+                    {% if card.status == 'BLOCKED' %}
+                        <span class="low-balance">BLOCKED</span>
+                    {% elif card.balance < 100 %}
+                        <span class="low-balance">LOW</span>
+                    {% else %}
+                        <span class="ok-balance">HEALTHY</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- FLEX BUFFER (PREVENTS CLIPPING) -->
+            <div style="flex-grow: 1;"></div>
+
+            <!-- CARD META -->
+            <p class="cardholder-name">
+                CARD ID: {{ card.card_id }}
+            </p>
+
+            <!-- SAFETY BUFFER -->
+            <div style="height: 6px;"></div>
+
+        </div>
+    </div>
+
+    <!-- RECHARGE FORM -->
+    <form method="post" class="recharge-form">
+        {% csrf_token %}
+
+        <label for="amount">Enter recharge amount (₹)</label>
+
+        <input
+            type="number"
+            id="amount"
+            name="amount"
+            min="1"
+            step="1"
+            placeholder="e.g. 200"
+            required
+        >
+
+        <div class="wallet-actions">
+            <a href="/student_wallet/" class="btn-outline">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn-primary">
+                Add Balance
+            </button>
+        </div>
+    </form>
+
+    {% else %}
+
+    <!-- NO CARD CASE -->
+    <div class="nfc-card low">
+        <div class="nfc-content">
+            <h3>No NFC Card Found</h3>
+            <p class="warning">
+                Your NFC card is not issued or not activated yet.
+            </p>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock content %}

@@ -3,8 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate
 from django.utils import timezone
+from decimal import Decimal
 from django.contrib import messages
 from .models import Login, StudentNFCCard, BusRoute, InfoSubmit
+from system_admin.models import BusFee
+import json
 import uuid
 
 def manage_card(request):
@@ -74,48 +77,54 @@ def student_login(request):
     return render(request, "student_login.html")
 
 def set_route(request):
-    info = None
     login_id = request.session.get("user_id")
+    info = None
     flag = "green"
-    if login_id:
-        login_user = Login.objects.get(id=login_id)
 
-        # Check if a route exists for this user
-        if BusRoute.objects.filter(user=login_user).exists():
+    if login_id:
+        # Assuming Login is your user model or related to it
+        if BusRoute.objects.filter(user=login_id).exists():
             info = "You already have routes saved for your account."
             flag = "red"
 
-    return render(request, "set_route.html", {"info": info, "flag": flag})
+    # Fetch data from BusFee model
+    bus_fees = BusFee.objects.all()
+    
+    # Structure data: { "Route Name": { "stops": [], "fares": [] } }
+    route_data_dict = {}
+    for fee in bus_fees:
+        route = fee.dest_route
+        if route not in route_data_dict:
+            route_data_dict[route] = {"stops": [], "fares": []}
+        
+        route_data_dict[route]["stops"].append(fee.dest_stop)
+        route_data_dict[route]["fares"].append(float(fee.busfee))
+
+    context = {
+        "info": info,
+        "flag": flag,
+        # Convert dictionary to JSON string for JavaScript
+        "route_data_json": json.dumps(route_data_dict)
+    }
+    
+    return render(request, "set_route.html", context)
 
 def add_route(request):
     if request.method == "POST":
         login_id = request.session.get("user_id")
-        if login_id:
-            login_user = Login.objects.get(id=login_id)
-            if BusRoute.objects.filter(user=login_user).exists():
-                info = "You already have routes saved for your account."
-                return render(request, "set_route.html", {'info':info})
-        stops = request.POST.getlist("stops[]")
+        if not login_id:
+            return redirect('login') # Or handle error
 
-        # Keep only the first four and pad if fewer
-        stops = (stops + ["", ""])[:2]
-
-        # Example login handling. Adjust if your session key is different
-        login_id = request.session.get("user_id")
-
-        if login_id is None:
-            return redirect("/")   # or wherever your login page is
-
-        login_user = Login.objects.get(id=login_id)
+        stop1 = request.POST.get('stop1')
+        stop2 = request.POST.get('stop2')
         
+        # Create the route
         BusRoute.objects.create(
-            user=login_user,
-            stop1=stops[0],
-            stop2=stops[1],
+            user=login_id,
+            stop1=stop1,
+            stop2=stop2
         )
-
-        return redirect("add_route")
-
+        return redirect('set_route')
     return render(request, "set_route.html", {'info':'Routes added successfully'})
 
 def view_balance(request):
@@ -286,3 +295,34 @@ def generate_card_id(user):
         user.info_submit.save()
     
     return formatted_id
+
+def recharge_wallet(request):
+    user = request.session.get("username")
+
+    # Get NFC card (source of truth for balance & status)
+    card = StudentNFCCard.objects.filter(username=user).first()
+
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+
+        try:
+            amount = Decimal(amount)
+            if amount <= 0:
+                raise ValueError
+        except:
+            messages.error(request, "Invalid recharge amount")
+            return redirect("recharge_wallet")
+
+        if card.status == "BLOCKED":
+            messages.error(request, "Blocked cards cannot be recharged")
+            return redirect("recharge_wallet")
+
+        card.balance += amount
+        card.save(update_fields=["balance"])
+
+        messages.success(request, f"₹{amount} added successfully")
+        return redirect("recharge_wallet")
+
+    return render(request, "recharge_wallet.html", {
+        "card": card
+    })

@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from student.models import Login, StudentNFCCard, InfoSubmit
+from .models import BusFee
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
 from hardware.nfc_writer import NFCWriter
 from django.http import JsonResponse
+from collections import defaultdict
+from decimal import Decimal
 
 def admin_login(request):
     if request.method == "POST":
@@ -137,3 +140,60 @@ def nfcwriter(request, card_id):
         }
         }
     )
+    
+def managefaresystem(request):
+    all_fees = BusFee.objects.all()
+
+    grouped_routes = defaultdict(list)
+
+    for item in all_fees:
+        grouped_routes[item.dest_route].append(item)
+
+    return render(request, "managefaresystem.html", {
+        "routes": dict(grouped_routes)
+    })
+
+def update_route_stops(request):
+    if request.method == "POST":
+        # We now pass the specific ID of the stop being edited
+        stop_id = request.POST.get("stop_id")
+        new_stop_name = request.POST.get("stop_name")
+        new_fee = request.POST.get("fee")
+
+        if stop_id:
+            fee_obj = BusFee.objects.get(id=stop_id)
+            if new_stop_name:
+                fee_obj.dest_stop = new_stop_name.strip()
+            if new_fee:
+                fee_obj.busfee = Decimal(new_fee)
+            fee_obj.save()
+            
+    return redirect("managefaresystem")
+
+def update_route_name(request, route_name):
+    if request.method == "POST":
+        new_name = request.POST.get("new_route_name")
+
+        if new_name:
+            BusFee.objects.filter(dest_route=route_name).update(
+                dest_route=new_name.strip()
+            )
+
+    return redirect("managefaresystem")
+
+def create_new_route(request):
+    """Creates a brand new route with its first stop."""
+    if request.method == "POST":
+        route_name = request.POST.get("route_name")
+        stop_name = request.POST.get("first_stop")
+        fee_amount = request.POST.get("first_fee")
+
+        if route_name and stop_name and fee_amount:
+            BusFee.objects.create(
+                dest_route=route_name.strip(),
+                dest_stop=stop_name.strip(),
+                busfee=Decimal(fee_amount)
+            )
+            messages.success(request, f"Route '{route_name}' created successfully!")
+    
+    return redirect("managefaresystem")

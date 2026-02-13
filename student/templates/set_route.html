@@ -1,230 +1,147 @@
 {% extends "base.html" %}
 {% load static %}
-{% block header %}{% endblock header %}
 {% block content %}
+
 <style>
-/* Dark mode base */
-:root {
-    color-scheme: dark;
-    --bg-main: #0f1115;
-    --bg-card: #181b22;
-    --bg-input: #1f242d;
-    --border-soft: #2b3040;
-    --text-main: #e6e9ef;
-    --text-muted: #9aa0ac;
-    --primary: #007bff;
-    --primary-hover: #0056b3;
-    --primary-soft: rgba(0,123,255,0.12);
-    --danger: #ff5f6d;
-    --danger-soft: rgba(255,95,109,0.12);
-}
-
-.modern-card {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 18px 20px;
-    border-radius: 14px;
-    background: var(--bg-card);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-    color: var(--text-main);
-}
-
-.title {
-    margin-bottom: 14px;
-    color: var(--text-main);
-}
-
-.modern-route {
-    margin-bottom: 14px;
-    padding: 12px;
-    border-radius: 10px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-soft);
-}
-
-.route-label {
-    font-size: 14px;
-    margin-bottom: 6px;
-    display: block;
-    color: var(--text-muted);
-}
-
-.input-modern {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border-soft);
-    background: var(--bg-card);
-    color: var(--text-main);
-}
-
-.input-modern::placeholder {
-    color: #6e7685;
-}
-
-.route-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 8px;
-}
-
-.route-icon-btn {
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border-soft);
-    background: var(--bg-card);
-    color: var(--text-main);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.route-icon-btn:hover {
-    background: var(--primary-soft);
-    border-color: var(--primary);
-}
-
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    gap: 10px;
-}
-
-.primary-btn {
-    background: var(--primary);
-    color: #fff;
-    border-radius: 8px;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-
-.primary-btn:hover {
-    background: var(--primary-hover);
-}
-
-.primary-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.info-message {
-    color: var(--text-muted);
-    margin: 0;
-}
-
-/* Dropdown styling */
-.stop-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background: var(--bg-card);
-    min-width: 200px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-    z-index: 1;
-    border-radius: 8px;
-    border: 1px solid var(--border-soft);
-    margin-top: 4px;
-}
-
-.dropdown-content button {
-    color: var(--text-main);
-    padding: 10px 14px;
-    text-decoration: none;
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.dropdown-content button:first-child {
-    border-radius: 8px 8px 0 0;
-}
-
-.dropdown-content button:last-child {
-    border-radius: 0 0 8px 8px;
-}
-
-.dropdown-content button:hover {
-    background: var(--bg-input);
-}
-
-.stop-dropdown.active .dropdown-content {
-    display: block;
-}
+    /* ... (Keep your existing CSS as is) ... */
+    :root {
+        color-scheme: dark;
+        --bg-main: #0f1115;
+        --bg-card: #181b22;
+        --bg-input: #1f242d;
+        --border-soft: #2b3040;
+        --text-main: #e6e9ef;
+        --text-muted: #9aa0ac;
+        --primary: #007bff;
+        --primary-hover: #0056b3;
+    }
+    .modern-card { max-width: 700px; margin: 0 auto; padding: 18px 20px; border-radius: 14px; background: var(--bg-card); box-shadow: 0 20px 40px rgba(0,0,0,0.35); color: var(--text-main); position: relative; padding-bottom: 80px; }
+    .title { margin-bottom: 14px; }
+    .modern-route { margin-bottom: 14px; padding: 12px; border-radius: 10px; background: var(--bg-input); border: 1px solid var(--border-soft); }
+    .route-label { font-size: 14px; margin-bottom: 6px; display: block; color: var(--text-muted); }
+    .input-modern { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); }
+    .route-icon-btn { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: 0.2s; width: 100%; text-align: left; }
+    .route-icon-btn:hover { background: var(--primary); }
+    .stop-dropdown { position: relative; display: block; width: 100%; }
+    .dropdown-content { display: none; position: absolute; background: var(--bg-card); width: 100%; box-shadow: 0 8px 16px rgba(0,0,0,0.4); z-index: 10; border-radius: 8px; border: 1px solid var(--border-soft); margin-top: 6px; max-height: 260px; overflow-y: auto; }
+    .dropdown-content button { width: 100%; padding: 10px; background: none; border: none; text-align: left; color: var(--text-main); cursor: pointer; }
+    .dropdown-content button:hover { background: var(--bg-input); }
+    .stop-dropdown.active .dropdown-content { display: block; }
+    .primary-btn { background: var(--primary); color: white; border-radius: 8px; padding: 10px 20px; border: none; cursor: pointer; }
+    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 
 <form method="post" action="{% url 'add_route' %}">
     {% csrf_token %}
-
-    <div class="route-container modern-card">
+    <div class="modern-card">
         <h2 class="title">Set Bus Route</h2>
 
-        <div id="routes">
-            <div class="route-box modern-route">
-                <label class="route-label">Stop 1</label>
-                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern" readonly>
-                <div class="route-actions">
-                    <div class="stop-dropdown">
-                        <button type="button" class="route-icon-btn choose-stop-btn" {% if flag != "green" %}disabled{% endif %}>Choose stop</button>
-                        <div class="dropdown-content">
-                            <button type="button" class="stop-option" data-stop="Bangalore Central Station">Bangalore Central Station</button>
-                            <button type="button" class="stop-option" data-stop="MG Road Metro">MG Road Metro</button>
-                            <button type="button" class="stop-option" data-stop="Indiranagar Bus Stand">Indiranagar Bus Stand</button>
-                            <button type="button" class="stop-option" data-stop="Koramangala 5th Block">Koramangala 5th Block</button>
-                            <button type="button" class="stop-option" data-stop="Electronic City">Electronic City</button>
-                            <button type="button" class="stop-option" data-stop="Whitefield Main Road">Whitefield Main Road</button>
-                        </div>
-                    </div>
-                    <button type="button" class="route-icon-btn map-btn">Open map</button>
-                </div>
-            </div>
+        {% if info %}
+            <p style="color: {{ flag }}; margin-bottom: 15px;">{{ info }}</p>
+        {% endif %}
 
-            <div class="route-box modern-route">
-                <label class="route-label">Stop 2</label>
-                <input type="text" name="stops[]" placeholder="Enter location" required class="input-modern" readonly>
-                <div class="route-actions">
-                    <div class="stop-dropdown">
-                        <button type="button" class="route-icon-btn choose-stop-btn" {% if flag != "green" %}disabled{% endif %}>Choose stop</button>
-                        <div class="dropdown-content">
-                            <button type="button" class="stop-option" data-stop="Bangalore Central Station">Bangalore Central Station</button>
-                            <button type="button" class="stop-option" data-stop="MG Road Metro">MG Road Metro</button>
-                            <button type="button" class="stop-option" data-stop="Indiranagar Bus Stand">Indiranagar Bus Stand</button>
-                            <button type="button" class="stop-option" data-stop="Koramangala 5th Block">Koramangala 5th Block</button>
-                            <button type="button" class="stop-option" data-stop="Electronic City">Electronic City</button>
-                            <button type="button" class="stop-option" data-stop="Whitefield Main Road">Whitefield Main Road</button>
-                        </div>
-                    </div>
-                    <button type="button" class="route-icon-btn map-btn">Open map</button>
+        <div class="modern-route">
+            <label class="route-label">From</label>
+            <input type="text" name="stop1" value="Kannur Engineering College" readonly class="input-modern">
+        </div>
+
+        <div class="modern-route">
+            <label class="route-label">Choose Route</label>
+            <div class="stop-dropdown" id="route-wrapper">
+                <button type="button" class="route-icon-btn" id="route-btn">Select Route</button>
+                <div class="dropdown-content" id="route-dropdown"></div>
+            </div>
+        </div>
+
+        <div class="modern-route">
+            <label class="route-label">Destination</label>
+            <input type="text" name="stop2" id="destination-input" readonly required class="input-modern" placeholder="Select a stop...">
+
+            <div style="margin-top:10px;">
+                <div class="stop-dropdown" id="stop-wrapper">
+                    <button type="button" class="route-icon-btn" id="stop-btn" disabled>Choose Stop</button>
+                    <div class="dropdown-content" id="stop-dropdown"></div>
                 </div>
             </div>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="primary-btn" {% if flag != "green" %}disabled{% endif %}>
-                Save route
-            </button>
-            
-            {% if info %}
-            <p class="info-message">{{ info }}</p>
-            {% endif %}
-            
-            <button type="button" class="primary-btn" id="next-btn" {% if flag == "green" %}disabled{% endif %}>
-                Next
-            </button>
+        <div style="position: absolute; bottom: 20px; right: 20px; text-align: right;">
+            <span style="color: var(--text-muted); font-size: 12px; display: block;">Estimated Fare</span>
+            <span style="font-size: 24px; font-weight: bold; color: #4ade80;">₹<span id="fare-amount">0</span></span>
         </div>
+
+        <button type="submit" class="primary-btn" id="save-btn" disabled>Save Route</button>
     </div>
 </form>
 
-<script src="{% static 'assets/js/set_route.js' %}"></script>
+<script id="route-data-script" type="application/json">
+    {{ route_data_json|safe }}
+</script>
+
+<script>
+// Parse the data from the script tag
+const routeData = JSON.parse(document.getElementById('route-data-script').textContent);
+
+const routeBtn = document.getElementById("route-btn");
+const routeDropdown = document.getElementById("route-dropdown");
+const stopBtn = document.getElementById("stop-btn");
+const stopDropdown = document.getElementById("stop-dropdown");
+const destinationInput = document.getElementById("destination-input");
+const saveBtn = document.getElementById("save-btn");
+const fareDisplay = document.getElementById("fare-amount");
+
+// Populate Routes from DB data
+Object.keys(routeData).forEach(routeName => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = routeName;
+    btn.onclick = () => {
+        routeBtn.textContent = routeName;
+        document.getElementById("route-wrapper").classList.remove("active");
+        stopBtn.disabled = false;
+        populateStops(routeName);
+        
+        destinationInput.value = "";
+        fareDisplay.textContent = "0";
+        saveBtn.disabled = true;
+    };
+    routeDropdown.appendChild(btn);
+});
+
+function populateStops(routeName) {
+    stopDropdown.innerHTML = "";
+    const data = routeData[routeName];
+
+    data.stops.forEach((stop, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = stop;
+        btn.onclick = () => {
+            destinationInput.value = stop;
+            fareDisplay.textContent = data.fares[index];
+            document.getElementById("stop-wrapper").classList.remove("active");
+            saveBtn.disabled = false;
+        };
+        stopDropdown.appendChild(btn);
+    });
+}
+
+// Dropdown Toggle Logic
+routeBtn.onclick = (e) => {
+    e.stopPropagation();
+    document.getElementById("route-wrapper").classList.toggle("active");
+    document.getElementById("stop-wrapper").classList.remove("active");
+};
+
+stopBtn.onclick = (e) => {
+    e.stopPropagation();
+    document.getElementById("stop-wrapper").classList.toggle("active");
+    document.getElementById("route-wrapper").classList.remove("active");
+};
+
+window.onclick = () => {
+    document.querySelectorAll('.stop-dropdown').forEach(d => d.classList.remove('active'));
+};
+</script>
+
 {% endblock content %}
