@@ -322,3 +322,4 @@ def recharge_wallet(request):
     return render(request, "recharge_wallet.html", {
         "card": card
     })
+
