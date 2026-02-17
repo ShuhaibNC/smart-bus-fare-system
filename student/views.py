@@ -18,18 +18,14 @@ def addinfo(request):
 
 def block_card(request):
     try:
-        card = StudentNFCCard.objects.get(student=request.session.get('user_id'))
+        card = StudentNFCCard.objects.get(username=request.session["username"])
     except StudentNFCCard.DoesNotExist:
         card = None
-
     if request.method == "POST":
         card_id = request.POST.get("card_id")
         reason = request.POST.get("reason")
         remarks = request.POST.get("remarks")
-        print(request.POST.get("card_id"))
-        print(request.POST.get("reason"))
-        print(request.POST.get("remarks"))
-
+        
         if not card or card.card_id != card_id:
             print(request, "Invalid NFC Card ID.")
             return redirect("home")
@@ -84,7 +80,7 @@ def set_route(request):
     if login_id:
         # Assuming Login is your user model or related to it
         if BusRoute.objects.filter(user=login_id).exists():
-            info = "You already have routes saved for your account."
+            info = "You just saved routes to your account."
             flag = "red"
 
     # Fetch data from BusFee model

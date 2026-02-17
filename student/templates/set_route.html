@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+ {% block header %}
+{% endblock %}
 {% block content %}
 
 <style>
@@ -29,6 +31,7 @@
     .stop-dropdown.active .dropdown-content { display: block; }
     .primary-btn { background: var(--primary); color: white; border-radius: 8px; padding: 10px 20px; border: none; cursor: pointer; }
     .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
 </style>
 
 <form method="post" action="{% url 'add_route' %}">
@@ -70,7 +73,16 @@
             <span style="font-size: 24px; font-weight: bold; color: #4ade80;">₹<span id="fare-amount">0</span></span>
         </div>
 
-        <button type="submit" class="primary-btn" id="save-btn" disabled>Save Route</button>
+        <div class="btn-row">
+    <button type="submit" class="primary-btn" id="save-btn" disabled>
+        Save Route
+    </button>
+
+    <a href="{% url 'infosubmit' %}" class="primary-btn" style="padding: 8px 40px;margin-left: 10px;">
+        Next
+    </a>
+</div>
+
     </div>
 </form>
 

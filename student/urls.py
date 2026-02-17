@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('login/', views.student_login, name='student_login'),
-    path('setroute/', views.set_route),
+    path('setroute/', views.set_route, name="set_route"),
     path("routes/add/", views.add_route, name="add_route"),
     path('cardblock/', views.block_card, name='block_card'),
     path('manage_card/', views.manage_card, name='manage_card'),
