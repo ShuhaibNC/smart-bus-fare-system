@@ -1,9 +1,54 @@
 {% extends "base.html" %}
 {% load static %}
+{% block addstyle %}
+<style>
+/* Dark mode dropdown */
+select#reason {
+    background-color: #1c1f26;
+    color: #ffffff;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Dropdown options */
+select#reason option {
+    background-color: #1c1f26;
+    color: #ffffff;
+}
+
+/* Focus effect */
+select#reason:focus {
+    outline: none;
+    border-color: #c0392b;
+    box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
+}
+</style>
+<script>
+document.querySelector("form").addEventListener("submit", function(e) {
+    const confirmBlock = confirm("Are you sure you want to block your NFC card?");
+    if (!confirmBlock) {
+        e.preventDefault();
+    }
+});
+</script>
+
+{% endblock addstyle %}
 {% block header %}{% endblock header %}
 {% block content %}
 
 <section class="container" style="max-width:520px;margin-top:60px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <section class="box special">
         <header class="major">
@@ -14,7 +59,7 @@
             </p>
         </header>
 
-        <form method="post" action="/cardblock/">
+        <form method="post" action="/block/">
             {% csrf_token %}
 
             <div class="row gtr-50 gtr-uniform">

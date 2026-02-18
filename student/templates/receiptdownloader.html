@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+
+<section class="container" style="max-width:520px;margin-top:60px;">
+
+    <section class="box special">
+        <header class="major">
+            <h2>Download Payment Receipt</h2>
+            <p>
+                Enter your Transaction ID below to download
+                the official payment receipt in PDF format.
+            </p>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row gtr-50 gtr-uniform">
+
+            <div class="col-12">
+                <label for="transaction_id"><strong>Transaction ID</strong></label>
+                <input
+                    type="text"
+                    id="transaction_id"
+                    placeholder="Enter your Transaction ID"
+                    required
+                />
+            </div>
+
+            <div class="col-12">
+                <button
+                    type="button"
+                    class="button primary fit"
+                    style="background:#3498db;"
+                    onclick="downloadReceipt()"
+                >
+                    Download Receipt
+                </button>
+            </div>
+
+        </div>
+
+        <hr />
+
+        <p style="font-size:13px;color:#aaa;text-align:center;">
+            Ensure the Transaction ID is correct.
+            Only completed transactions are eligible for receipt download.
+        </p>
+
+    </section>
+
+</section>
+
+<script>
+function downloadReceipt() {
+    const txnId = document.getElementById("transaction_id").value.trim();
+
+    if (!txnId) {
+        alert("Please enter a valid Transaction ID.");
+        return;
+    }
+
+    window.location.href = "/receipt/" + txnId;
+}
+</script>
+
+{% endblock content %}

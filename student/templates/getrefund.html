@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+
+<section class="container" style="max-width:520px;margin-top:60px;">
+
+    <section class="box special">
+        <header class="major">
+            <h2>Request Transaction Refund</h2>
+            <p>
+                Submit a refund request for a specific transaction.
+                Please provide the correct Transaction ID for faster processing.
+            </p>
+        </header>
+        {% if messages %}
+    {% for message in messages %}
+        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+        <form method="post" action="/getrefund/">
+            {% csrf_token %}
+
+            <div class="row gtr-50 gtr-uniform">
+
+                <div class="col-12">
+                    <label for="transaction_id"><strong>Transaction ID</strong></label>
+                    <input
+                        type="text"
+                        name="transaction_id"
+                        id="transaction_id"
+                        placeholder="Enter your Transaction ID"
+                        required
+                    />
+                </div>
+
+                <div class="col-12">
+                    <label for="message"><strong>Additional Message</strong></label>
+                    <textarea
+                        name="message"
+                        id="message"
+                        rows="4"
+                        placeholder="Describe the issue (optional but recommended)"
+                    ></textarea>
+                </div>
+
+                <div class="col-12">
+                    <button
+                        type="submit"
+                        class="button primary fit"
+                        style="background:#e67e22;"
+                    >
+                        Submit Refund Request
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+        <hr />
+
+        <p style="font-size:13px;color:#aaa;text-align:center;">
+            ⚠ Refunds are subject to verification.
+            Processing time may take 3 to 5 business days.
+        </p>
+
+    </section>
+
+</section>
+
+{% endblock content %}

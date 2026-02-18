@@ -1,22 +1,38 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import authenticate
 from django.utils import timezone
+from django.http import HttpResponse
 from decimal import Decimal
 from django.contrib import messages
 from .models import Login, StudentNFCCard, BusRoute, InfoSubmit
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+)
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.platypus import HRFlowable
 from system_admin.models import BusFee
 import json
 import uuid
+from system_admin.models import Transaction
+from django.db import transaction
+from io import BytesIO
+from datetime import datetime
 
-def manage_card(request):
-    return render(request, 'manage_card.html')
+def block_card(request):
+    return render(request, 'block_card.html')
 
 def addinfo(request):
     return render(request, 'addinfo.html')
 
-def block_card(request):
+def block(request):
     try:
         card = StudentNFCCard.objects.get(username=request.session["username"])
     except StudentNFCCard.DoesNotExist:
@@ -27,12 +43,12 @@ def block_card(request):
         remarks = request.POST.get("remarks")
         
         if not card or card.card_id != card_id:
-            print(request, "Invalid NFC Card ID.")
-            return redirect("home")
+            messages.success(request, f"Invalid NFC Card ID. {card.card_id} and {card_id} not matching")
+            return redirect("block")
 
         if card.status == "BLOCKED":
-            print   (request, "Your card is already blocked.")
-            return redirect("home")
+            messages.success(request, "Your card is already blocked.")
+            return redirect("block")
 
         card.status = "BLOCKED"
         card.block_reason = reason
@@ -41,9 +57,9 @@ def block_card(request):
         card.save()
 
         messages.success(request, "Your NFC card has been blocked successfully.")
-        return redirect("/home")
+        return redirect('block_card')
 
-    return render(request, "manage_card.html", {
+    return render(request, "block_card.html", {
         "card": card
     })
 
@@ -294,9 +310,11 @@ def generate_card_id(user):
 
 def recharge_wallet(request):
     user = request.session.get("username")
-
-    # Get NFC card (source of truth for balance & status)
     card = StudentNFCCard.objects.filter(username=user).first()
+    student_info = InfoSubmit.objects.filter(user=user).first()
+    if not card:
+        messages.error(request, "Card not found")
+        return redirect("recharge_wallet")
 
     if request.method == "POST":
         amount = request.POST.get("amount")
@@ -313,13 +331,170 @@ def recharge_wallet(request):
             messages.error(request, "Blocked cards cannot be recharged")
             return redirect("recharge_wallet")
 
-        card.balance += amount
-        card.save(update_fields=["balance"])
+        try:
+            with transaction.atomic():
+
+                # 1. Create transaction record (pending)
+                txn = Transaction.objects.create(
+                    transaction_id=uuid.uuid4(),
+                    amount=amount,
+                    status="pending",
+                    description="Wallet Recharge"
+                )
+
+                # 2. Update balance
+                card.balance += amount
+                card.save(update_fields=["balance"])
+
+                # 3. Mark transaction completed
+                txn.status = "completed"
+                txn.save(update_fields=["status"])
+
+        except Exception as e:
+            messages.error(request, "Recharge failed. Try again.")
+            return redirect("recharge_wallet")
 
         messages.success(request, f"₹{amount} added successfully")
         return redirect("recharge_wallet")
 
     return render(request, "recharge_wallet.html", {
-        "card": card
+        "card": card,
+        "student_info": student_info
     })
 
+
+def get_refund(request):
+    if request.method == "POST":
+        transaction_id = request.POST.get("transaction_id")
+        message_text = request.POST.get("message")
+
+        # Save refund request logic here
+
+        messages.success(request, "Refund request sent successfully.")
+        return redirect("getrefund")  # or your URL name
+
+    return render(request, "getrefund.html")
+
+def download_receipt_file(request, transaction_id):
+
+    username = request.session.get("username")
+
+    if not username:
+        messages.error(request, "You must be logged in.")
+        return redirect("login")
+
+    txn = get_object_or_404(
+        Transaction,
+        transaction_id=transaction_id,
+        username=username
+    )
+
+    if txn.status != "completed":
+        messages.error(request, "Receipt not available for this transaction.")
+        return redirect("transaction_list")
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=50,
+        leftMargin=50,
+        topMargin=60,
+        bottomMargin=40
+    )
+
+    elements = []
+
+    styles = getSampleStyleSheet()
+
+    # Custom Styles
+    title_style = ParagraphStyle(
+        "TitleStyle",
+        parent=styles["Heading1"],
+        fontSize=22,
+        alignment=TA_CENTER,
+        textColor=colors.HexColor("#1a237e"),
+        spaceAfter=20
+    )
+
+    amount_style = ParagraphStyle(
+        "AmountStyle",
+        parent=styles["Heading2"],
+        fontSize=18,
+        textColor=colors.HexColor("#2e7d32"),
+        spaceAfter=10
+    )
+
+    right_style = ParagraphStyle(
+        "RightStyle",
+        parent=styles["Normal"],
+        alignment=TA_RIGHT,
+        fontSize=9,
+        textColor=colors.grey
+    )
+
+    normal_style = styles["Normal"]
+    # Header
+    elements.append(Paragraph("PAYMENT RECEIPT", title_style))
+    elements.append(HRFlowable(width="100%", thickness=1, color=colors.grey))
+    elements.append(Spacer(1, 0.3 * inch))
+    # Amount Highlight
+    elements.append(Paragraph(f"Amount Paid: ₹ {txn.amount}", amount_style))
+    elements.append(Spacer(1, 0.2 * inch))
+    # Transaction Table
+    data = [
+        ["Transaction ID", str(txn.transaction_id)],
+        ["Username", txn.username],
+        ["Status", txn.status.capitalize()],
+        ["Payment Date", txn.created_at.strftime("%d %b %Y, %H:%M")],
+    ]
+
+    table = Table(data, colWidths=[160, 300])
+
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.whitesmoke),
+        ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#d0d0d0")),
+        ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#eeeeee")),
+        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (0, 0), (-1, -1), 11),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
+    ]))
+
+    elements.append(table)
+    elements.append(Spacer(1, 0.5 * inch))
+
+    elements.append(HRFlowable(width="100%", thickness=0.8, color=colors.grey))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Footer
+    elements.append(Paragraph(
+        "This is a system generated receipt. No signature required.",
+        normal_style
+    ))
+
+    elements.append(Spacer(1, 0.1 * inch))
+
+    elements.append(Paragraph(
+        f"Generated on {datetime.now().strftime('%d %b %Y, %H:%M')}",
+        right_style
+    ))
+
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="receipt_{txn.transaction_id}.pdf"'
+    )
+
+    return response
+
+
+def receipt_downloader(request):
+    return render(request, "receiptdownloader.html")

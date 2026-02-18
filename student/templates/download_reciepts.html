@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+
+<section class="container" style="max-width:950px;margin-top:60px;">
+
+    <section class="box special">
+        <header class="major">
+            <h2>Transaction History & Receipts</h2>
+            <p>
+                View your recharge transactions and download receipts for completed payments.
+            </p>
+        </header>
+
+        {% if transactions %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Refundable</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for txn in transactions %}
+                    <tr>
+                        <!-- Public UUID -->
+                        <td>{{ txn.transaction_id }}</td>
+
+                        <!-- Formatted Date -->
+                        <td>{{ txn.created_at|date:"d M Y, H:i" }}</td>
+
+                        <!-- Amount -->
+                        <td>₹ {{ txn.amount }}</td>
+
+                        <!-- Status with proper color mapping -->
+                        <td>
+                            {% if txn.status == "completed" %}
+                                <span style="color:#27ae60;font-weight:600;">
+                                    Completed
+                                </span>
+                            {% elif txn.status == "pending" %}
+                                <span style="color:#f39c12;font-weight:600;">
+                                    Pending
+                                </span>
+                            {% elif txn.status == "failed" %}
+                                <span style="color:#e74c3c;font-weight:600;">
+                                    Failed
+                                </span>
+                            {% elif txn.status == "refunded" %}
+                                <span style="color:#3498db;font-weight:600;">
+                                    Refunded
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Refund Eligibility -->
+                        <td>
+                            {% if txn.is_refundable %}
+                                <span style="color:#2ecc71;">Yes</span>
+                            {% else %}
+                                <span style="color:#888;">No</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Receipt -->
+                        <td>
+                            {% if txn.status == "completed" %}
+                                <form method="post" action="{% url 'download_receipt_file' txn.transaction_id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="button small primary">
+                                        Download
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span style="color:#888;">Not Available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p style="text-align:center;color:#aaa;">
+                No transactions found.
+            </p>
+        {% endif %}
+
+        <hr />
+
+        <p style="font-size:13px;color:#aaa;text-align:center;">
+            Only completed transactions are eligible for receipt download.
+        </p>
+
+    </section>
+
+</section>
+
+{% endblock content %}

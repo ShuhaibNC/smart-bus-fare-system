@@ -8,7 +8,13 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'assets/css/wallet.css' %}">
-
+{% if messages %}
+    {% for message in messages %}
+        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 <div class="wallet-page box">
 
     <h2 class="wallet-title">Recharge Wallet</h2>
@@ -72,7 +78,7 @@
 
         </div>
     </div>
-
+    
     <!-- RECHARGE FORM -->
     <form method="post" class="recharge-form">
         {% csrf_token %}
