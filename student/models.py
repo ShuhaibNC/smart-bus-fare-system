@@ -10,7 +10,7 @@ class Login(models.Model):
     email = models.EmailField(blank=True)
     password_hash = models.CharField(max_length=255)
     role = models.CharField(max_length=150, null=True, default="student")
-    test=models.CharField(max_length=150,default="test")
+    
     
     def __str__(self):
         return self.username
