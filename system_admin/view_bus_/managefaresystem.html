@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+{% endblock %}
+{% block addstyle %}
+<style>
+    /* 1. Global Card Styling - Defaults to Light */
+    .new-route-section, .edit-route-section { 
+        background: #f9f9f9; 
+        padding: 2em; 
+        border-radius: 8px; 
+        margin-bottom: 3em; 
+        border: 1px solid #e5e5e5; 
+        transition: all 0.3s ease;
+    }
+
+    /* 2. Dark Mode Overrides for Cards */
+    body.dark .new-route-section, 
+    body.dark .edit-route-section { 
+        background: #1a1a2e; 
+        border-color: #2a2a3d; 
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    /* 3. Global Form Element Reset */
+    select, input {
+        width: 100%;
+        height: 3em;
+        padding: 0 1em;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background: #fff;
+        color: #333;
+        font-size: 1em;
+    }
+
+    /* 4. Dark Mode Dropdowns & Inputs */
+    body.dark select, 
+    body.dark input {
+        background-color: #2a2a3d !important;
+        color: #ffffff !important;
+        border-color: #444 !important;
+    }
+
+    /* Styling the dropdown popup list for Dark Mode */
+    body.dark select option {
+        background-color: #1a1a2e;
+        color: #ffffff;
+    }
+
+    /* 5. Layout & Utilities */
+    .hidden { display: none; }
+    
+    label { 
+        display: block; 
+        margin-bottom: 0.5em; 
+        font-weight: bold; 
+        font-size: 0.9em;
+    }
+
+    .row.gtr-uniform {
+        display: flex;
+        align-items: flex-end;
+    }
+
+    /* 6. Button Reset & Alignment */
+    .button.primary.fit {
+        appearance: none;
+        display: block;
+        width: 100%;
+        height: 3em;
+        line-height: 3em;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        border-radius: 4px;
+        background-color: #5e5eaf; 
+        color: #fff !important;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .button.primary.fit:hover {
+        background-color: #4a4a8f;
+    }
+
+    /* Dynamic Form Divider */
+    #editFields {
+        margin-top: 2em;
+        padding-top: 2em;
+        border-top: 1px solid #ddd;
+    }
+
+    body.dark #editFields {
+        border-top-color: #333;
+    }
+</style>
+{% endblock addstyle %}
+
+{% block content %}
+<section id="main" class="container">
+    <div class="box">
+        <header class="major">
+            <h2>Manage Fare System</h2>
+        </header>
+
+        <div class="new-route-section">
+            <h3><i class="icon solid fa-plus-circle"></i> Create New Route/Stop</h3>
+            <p style="font-size: 0.85em; opacity: 0.8; margin-bottom: 1.5em;">Enter an existing route name to add a stop to it, or a new name for a new route.</p>
+            
+            <form method="post" action="{% url 'create_new_route' %}">
+                {% csrf_token %}
+                <div class="row gtr-uniform">
+                    <div class="col-4 col-12-xsmall">
+                        <label>Route Name</label>
+                        <input type="text" name="route_name" placeholder="e.g. Route A" required>
+                    </div>
+                    <div class="col-4 col-12-xsmall">
+                        <label>Stop Name</label>
+                        <input type="text" name="first_stop" placeholder="Stop Name" required>
+                    </div>
+                    <div class="col-2 col-12-xsmall">
+                        <label>Fee</label>
+                        <input type="number" name="first_fee" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="col-2 col-12-xsmall">
+                        <label>&nbsp;</label> 
+                        <button type="submit" class="button primary fit">Add Entry</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <hr />
+
+        <div class="edit-route-section">
+            <h3><i class="icon solid fa-edit"></i> Edit Existing Stop</h3>
+            
+            <div class="row gtr-uniform">
+                <div class="col-6 col-12-xsmall">
+                    <label for="routeSelect">1. Select Route</label>
+                    <select id="routeSelect">
+                        <option value="">-- Choose Route --</option>
+                        {% for route in routes.keys %}
+                            <option value="{{ route }}">{{ route }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-6 col-12-xsmall">
+                    <label for="stopSelect">2. Select Stop</label>
+                    <select id="stopSelect" disabled>
+                        <option value="">-- Choose a route first --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="editFields" class="hidden">
+                <form method="post" action="{% url 'update_route_stops' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="stop_id" id="input_stop_id">
+                    
+                    <div class="row gtr-uniform">
+                        <div class="col-5 col-12-xsmall">
+                            <label>Edit Stop Name</label>
+                            <input type="text" name="stop_name" id="input_stop_name" required>
+                        </div>
+                        <div class="col-4 col-12-xsmall">
+                            <label>Edit Fare</label>
+                            <input type="number" step="0.01" name="fee" id="input_fee" required>
+                        </div>
+                        <div class="col-3 col-12-xsmall">
+                            <label>&nbsp;</label> 
+                            <button type="submit" class="button primary fit">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // JS Logic for dependent dropdowns
+    const routeData = {
+        {% for route, stops in routes.items %}
+            "{{ route|escapejs }}": [
+                {% for s in stops %}
+                    { "id": "{{ s.id }}", "name": "{{ s.dest_stop|escapejs }}", "fee": "{{ s.busfee }}" },
+                {% endfor %}
+            ],
+        {% endfor %}
+    };
+
+    const routeSelect = document.getElementById('routeSelect');
+    const stopSelect = document.getElementById('stopSelect');
+    const editFields = document.getElementById('editFields');
+    const inputId = document.getElementById('input_stop_id');
+    const inputName = document.getElementById('input_stop_name');
+    const inputFee = document.getElementById('input_fee');
+
+    routeSelect.addEventListener('change', function() {
+        const stops = routeData[this.value] || [];
+        stopSelect.innerHTML = '<option value="">-- Choose Stop --</option>';
+        editFields.classList.add('hidden');
+        if (this.value && stops.length > 0) {
+            stopSelect.disabled = false;
+            stops.forEach(stop => {
+                let opt = document.createElement('option');
+                opt.value = stop.id;
+                opt.text = stop.name;
+                opt.setAttribute('data-fee', stop.fee);
+                stopSelect.add(opt);
+            });
+        } else {
+            stopSelect.disabled = true;
+        }
+    });
+
+    stopSelect.addEventListener('change', function() {
+        if (this.value) {
+            const opt = this.options[this.selectedIndex];
+            editFields.classList.remove('hidden');
+            inputId.value = this.value;
+            inputName.value = opt.text;
+            inputFee.value = opt.getAttribute('data-fee');
+        } else {
+            editFields.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock content %}
