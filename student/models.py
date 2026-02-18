@@ -11,7 +11,6 @@ class Login(models.Model):
     password_hash = models.CharField(max_length=255)
     role = models.CharField(max_length=150, null=True, default="student")
     
-    
     def __str__(self):
         return self.username
 

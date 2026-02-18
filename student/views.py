@@ -89,7 +89,7 @@ def student_login(request):
     return render(request, "student_login.html")
 
 def set_route(request):
-    login_id = request.session.get("user_id")
+    login_id = request.session.get("username")
     info = None
     flag = "green"
 
