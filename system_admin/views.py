@@ -125,7 +125,7 @@ def write_nfc(request, card_id):
 def nfcwriter(request, card_id):
     #hardware
     card = get_object_or_404(InfoSubmit, card_id=card_id)
-    fullname = card.first_name + card.last_name
+    fullname = card.first_name + " " + card.last_name
     writer = NFCWriter(card_id=card_id, fullname=fullname)
     writer.run()
     return render(
