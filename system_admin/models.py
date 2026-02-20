@@ -75,4 +75,4 @@ class Transaction(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.transaction_id} | {self.user} | {self.status}"
+        return f"{self.transaction_id} | {self.username} | {self.status}"

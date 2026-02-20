@@ -8,6 +8,17 @@ from hardware.nfc_writer import NFCWriter
 from django.http import JsonResponse
 from collections import defaultdict
 from decimal import Decimal
+from functools import wraps
+
+
+def require_admin_session(view_func):
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if request.session.get("role") != "admin":
+            messages.error(request, "Admin access required.")
+            return redirect("admin_login")
+        return view_func(request, *args, **kwargs)
+    return _wrapped
 
 def admin_login(request):
     if request.method == "POST":
@@ -32,6 +43,7 @@ def admin_login(request):
         return redirect("home")
     return render(request, 'admin_login.html')
 
+@require_admin_session
 def manage_nfc(request):
     pending_cards = InfoSubmit.objects.filter(
         card_id__isnull=False,
@@ -47,6 +59,7 @@ def manage_nfc(request):
 
     return render(request, 'manage_nfc.html', context)
 
+@require_admin_session
 def accept_nfc_card(request, id):
     if request.method != 'POST':
         return redirect('manage_nfc')
@@ -76,6 +89,7 @@ def accept_nfc_card(request, id):
     messages.success(request, "NFC card accepted and activated successfully.")
     return redirect('manage_nfc')
 
+@require_admin_session
 def update_nfc_card(request, id):
     if request.method != 'POST':
         return redirect('manage_nfc')
@@ -107,6 +121,7 @@ def update_nfc_card(request, id):
     messages.success(request, "NFC card updated successfully.")
     return redirect('manage_nfc')
 
+@require_admin_session
 def write_nfc(request, card_id):
     flag = 'green'
     card = get_object_or_404(InfoSubmit, card_id=card_id)
@@ -122,6 +137,7 @@ def write_nfc(request, card_id):
     
     return render(request, "write_nfc.html", context)
 
+@require_admin_session
 def nfcwriter(request, card_id):
     #hardware
     card = get_object_or_404(InfoSubmit, card_id=card_id)
@@ -141,6 +157,7 @@ def nfcwriter(request, card_id):
         }
     )
     
+@require_admin_session
 def managefaresystem(request):
     all_fees = BusFee.objects.all()
 
@@ -153,6 +170,7 @@ def managefaresystem(request):
         "routes": dict(grouped_routes)
     })
 
+@require_admin_session
 def update_route_stops(request):
     if request.method == "POST":
         # We now pass the specific ID of the stop being edited
@@ -170,6 +188,7 @@ def update_route_stops(request):
             
     return redirect("managefaresystem")
 
+@require_admin_session
 def update_route_name(request, route_name):
     if request.method == "POST":
         new_name = request.POST.get("new_route_name")
@@ -181,6 +200,7 @@ def update_route_name(request, route_name):
 
     return redirect("managefaresystem")
 
+@require_admin_session
 def create_new_route(request):
     """Creates a brand new route with its first stop."""
     if request.method == "POST":
