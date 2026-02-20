@@ -66,7 +66,7 @@ class StudentNFCCard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.student.username} - {self.card_id} ({self.status})"
+        return f"{self.username or 'Unknown'} - {self.card_id} ({self.status})"
     
 class BusRoute(models.Model):
     user = models.CharField(max_length=255, null=True)
@@ -132,4 +132,3 @@ class InfoSubmit(models.Model):
         self.card_accepted_at = timezone.now()
         self.save(update_fields=["card_activated", "card_accepted_at"])
         return True
-

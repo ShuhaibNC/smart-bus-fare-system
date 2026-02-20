@@ -25,6 +25,17 @@ from system_admin.models import Transaction
 from django.db import transaction
 from io import BytesIO
 from datetime import datetime
+from functools import wraps
+
+
+def require_student_session(view_func):
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.session.get("username"):
+            messages.error(request, "Please log in to continue.")
+            return redirect("student_login")
+        return view_func(request, *args, **kwargs)
+    return _wrapped
 
 def block_card(request):
     return render(request, 'block_card.html')
@@ -32,9 +43,10 @@ def block_card(request):
 def addinfo(request):
     return render(request, 'addinfo.html')
 
+@require_student_session
 def block(request):
     try:
-        card = StudentNFCCard.objects.get(username=request.session["username"])
+        card = StudentNFCCard.objects.get(username=request.session.get("username"))
     except StudentNFCCard.DoesNotExist:
         card = None
     if request.method == "POST":
@@ -43,7 +55,7 @@ def block(request):
         remarks = request.POST.get("remarks")
         
         if not card or card.card_id != card_id:
-            messages.success(request, f"Invalid NFC Card ID. {card.card_id} and {card_id} not matching")
+            messages.error(request, "Invalid NFC Card ID.")
             return redirect("block")
 
         if card.status == "BLOCKED":
@@ -88,6 +100,7 @@ def student_login(request):
 
     return render(request, "student_login.html")
 
+@require_student_session
 def set_route(request):
     login_id = request.session.get("username")
     info = None
@@ -121,11 +134,12 @@ def set_route(request):
     
     return render(request, "set_route.html", context)
 
+@require_student_session
 def add_route(request):
     if request.method == "POST":
         login_id = request.session.get("user_id")
         if not login_id:
-            return redirect('login') # Or handle error
+            return redirect('student_login') # Or handle error
 
         stop1 = request.POST.get('stop1')
         stop2 = request.POST.get('stop2')
@@ -139,6 +153,7 @@ def add_route(request):
         return redirect('set_route')
     return render(request, "set_route.html", {'info':'Routes added successfully'})
 
+@require_student_session
 def view_balance(request):
     user = request.session.get("username")
 
@@ -160,11 +175,13 @@ def view_balance(request):
     })
 
 
+@require_student_session
 def infosubmit(request):
-    existing_info = InfoSubmit.objects.filter(user=request.user).first()
+    session_username = request.session.get("username")
+    existing_info = InfoSubmit.objects.filter(user=session_username).first()
 
     if request.method == "POST":
-        user = request.session["username"]
+        user = session_username
 
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
@@ -201,7 +218,7 @@ def infosubmit(request):
             messages.error(request, "Aadhaar number must be 12 digits.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if InfoSubmit.objects.filter(aadhaar_no=aadhaar_no).exclude(user=request.user).exists():
+        if InfoSubmit.objects.filter(aadhaar_no=aadhaar_no).exclude(user=user).exists():
             messages.error(request, "This Aadhaar number is already registered.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
@@ -240,6 +257,7 @@ def infosubmit(request):
     return render(request, "addinfo.html", {"existing_info": existing_info})
 
 
+@require_student_session
 def nfcview(request):
     """
     View function to display NFC card with user information
@@ -247,7 +265,7 @@ def nfcview(request):
     # Generate or retrieve unique card ID
     # You can store this in a separate model or in InfoSubmit model
     
-    user = request.session["username"]
+    user = request.session.get("username")
     # Check flag status (adjust this based on your flag logic)
     # For example, check if user has completed registration
     flag = 'green'
@@ -264,13 +282,14 @@ def nfcview(request):
 
 
 
+@require_student_session
 def accept_card(request):
     """
     View function to handle card acceptance
     """
     # Add your card acceptance logic here
     # For example: activate card, update database, etc.
-    user = request.session["username"]
+    user = request.session.get("username")
     
     try:
         # Your acceptance logic
@@ -308,6 +327,7 @@ def generate_card_id(user):
     
     return formatted_id
 
+@require_student_session
 def recharge_wallet(request):
     user = request.session.get("username")
     card = StudentNFCCard.objects.filter(username=user).first()
@@ -337,6 +357,7 @@ def recharge_wallet(request):
                 # 1. Create transaction record (pending)
                 txn = Transaction.objects.create(
                     transaction_id=uuid.uuid4(),
+                    username=user,
                     amount=amount,
                     status="pending",
                     description="Wallet Recharge"
@@ -363,6 +384,7 @@ def recharge_wallet(request):
     })
 
 
+@require_student_session
 def get_refund(request):
     if request.method == "POST":
         transaction_id = request.POST.get("transaction_id")
@@ -381,7 +403,7 @@ def download_receipt_file(request, transaction_id):
 
     if not username:
         messages.error(request, "You must be logged in.")
-        return redirect("login")
+        return redirect("student_login")
 
     txn = get_object_or_404(
         Transaction,
@@ -391,7 +413,7 @@ def download_receipt_file(request, transaction_id):
 
     if txn.status != "completed":
         messages.error(request, "Receipt not available for this transaction.")
-        return redirect("transaction_list")
+        return redirect("receipt_downloader")
 
     buffer = BytesIO()
 
@@ -497,4 +519,7 @@ def download_receipt_file(request, transaction_id):
 
 
 def receipt_downloader(request):
+    if not request.session.get("username"):
+        messages.error(request, "Please log in to continue.")
+        return redirect("student_login")
     return render(request, "receiptdownloader.html")
