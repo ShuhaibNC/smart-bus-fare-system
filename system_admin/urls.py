@@ -12,5 +12,5 @@ urlpatterns = [
     path("managefaresystem/create/", views.create_new_route, name="create_new_route"),
     path("managefaresystem/update-stop/", views.update_route_stops, name="update_route_stops"),
     path("managefaresystem/rename-route/<str:route_name>/", views.update_route_name, name="update_route_name"),
-
+    path("all_travel_history/", views.all_travel_history, name="all_travel_history"),
 ]

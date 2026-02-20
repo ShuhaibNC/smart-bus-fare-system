@@ -18,7 +18,7 @@ from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import HRFlowable
-from system_admin.models import BusFee
+from system_admin.models import BusFee, BusLog
 import json
 import uuid
 from system_admin.models import Transaction
@@ -80,7 +80,6 @@ def student_login(request):
             messages.error(request, "Invalid username or password.")
             return render(request, "student_login.html", {"info": "Login failed"})
 
-        # Store session data
         request.session["user_id"] = user.id
         request.session["username"] = user.username
         request.session["role"] = user.role
@@ -89,13 +88,13 @@ def student_login(request):
     return render(request, "student_login.html")
 
 def set_route(request):
-    login_id = request.session.get("username")
+    username = request.session["username"]
     info = None
     flag = "green"
 
-    if login_id:
+    if username:
         # Assuming Login is your user model or related to it
-        if BusRoute.objects.filter(user=login_id).exists():
+        if BusRoute.objects.filter(user=username).exists():
             info = "You just saved routes to your account."
             flag = "red"
 
@@ -123,8 +122,8 @@ def set_route(request):
 
 def add_route(request):
     if request.method == "POST":
-        login_id = request.session.get("user_id")
-        if not login_id:
+        username = request.session["username"]
+        if not username:
             return redirect('login') # Or handle error
 
         stop1 = request.POST.get('stop1')
@@ -132,9 +131,9 @@ def add_route(request):
         
         # Create the route
         BusRoute.objects.create(
-            user=login_id,
+            user=username,
             stop1=stop1,
-            stop2=stop2
+            stop2=stop2,
         )
         return redirect('set_route')
     return render(request, "set_route.html", {'info':'Routes added successfully'})
@@ -498,3 +497,8 @@ def download_receipt_file(request, transaction_id):
 
 def receipt_downloader(request):
     return render(request, "receiptdownloader.html")
+
+def travel_history(request):
+    username = request.session["username"]
+    tap_records = BusLog.objects.filter(student_name=username).order_by("-tap_date", "-tap_time")
+    return render(request, "travel_history.html", {"tap_records": tap_records})

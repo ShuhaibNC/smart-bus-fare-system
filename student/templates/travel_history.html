@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}{% endblock header %}
+{% block content %}
+
+<style>
+.dark-box {
+    background-color: #1e1e2f;
+    color: #e4e6eb;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.dark-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    background-color: #252538;
+    color: #e4e6eb;
+}
+
+.dark-table thead {
+    background-color: #12121c;
+}
+
+.dark-table th {
+    padding: 12px;
+    border-bottom: 2px solid #33334d;
+    font-weight: 600;
+}
+
+.dark-table td {
+    padding: 10px;
+    border-bottom: 1px solid #33334d;
+}
+
+.dark-table tbody tr:hover {
+    background-color: #32324a;
+    transition: 0.2s ease;
+}
+
+.no-data {
+    padding: 20px;
+    color: #aaa;
+}
+</style>
+
+<section class="container" style="margin-top:60px;">
+
+    <section class="dark-box">
+        <header class="major">
+            <h2 style="color:white;">My Tap History</h2>
+            <p style="color:#bbb;">
+                Tap record log including card ID,
+                student name, date, time, and location.
+            </p>
+        </header>
+
+    
+
+        <div style="overflow-x:auto;">
+
+            <table class="dark-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Card ID</th>
+                        <th>Tap Date</th>
+                        <th>Tap Time</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in tap_records %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.card_id }}</td>
+                        <td>{{ record.tap_date }}</td>
+                        <td>{{ record.tap_time|time:"H:i:s" }}</td>
+                        <td>{{ record.location }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="no-data">
+                            No tap records found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+</section>
+
+{% endblock content %}

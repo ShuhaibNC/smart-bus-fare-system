@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from student.models import Login, StudentNFCCard, InfoSubmit
-from .models import BusFee
+from .models import BusFee, BusLog
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
@@ -197,3 +197,7 @@ def create_new_route(request):
             messages.success(request, f"Route '{route_name}' created successfully!")
     
     return redirect("managefaresystem")
+
+def all_travel_history(request):
+    tap_records = BusLog.objects.all().order_by("-tap_date", "-tap_time")
+    return render(request, "all_travel_history.html", {"tap_records": tap_records})
