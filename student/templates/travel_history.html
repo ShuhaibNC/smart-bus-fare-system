@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 {% block header %}{% endblock header %}
-{% block content %}
 
+{% block content %}
 <style>
+/* ── Desktop table (unchanged) ── */
 .dark-box {
     background-color: #1e1e2f;
     color: #e4e6eb;
     padding: 30px;
     border-radius: 10px;
 }
-
 .dark-table {
     width: 100%;
     border-collapse: collapse;
@@ -18,82 +18,279 @@
     background-color: #252538;
     color: #e4e6eb;
 }
-
-.dark-table thead {
-    background-color: #12121c;
-}
-
+.dark-table thead { background-color: #12121c; }
 .dark-table th {
     padding: 12px;
     border-bottom: 2px solid #33334d;
     font-weight: 600;
 }
-
 .dark-table td {
     padding: 10px;
     border-bottom: 1px solid #33334d;
 }
-
 .dark-table tbody tr:hover {
     background-color: #32324a;
     transition: 0.2s ease;
 }
+.no-data { padding: 20px; color: #aaa; }
 
-.no-data {
-    padding: 20px;
-    color: #aaa;
+/* ── Show/hide per screen ── */
+.desktop-view { display: block; }
+.mobile-view  { display: none;  }
+
+@media(max-width: 768px) {
+  .desktop-view { display: none;  }
+  .mobile-view  { display: block; }
+}
+
+/* ── Mobile App List ── */
+.trip-page {
+  padding: 4px 0 0;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+.trip-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--md-text);
+  margin-bottom: 4px;
+}
+
+.trip-page-sub {
+  font-size: 13px;
+  color: var(--md-muted);
+  margin-bottom: 20px;
+}
+
+/* ── Trip card ── */
+.trip-card {
+  background: var(--md-surface);
+  border: 1px solid var(--md-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .15s;
+}
+.trip-card:active { background: var(--md-surface2); }
+
+/* Left accent line */
+.trip-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 12px; bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--md-primary);
+}
+
+.trip-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: rgba(91,141,238,0.12);
+  color: var(--md-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trip-icon .material-symbols-rounded {
+  font-size: 22px;
+  font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+.trip-body { flex: 1; min-width: 0; }
+
+.trip-location {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--md-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+}
+
+.trip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.trip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--md-muted);
+  font-weight: 500;
+}
+.trip-chip .material-symbols-rounded { font-size: 13px; }
+
+.trip-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.trip-id {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--md-primary);
+  font-family: 'DM Mono', 'Courier New', monospace;
+  background: rgba(91,141,238,0.1);
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.trip-card-id {
+  font-size: 10px;
+  color: var(--md-muted);
+  font-family: 'DM Mono', 'Courier New', monospace;
+  letter-spacing: 0.3px;
+}
+
+/* ── Empty state ── */
+.trip-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+.trip-empty .material-symbols-rounded {
+  font-size: 56px;
+  color: var(--md-muted);
+  margin-bottom: 16px;
+  display: block;
+  font-variation-settings: 'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48;
+}
+.trip-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--md-text);
+  margin-bottom: 8px;
+}
+.trip-empty-sub {
+  font-size: 13px;
+  color: var(--md-muted);
+  line-height: 1.5;
+}
+
+/* ── Count badge ── */
+.trip-count-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.trip-count-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--md-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.trip-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--md-primary);
+  background: rgba(91,141,238,0.12);
+  border-radius: 20px;
+  padding: 3px 10px;
 }
 </style>
 
-<section class="container" style="margin-top:60px;">
+<!-- ── MOBILE VIEW ── -->
+<div class="mobile-view">
+  <div class="trip-page">
+    <div class="trip-page-title">My Trips</div>
+    <div class="trip-page-sub">Tap record log with card ID, date, time & location.</div>
 
-    <section class="dark-box">
-        <header class="major">
-            <h2 style="color:white;">My Tap History</h2>
-            <p style="color:#bbb;">
-                Tap record log including card ID,
-                student name, date, time, and location.
-            </p>
-        </header>
+    {% if tap_records %}
+    <div class="trip-count-bar">
+      <span class="trip-count-label">Records</span>
+      <span class="trip-count-badge">{{ tap_records|length }} trips</span>
+    </div>
+    {% endif %}
 
-    
+    {% for record in tap_records %}
+    <div class="trip-card">
+      <div class="trip-icon">
+        <span class="material-symbols-rounded">directions_bus</span>
+      </div>
 
-        <div style="overflow-x:auto;">
-
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Card ID</th>
-                        <th>Tap Date</th>
-                        <th>Tap Time</th>
-                        <th>Location</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for record in tap_records %}
-                    <tr>
-                        <td>{{ record.id }}</td>
-                        <td>{{ record.card_id }}</td>
-                        <td>{{ record.tap_date }}</td>
-                        <td>{{ record.tap_time|time:"H:i:s" }}</td>
-                        <td>{{ record.location }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="no-data">
-                            No tap records found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
+      <div class="trip-body">
+        <div class="trip-location">
+          {{ record.location|default:"Unknown Stop" }}
         </div>
+        <div class="trip-meta">
+          <span class="trip-chip">
+            <span class="material-symbols-rounded">calendar_today</span>
+            {{ record.tap_date }}
+          </span>
+          <span class="trip-chip">
+            <span class="material-symbols-rounded">schedule</span>
+            {{ record.tap_time|time:"H:i" }}
+          </span>
+        </div>
+      </div>
 
-    </section>
+      <div class="trip-right">
+        <div class="trip-id">#{{ record.id }}</div>
+        <div class="trip-card-id">{{ record.card_id }}</div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="trip-empty">
+      <span class="material-symbols-rounded">directions_bus</span>
+      <div class="trip-empty-title">No trips yet</div>
+      <div class="trip-empty-sub">Your tap records will appear here once you start travelling.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
+<!-- ── DESKTOP VIEW (unchanged) ── -->
+<section class="container desktop-view" style="margin-top:60px;">
+  <section class="dark-box">
+    <header class="major">
+      <h2 style="color:white;">My Tap History</h2>
+      <p style="color:#bbb;">Tap record log including card ID, student name, date, time, and location.</p>
+    </header>
+    <div style="overflow-x:auto;">
+      <table class="dark-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Card ID</th>
+            <th>Tap Date</th>
+            <th>Tap Time</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in tap_records %}
+          <tr>
+            <td>{{ record.id }}</td>
+            <td>{{ record.card_id }}</td>
+            <td>{{ record.tap_date }}</td>
+            <td>{{ record.tap_time|time:"H:i:s" }}</td>
+            <td>{{ record.location }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="no-data">No tap records found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </section>
 
 {% endblock content %}

@@ -3,72 +3,342 @@
 {% block header %}{% endblock header %}
 {% block content %}
 
-<section class="container" style="max-width:520px;margin-top:60px;">
+<style>
+:root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface-2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8ecf4;
+    --muted: #6b7590;
+    --primary: #3d7eff;
+    --primary-glow: rgba(61,126,255,0.25);
+    --success-bg: rgba(34,197,94,0.1);
+    --success-border: rgba(34,197,94,0.25);
+    --font: 'DM Sans', 'Segoe UI', sans-serif;
+}
 
-    <section class="box special">
-        <header class="major">
-            <h2>Download Payment Receipt</h2>
-            <p>
-                Enter your Transaction ID below to download
-                the official payment receipt in PDF format.
-            </p>
-        </header>
+.receipt-page {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 32px 18px 60px;
+    font-family: var(--font);
+    color: var(--text);
+    box-sizing: border-box;
+}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+/* ── Flash ── */
+.r-flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: #86efac;
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    animation: slideDown 0.3s ease;
+}
+.r-flash .material-symbols-rounded {
+    font-size: 20px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
-        <div class="row gtr-50 gtr-uniform">
+/* ── Header ── */
+.r-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+.r-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    background: rgba(61,126,255,0.1);
+    border: 1px solid rgba(61,126,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.r-icon-wrap .material-symbols-rounded {
+    font-size: 26px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.r-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 3px;
+    color: var(--text);
+}
+.r-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+}
 
-            <div class="col-12">
-                <label for="transaction_id"><strong>Transaction ID</strong></label>
+/* ── Card ── */
+.r-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 14px;
+    box-sizing: border-box;
+}
+
+/* ── Field ── */
+.r-field { margin-bottom: 0; }
+.r-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+.r-label .material-symbols-rounded {
+    font-size: 14px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.r-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.r-input {
+    width: 100%;
+    height: 54px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    padding: 0 16px;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.r-input::placeholder {
+    color: var(--muted);
+    font-weight: 400;
+    font-family: var(--font);
+    letter-spacing: 0;
+    font-size: 14px;
+}
+.r-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* ── Submit button ── */
+.r-btn {
+    width: 100%;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1d4ed8, #5b8dee);
+    color: #fff;
+    border: none;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px var(--primary-glow);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s, opacity 0.15s;
+    letter-spacing: 0.2px;
+    box-sizing: border-box;
+}
+.r-btn:active { transform: scale(0.97); opacity: 0.88; }
+.r-btn .material-symbols-rounded {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+/* ── How it works steps ── */
+.r-steps {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+}
+.r-steps-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
+.r-step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.r-step-row:last-child { margin-bottom: 0; }
+.r-step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(61,126,255,0.12);
+    border: 1px solid rgba(61,126,255,0.2);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.r-step-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.r-step-text strong { color: var(--text); font-weight: 600; }
+
+/* ── Notice ── */
+.r-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(61,126,255,0.05);
+    border: 1px solid rgba(61,126,255,0.12);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+.r-notice .material-symbols-rounded {
+    font-size: 15px; flex-shrink: 0; margin-top: 1px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+</style>
+
+<div class="receipt-page">
+
+    <!-- Flash messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="r-flash">
+            <span class="material-symbols-rounded">check_circle</span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Header -->
+    <div class="r-header">
+        <div class="r-icon-wrap">
+            <span class="material-symbols-rounded">sim_card_download</span>
+        </div>
+        <div>
+            <h2 class="r-title">Download Receipt</h2>
+            <p class="r-subtitle">Get your official payment receipt as PDF</p>
+        </div>
+    </div>
+
+    <!-- Input card -->
+    <div class="r-card">
+        <div class="r-field">
+            <label class="r-label" for="transaction_id">
+                <span class="material-symbols-rounded">tag</span>
+                Transaction ID
+            </label>
+            <div class="r-input-wrap">
                 <input
                     type="text"
                     id="transaction_id"
-                    placeholder="Enter your Transaction ID"
-                    required
+                    class="r-input"
+                    placeholder="e.g. TXN-20240521-00123"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
                 />
             </div>
-
-            <div class="col-12">
-                <button
-                    type="button"
-                    class="button primary fit"
-                    style="background:#3498db;"
-                    onclick="downloadReceipt()"
-                >
-                    Download Receipt
-                </button>
-            </div>
-
         </div>
+    </div>
 
-        <hr />
+    <!-- Download button -->
+    <button type="button" class="r-btn" onclick="downloadReceipt()">
+        <span class="material-symbols-rounded">download</span>
+        Download Receipt
+    </button>
 
-        <p style="font-size:13px;color:#aaa;text-align:center;">
-            Ensure the Transaction ID is correct.
-            Only completed transactions are eligible for receipt download.
-        </p>
+    <!-- Spacer -->
+    <div style="height:20px;"></div>
 
-    </section>
+    <!-- How it works -->
+    <div class="r-steps">
+        <div class="r-steps-title">How it works</div>
+        <div class="r-step-row">
+            <div class="r-step-num">1</div>
+            <div class="r-step-text"><strong>Enter</strong> your Transaction ID from your transaction history</div>
+        </div>
+        <div class="r-step-row">
+            <div class="r-step-num">2</div>
+            <div class="r-step-text"><strong>Tap Download</strong> to generate your receipt instantly</div>
+        </div>
+        <div class="r-step-row">
+            <div class="r-step-num">3</div>
+            <div class="r-step-text"><strong>Save or share</strong> the PDF receipt from your device</div>
+        </div>
+    </div>
 
-</section>
+    <!-- Notice -->
+    <div class="r-notice">
+        <span class="material-symbols-rounded">info</span>
+        Ensure the Transaction ID is correct. Only <strong style="color:var(--text);">completed</strong> transactions are eligible for receipt download.
+    </div>
+
+</div>
 
 <script>
 function downloadReceipt() {
     const txnId = document.getElementById("transaction_id").value.trim();
-
     if (!txnId) {
-        alert("Please enter a valid Transaction ID.");
+        const input = document.getElementById("transaction_id");
+        input.style.borderColor = "#ef4444";
+        input.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.2)";
+        input.focus();
+        setTimeout(() => {
+            input.style.borderColor = "";
+            input.style.boxShadow = "";
+        }, 2000);
         return;
     }
-
     window.location.href = "/receipt/" + txnId;
 }
+
+// Allow Enter key to trigger download
+document.getElementById("transaction_id").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") downloadReceipt();
+});
 </script>
 
 {% endblock content %}

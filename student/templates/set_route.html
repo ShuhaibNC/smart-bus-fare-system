@@ -1,159 +1,637 @@
 {% extends "base.html" %}
 {% load static %}
- {% block header %}
-{% endblock %}
-{% block content %}
+{% block header %}{% endblock %}
 
+{% block content %}
 <style>
-    /* ... (Keep your existing CSS as is) ... */
-    :root {
-        color-scheme: dark;
-        --bg-main: #0f1115;
-        --bg-card: #181b22;
-        --bg-input: #1f242d;
-        --border-soft: #2b3040;
-        --text-main: #e6e9ef;
-        --text-muted: #9aa0ac;
-        --primary: #007bff;
-        --primary-hover: #0056b3;
-    }
-    .modern-card { max-width: 700px; margin: 0 auto; padding: 18px 20px; border-radius: 14px; background: var(--bg-card); box-shadow: 0 20px 40px rgba(0,0,0,0.35); color: var(--text-main); position: relative; padding-bottom: 80px; }
-    .title { margin-bottom: 14px; }
-    .modern-route { margin-bottom: 14px; padding: 12px; border-radius: 10px; background: var(--bg-input); border: 1px solid var(--border-soft); }
-    .route-label { font-size: 14px; margin-bottom: 6px; display: block; color: var(--text-muted); }
-    .input-modern { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); }
-    .route-icon-btn { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: 0.2s; width: 100%; text-align: left; }
-    .route-icon-btn:hover { background: var(--primary); }
-    .stop-dropdown { position: relative; display: block; width: 100%; }
-    .dropdown-content { display: none; position: absolute; background: var(--bg-card); width: 100%; box-shadow: 0 8px 16px rgba(0,0,0,0.4); z-index: 10; border-radius: 8px; border: 1px solid var(--border-soft); margin-top: 6px; max-height: 260px; overflow-y: auto; }
-    .dropdown-content button { width: 100%; padding: 10px; background: none; border: none; text-align: left; color: var(--text-main); cursor: pointer; }
-    .dropdown-content button:hover { background: var(--bg-input); }
-    .stop-dropdown.active .dropdown-content { display: block; }
-    .primary-btn { background: var(--primary); color: white; border-radius: 8px; padding: 10px 20px; border: none; cursor: pointer; }
-    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    
+/* ── Keep desktop styles unchanged ── */
+:root {
+    color-scheme: dark;
+    --bg-main: #0f1115;
+    --bg-card: #181b22;
+    --bg-input: #1f242d;
+    --border-soft: #2b3040;
+    --text-main: #e6e9ef;
+    --text-muted: #9aa0ac;
+    --primary: #007bff;
+    --primary-hover: #0056b3;
+}
+.modern-card { max-width: 700px; margin: 0 auto; padding: 18px 20px; border-radius: 14px; background: var(--bg-card); box-shadow: 0 20px 40px rgba(0,0,0,0.35); color: var(--text-main); position: relative; padding-bottom: 80px; }
+.title { margin-bottom: 14px; }
+.modern-route { margin-bottom: 14px; padding: 12px; border-radius: 10px; background: var(--bg-input); border: 1px solid var(--border-soft); }
+.route-label { font-size: 14px; margin-bottom: 6px; display: block; color: var(--text-muted); }
+.input-modern { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); }
+.route-icon-btn { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-card); color: var(--text-main); cursor: pointer; transition: 0.2s; width: 100%; text-align: left; }
+.route-icon-btn:hover { background: var(--primary); }
+.stop-dropdown { position: relative; display: block; width: 100%; }
+.dropdown-content { display: none; position: absolute; background: var(--bg-card); width: 100%; box-shadow: 0 8px 16px rgba(0,0,0,0.4); z-index: 10; border-radius: 8px; border: 1px solid var(--border-soft); margin-top: 6px; max-height: 260px; overflow-y: auto; }
+.dropdown-content button { width: 100%; padding: 10px; background: none; border: none; text-align: left; color: var(--text-main); cursor: pointer; }
+.dropdown-content button:hover { background: var(--bg-input); }
+.stop-dropdown.active .dropdown-content { display: block; }
+.primary-btn { background: var(--primary); color: white; border-radius: 8px; padding: 10px 20px; border: none; cursor: pointer; }
+.primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Show/hide ── */
+.desktop-view { display: block; }
+.mobile-view  { display: none;  }
+
+@media(max-width: 768px) {
+  .desktop-view { display: none;  }
+  .mobile-view  { display: block; }
+}
+
+/* ══════════════════════════════════
+   MOBILE STYLES
+══════════════════════════════════ */
+.m-route-page {
+  padding: 4px 0 0;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+.m-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--md-text);
+  margin-bottom: 4px;
+}
+
+.m-page-sub {
+  font-size: 13px;
+  color: var(--md-muted);
+  margin-bottom: 20px;
+}
+
+/* Info/error banner */
+.m-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.m-info-banner.success {
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #86efac;
+}
+.m-info-banner.error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+}
+.m-info-banner .material-symbols-rounded { font-size: 18px; flex-shrink: 0; }
+
+/* Route visual connector */
+.m-route-connector {
+  background: var(--md-surface);
+  border: 1px solid var(--md-border);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.m-route-stop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.m-stop-dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.m-stop-dot.origin {
+  background: rgba(59,130,246,0.15);
+  color: #60a5fa;
+}
+.m-stop-dot.dest {
+  background: rgba(34,197,94,0.15);
+  color: #4ade80;
+}
+.m-stop-dot .material-symbols-rounded {
+  font-size: 18px;
+  font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+.m-stop-info { flex: 1; min-width: 0; }
+
+.m-stop-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--md-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.m-stop-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--md-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-stop-value.placeholder { color: var(--md-muted); font-weight: 400; }
+
+/* Dashed vertical connector between stops */
+.m-route-line {
+  display: flex;
+  align-items: center;
+  padding: 6px 0 6px 17px;
+  gap: 12px;
+}
+.m-route-line-dash {
+  width: 2px;
+  height: 28px;
+  border-left: 2px dashed var(--md-border);
+  margin-left: 1px;
+}
+.m-route-line-label {
+  font-size: 11px;
+  color: var(--md-muted);
+}
+
+/* Fare display */
+.m-fare-card {
+  background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.05));
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.m-fare-label {
+  font-size: 12px;
+  color: var(--md-muted);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.m-fare-amount {
+  font-size: 28px;
+  font-weight: 800;
+  color: #4ade80;
+  line-height: 1;
+}
+.m-fare-currency {
+  font-size: 17px;
+  vertical-align: super;
+  font-weight: 600;
+}
+.m-fare-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(34,197,94,0.12);
+  color: #4ade80;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Section label */
+.m-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--md-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Selector buttons */
+.m-selector-btn {
+  width: 100%;
+  background: var(--md-surface);
+  border: 1.5px solid var(--md-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--md-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .2s;
+}
+.m-selector-btn:active { border-color: var(--md-primary); background: var(--md-surface2); }
+.m-selector-btn.selected { border-color: var(--md-primary); }
+.m-selector-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.m-selector-btn .btn-left { display: flex; align-items: center; gap: 10px; }
+.m-selector-btn .material-symbols-rounded { font-size: 20px; color: var(--md-muted); }
+.m-selector-btn.selected .material-symbols-rounded { color: var(--md-primary); }
+.m-selector-chevron { font-size: 18px !important; color: var(--md-muted) !important; }
+
+/* Bottom sheet for selections */
+.m-sheet-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+}
+.m-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--md-surface);
+  border-radius: 20px 20px 0 0;
+  z-index: 2100;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+}
+.m-sheet.open { transform: translateY(0); }
+
+.m-sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--md-border);
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.m-sheet-header {
+  padding: 14px 20px 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--md-border);
+}
+.m-sheet-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--md-text);
+}
+
+.m-sheet-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.m-sheet-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  color: var(--md-text);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid var(--md-border);
+  -webkit-tap-highlight-color: transparent;
+}
+.m-sheet-option:last-child { border-bottom: none; }
+.m-sheet-option:active { background: rgba(255,255,255,0.05); }
+.m-sheet-option .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--md-muted);
+  font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.m-sheet-option.selected-opt {
+  color: var(--md-primary);
+  background: rgba(91,141,238,0.06);
+}
+.m-sheet-option.selected-opt .material-symbols-rounded { color: var(--md-primary); }
+
+/* Action buttons */
+.m-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.m-save-btn {
+  flex: 1;
+  height: 52px;
+  background: linear-gradient(135deg, #1d4ed8, #5b8dee);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity .2s;
+}
+.m-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.m-save-btn:active:not(:disabled) { opacity: .85; }
+
+.m-next-btn {
+  flex: 1;
+  height: 52px;
+  background: var(--md-surface);
+  color: var(--md-text);
+  border: 1.5px solid var(--md-border);
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.m-next-btn:active { border-color: var(--md-primary); }
 </style>
 
-<form method="post" action="{% url 'add_route' %}">
-    {% csrf_token %}
-    <div class="modern-card">
-        <h2 class="title">Set Bus Route</h2>
+<!-- ══ MOBILE VIEW ══ -->
+<div class="mobile-view">
+<form method="post" action="{% url 'add_route' %}" id="mobile-form">
+  {% csrf_token %}
+  <!-- hidden inputs synced by JS -->
+  <input type="hidden" name="stop1" value="Kannur Engineering College" />
+  <input type="hidden" name="stop2" id="m-stop2-hidden" />
 
-        {% if info %}
-            <p style="color: {{ flag }}; margin-bottom: 15px;">{{ info }}</p>
-        {% endif %}
+  <div class="m-route-page">
 
-        <div class="modern-route">
-            <label class="route-label">From</label>
-            <input type="text" name="stop1" value="Kannur Engineering College" readonly class="input-modern">
+    <div class="m-page-title">Set Bus Route</div>
+    <div class="m-page-sub">Choose your route and destination stop.</div>
+
+    {% if info %}
+    <div class="m-info-banner {% if 'success' in flag or flag == 'green' %}success{% else %}error{% endif %}">
+      <span class="material-symbols-rounded">{% if 'success' in flag or flag == 'green' %}check_circle{% else %}error{% endif %}</span>
+      {{ info }}
+    </div>
+    {% endif %}
+
+    <!-- Route visual -->
+    <div class="m-route-connector">
+      <div class="m-route-stop">
+        <div class="m-stop-dot origin">
+          <span class="material-symbols-rounded">location_on</span>
         </div>
-
-        <div class="modern-route">
-            <label class="route-label">Choose Route</label>
-            <div class="stop-dropdown" id="route-wrapper">
-                <button type="button" class="route-icon-btn" id="route-btn">Select Route</button>
-                <div class="dropdown-content" id="route-dropdown"></div>
-            </div>
+        <div class="m-stop-info">
+          <div class="m-stop-label">From</div>
+          <div class="m-stop-value">Kannur Engineering College</div>
         </div>
-
-        <div class="modern-route">
-            <label class="route-label">Destination</label>
-            <input type="text" name="stop2" id="destination-input" readonly required class="input-modern" placeholder="Select a stop...">
-
-            <div style="margin-top:10px;">
-                <div class="stop-dropdown" id="stop-wrapper">
-                    <button type="button" class="route-icon-btn" id="stop-btn" disabled>Choose Stop</button>
-                    <div class="dropdown-content" id="stop-dropdown"></div>
-                </div>
-            </div>
+      </div>
+      <div class="m-route-line">
+        <div class="m-route-line-dash"></div>
+        <div class="m-route-line-label" id="m-route-line-text">Select route</div>
+      </div>
+      <div class="m-route-stop">
+        <div class="m-stop-dot dest">
+          <span class="material-symbols-rounded">flag</span>
         </div>
-
-        <div style="position: absolute; bottom: 20px; right: 20px; text-align: right;">
-            <span style="color: var(--text-muted); font-size: 12px; display: block;">Estimated Fare</span>
-            <span style="font-size: 24px; font-weight: bold; color: #4ade80;">₹<span id="fare-amount">0</span></span>
+        <div class="m-stop-info">
+          <div class="m-stop-label">To</div>
+          <div class="m-stop-value placeholder" id="m-dest-display">Select a stop...</div>
         </div>
+      </div>
+    </div>
 
-        <div class="btn-row">
-    <button type="submit" class="primary-btn" id="save-btn" disabled>
-        Save Route
+    <!-- Fare -->
+    <div class="m-fare-card">
+      <div>
+        <div class="m-fare-label">Estimated Fare</div>
+        <div class="m-fare-amount"><span class="m-fare-currency">₹</span><span id="m-fare-amount">0</span></div>
+      </div>
+      <div class="m-fare-icon">
+        <span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">payments</span>
+      </div>
+    </div>
+
+    <!-- Route selector -->
+    <div class="m-section-label">Route & Stop</div>
+
+    <button type="button" class="m-selector-btn" id="m-route-btn" onclick="openSheet('route')">
+      <div class="btn-left">
+        <span class="material-symbols-rounded">route</span>
+        <span id="m-route-btn-text">Select Route</span>
+      </div>
+      <span class="material-symbols-rounded m-selector-chevron">expand_more</span>
     </button>
 
-    <a href="{% url 'infosubmit' %}" class="primary-btn" style="padding: 8px 40px;margin-left: 10px;">
+    <button type="button" class="m-selector-btn" id="m-stop-btn" disabled onclick="openSheet('stop')">
+      <div class="btn-left">
+        <span class="material-symbols-rounded">place</span>
+        <span id="m-stop-btn-text">Choose Stop</span>
+      </div>
+      <span class="material-symbols-rounded m-selector-chevron">expand_more</span>
+    </button>
+
+    <!-- Action buttons -->
+    <div class="m-btn-row">
+      <button type="submit" class="m-save-btn" id="m-save-btn" disabled>
+        <span class="material-symbols-rounded">save</span>
+        Save Route
+      </button>
+      <a href="{% url 'infosubmit' %}" class="m-next-btn">
         Next
-    </a>
+        <span class="material-symbols-rounded">arrow_forward</span>
+      </a>
+    </div>
+
+  </div>
+</form>
 </div>
 
+<!-- ══ Route sheet ══ -->
+<div class="m-sheet-overlay" id="m-sheet-overlay" onclick="closeSheet()"></div>
+<div class="m-sheet" id="m-sheet">
+  <div class="m-sheet-handle"></div>
+  <div class="m-sheet-header">
+    <div class="m-sheet-title" id="m-sheet-title">Select Route</div>
+  </div>
+  <div class="m-sheet-list" id="m-sheet-list"></div>
+</div>
+
+<!-- ══ DESKTOP VIEW (unchanged) ══ -->
+<div class="desktop-view">
+<form method="post" action="{% url 'add_route' %}">
+  {% csrf_token %}
+  <div class="modern-card">
+    <h2 class="title">Set Bus Route</h2>
+    {% if info %}
+      <p style="color: {{ flag }}; margin-bottom: 15px;">{{ info }}</p>
+    {% endif %}
+    <div class="modern-route">
+      <label class="route-label">From</label>
+      <input type="text" name="stop1" value="Kannur Engineering College" readonly class="input-modern">
     </div>
+    <div class="modern-route">
+      <label class="route-label">Choose Route</label>
+      <div class="stop-dropdown" id="route-wrapper">
+        <button type="button" class="route-icon-btn" id="route-btn">Select Route</button>
+        <div class="dropdown-content" id="route-dropdown"></div>
+      </div>
+    </div>
+    <div class="modern-route">
+      <label class="route-label">Destination</label>
+      <input type="text" name="stop2" id="destination-input" readonly required class="input-modern" placeholder="Select a stop...">
+      <div style="margin-top:10px;">
+        <div class="stop-dropdown" id="stop-wrapper">
+          <button type="button" class="route-icon-btn" id="stop-btn-d" disabled>Choose Stop</button>
+          <div class="dropdown-content" id="stop-dropdown"></div>
+        </div>
+      </div>
+    </div>
+    <div style="position: absolute; bottom: 20px; right: 20px; text-align: right;">
+      <span style="color: var(--text-muted); font-size: 12px; display: block;">Estimated Fare</span>
+      <span style="font-size: 24px; font-weight: bold; color: #4ade80;">₹<span id="fare-amount-d">0</span></span>
+    </div>
+    <div class="btn-row">
+      <button type="submit" class="primary-btn" id="save-btn-d" disabled>Save Route</button>
+      <a href="{% url 'infosubmit' %}" class="primary-btn" style="padding: 8px 40px;margin-left: 10px;">Next</a>
+    </div>
+  </div>
 </form>
+</div>
 
 <script id="route-data-script" type="application/json">
-    {{ route_data_json|safe }}
+  {{ route_data_json|safe }}
 </script>
 
 <script>
-// Parse the data from the script tag
 const routeData = JSON.parse(document.getElementById('route-data-script').textContent);
 
-const routeBtn = document.getElementById("route-btn");
-const routeDropdown = document.getElementById("route-dropdown");
-const stopBtn = document.getElementById("stop-btn");
-const stopDropdown = document.getElementById("stop-dropdown");
-const destinationInput = document.getElementById("destination-input");
-const saveBtn = document.getElementById("save-btn");
-const fareDisplay = document.getElementById("fare-amount");
+/* ══════════════════
+   DESKTOP LOGIC
+══════════════════ */
+const routeBtn   = document.getElementById("route-btn");
+const routeDrop  = document.getElementById("route-dropdown");
+const stopBtnD   = document.getElementById("stop-btn-d");
+const stopDrop   = document.getElementById("stop-dropdown");
+const destInput  = document.getElementById("destination-input");
+const saveBtnD   = document.getElementById("save-btn-d");
+const fareD      = document.getElementById("fare-amount-d");
 
-// Populate Routes from DB data
-Object.keys(routeData).forEach(routeName => {
+if (routeBtn) {
+  Object.keys(routeData).forEach(routeName => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.textContent = routeName;
     btn.onclick = () => {
-        routeBtn.textContent = routeName;
-        document.getElementById("route-wrapper").classList.remove("active");
-        stopBtn.disabled = false;
-        populateStops(routeName);
-        
-        destinationInput.value = "";
-        fareDisplay.textContent = "0";
-        saveBtn.disabled = true;
+      routeBtn.textContent = routeName;
+      document.getElementById("route-wrapper").classList.remove("active");
+      stopBtnD.disabled = false;
+      populateStopsDesktop(routeName);
+      destInput.value = ""; fareD.textContent = "0"; saveBtnD.disabled = true;
     };
-    routeDropdown.appendChild(btn);
-});
+    routeDrop.appendChild(btn);
+  });
 
-function populateStops(routeName) {
-    stopDropdown.innerHTML = "";
+  function populateStopsDesktop(routeName) {
+    stopDrop.innerHTML = "";
     const data = routeData[routeName];
-
-    data.stops.forEach((stop, index) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = stop;
-        btn.onclick = () => {
-            destinationInput.value = stop;
-            fareDisplay.textContent = data.fares[index];
-            document.getElementById("stop-wrapper").classList.remove("active");
-            saveBtn.disabled = false;
-        };
-        stopDropdown.appendChild(btn);
+    data.stops.forEach((stop, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.textContent = stop;
+      btn.onclick = () => {
+        destInput.value = stop; fareD.textContent = data.fares[i];
+        document.getElementById("stop-wrapper").classList.remove("active");
+        saveBtnD.disabled = false;
+      };
+      stopDrop.appendChild(btn);
     });
+  }
+
+  routeBtn.onclick = e => { e.stopPropagation(); document.getElementById("route-wrapper").classList.toggle("active"); document.getElementById("stop-wrapper").classList.remove("active"); };
+  stopBtnD.onclick = e => { e.stopPropagation(); document.getElementById("stop-wrapper").classList.toggle("active"); document.getElementById("route-wrapper").classList.remove("active"); };
+  window.onclick = () => { document.querySelectorAll('.stop-dropdown').forEach(d => d.classList.remove('active')); };
 }
 
-// Dropdown Toggle Logic
-routeBtn.onclick = (e) => {
-    e.stopPropagation();
-    document.getElementById("route-wrapper").classList.toggle("active");
-    document.getElementById("stop-wrapper").classList.remove("active");
-};
+/* ══════════════════
+   MOBILE LOGIC
+══════════════════ */
+let mCurrentSheet = null;
+let mSelectedRoute = null;
 
-stopBtn.onclick = (e) => {
-    e.stopPropagation();
-    document.getElementById("stop-wrapper").classList.toggle("active");
-    document.getElementById("route-wrapper").classList.remove("active");
-};
+const mRouteBtnText = document.getElementById('m-route-btn-text');
+const mStopBtnText  = document.getElementById('m-stop-btn-text');
+const mStopBtn      = document.getElementById('m-stop-btn');
+const mRouteBtn     = document.getElementById('m-route-btn');
+const mSaveBtn      = document.getElementById('m-save-btn');
+const mFare         = document.getElementById('m-fare-amount');
+const mDestDisplay  = document.getElementById('m-dest-display');
+const mStop2Hidden  = document.getElementById('m-stop2-hidden');
+const mRouteLineText= document.getElementById('m-route-line-text');
 
-window.onclick = () => {
-    document.querySelectorAll('.stop-dropdown').forEach(d => d.classList.remove('active'));
-};
+function openSheet(type) {
+  mCurrentSheet = type;
+  const list  = document.getElementById('m-sheet-list');
+  const title = document.getElementById('m-sheet-title');
+  list.innerHTML = '';
+
+  if (type === 'route') {
+    title.textContent = 'Select Route';
+    Object.keys(routeData).forEach(routeName => {
+      const opt = document.createElement('div');
+      opt.className = 'm-sheet-option' + (mRouteBtnText.textContent === routeName ? ' selected-opt' : '');
+      opt.innerHTML = `<span class="material-symbols-rounded">route</span>${routeName}`;
+      opt.onclick = () => {
+        mSelectedRoute = routeName;
+        mRouteBtnText.textContent = routeName;
+        mRouteBtn.classList.add('selected');
+        mRouteLineText.textContent = routeName;
+        mStopBtn.disabled = false;
+        // reset stop
+        mStopBtnText.textContent = 'Choose Stop';
+        mStopBtn.classList.remove('selected');
+        mDestDisplay.textContent = 'Select a stop...';
+        mDestDisplay.classList.add('placeholder');
+        mStop2Hidden.value = '';
+        mFare.textContent = '0';
+        mSaveBtn.disabled = true;
+        closeSheet();
+      };
+      list.appendChild(opt);
+    });
+  } else if (type === 'stop' && mSelectedRoute) {
+    title.textContent = 'Choose Stop';
+    const data = routeData[mSelectedRoute];
+    data.stops.forEach((stop, i) => {
+      const opt = document.createElement('div');
+      opt.className = 'm-sheet-option' + (mStop2Hidden.value === stop ? ' selected-opt' : '');
+      opt.innerHTML = `<span class="material-symbols-rounded">place</span>${stop}`;
+      opt.onclick = () => {
+        mStopBtnText.textContent = stop;
+        mStopBtn.classList.add('selected');
+        mDestDisplay.textContent = stop;
+        mDestDisplay.classList.remove('placeholder');
+        mStop2Hidden.value = stop;
+        mFare.textContent = data.fares[i];
+        mSaveBtn.disabled = false;
+        closeSheet();
+      };
+      list.appendChild(opt);
+    });
+  }
+
+  document.getElementById('m-sheet-overlay').style.display = 'block';
+  requestAnimationFrame(() => { document.getElementById('m-sheet').classList.add('open'); });
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  document.getElementById('m-sheet').classList.remove('open');
+  setTimeout(() => { document.getElementById('m-sheet-overlay').style.display = 'none'; }, 300);
+  document.body.style.overflow = '';
+}
+
+// swipe down to close
+(function(){
+  const sheet = document.getElementById('m-sheet');
+  let startY = 0;
+  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive:true});
+  sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - startY > 60) closeSheet(); }, {passive:true});
+})();
 </script>
 
 {% endblock content %}

@@ -3,71 +3,441 @@
 {% block header %}{% endblock header %}
 {% block content %}
 
-<section class="container" style="max-width:520px;margin-top:60px;">
+<style>
+:root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface-2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8ecf4;
+    --muted: #6b7590;
+    --primary: #3d7eff;
+    --primary-glow: rgba(61,126,255,0.25);
+    --orange: #f97316;
+    --orange-bg: rgba(249,115,22,0.08);
+    --orange-border: rgba(249,115,22,0.25);
+    --orange-glow: rgba(249,115,22,0.2);
+    --success-bg: rgba(34,197,94,0.1);
+    --success-border: rgba(34,197,94,0.25);
+    --font: 'DM Sans', 'Segoe UI', sans-serif;
+    --radius: 20px;
+}
 
+/* ── Page shell ── */
+.refund-page {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px 60px;
+}
+
+.refund-shell {
+    width: 100%;
+    max-width: 480px;
+}
+
+/* ── Flash ── */
+.r-flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: #86efac;
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    animation: slideDown 0.3s ease;
+}
+.r-flash .material-symbols-rounded {
+    font-size: 20px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+.r-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+.r-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 16px;
+    background: var(--orange-bg);
+    border: 1px solid var(--orange-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.r-icon-wrap .material-symbols-rounded {
+    font-size: 24px;
+    color: var(--orange);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.r-title-block {}
+.r-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 2px;
+    color: var(--text);
+}
+.r-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ── Card ── */
+.r-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 14px;
+}
+
+/* ── Form fields ── */
+.r-field {
+    margin-bottom: 18px;
+}
+.r-field:last-child { margin-bottom: 0; }
+
+.r-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+.r-label .material-symbols-rounded {
+    font-size: 14px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+    color: var(--orange);
+}
+
+.r-input,
+.r-textarea {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}
+.r-input {
+    height: 52px;
+    padding: 0 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.r-textarea {
+    padding: 14px 16px;
+    font-size: 14px;
+    resize: none;
+    line-height: 1.5;
+    font-weight: 400;
+}
+.r-input::placeholder,
+.r-textarea::placeholder { color: var(--muted); font-weight: 400; }
+
+.r-input:focus,
+.r-textarea:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-glow);
+}
+
+/* ID field monospace hint */
+.r-input.mono {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* ── Divider ── */
+.r-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 0 14px;
+}
+
+/* ── Notice ── */
+.r-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(249,115,22,0.06);
+    border: 1px solid var(--orange-border);
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+}
+.r-notice .material-symbols-rounded {
+    font-size: 18px;
+    color: var(--orange);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.r-notice-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fb923c;
+    margin-bottom: 2px;
+}
+.r-notice-sub {
+    font-size: 11px;
+    color: rgba(251,146,60,0.7);
+    line-height: 1.4;
+}
+
+/* ── Submit button ── */
+.r-submit {
+    width: 100%;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #c2410c, var(--orange));
+    color: #fff;
+    border: none;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px var(--orange-glow);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+}
+.r-submit:hover  { box-shadow: 0 6px 28px rgba(249,115,22,0.35); }
+.r-submit:active { transform: scale(0.97); opacity: 0.88; }
+.r-submit .material-symbols-rounded {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+/* ── Step indicators ── */
+.r-steps {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+}
+.r-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: center;
+}
+.r-step::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    z-index: 0;
+}
+.r-step:last-child::before { display: none; }
+.r-step-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    margin-bottom: 6px;
+    position: relative; z-index: 1;
+}
+.r-step.active .r-step-dot {
+    background: var(--orange);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--orange-bg);
+}
+.r-step.done .r-step-dot {
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+}
+.r-step.active { color: var(--text); }
+.r-step-label { font-size: 10px; letter-spacing: 0.3px; }
+</style>
+
+{% if messages %}
+    {% for message in messages %}
+        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;display:none;" class="desktop-flash">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<!-- ORIGINAL DESKTOP (shown on desktop only via media) -->
+<section class="container desktop-refund" style="max-width:520px;margin-top:60px;">
     <section class="box special">
         <header class="major">
             <h2>Request Transaction Refund</h2>
-            <p>
-                Submit a refund request for a specific transaction.
-                Please provide the correct Transaction ID for faster processing.
-            </p>
+            <p>Submit a refund request for a specific transaction. Please provide the correct Transaction ID for faster processing.</p>
         </header>
-        {% if messages %}
-    {% for message in messages %}
-        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
+        {% if messages %}{% for message in messages %}
+        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">{{ message }}</div>
+        {% endfor %}{% endif %}
         <form method="post" action="/getrefund/">
             {% csrf_token %}
-
             <div class="row gtr-50 gtr-uniform">
-
                 <div class="col-12">
                     <label for="transaction_id"><strong>Transaction ID</strong></label>
-                    <input
-                        type="text"
-                        name="transaction_id"
-                        id="transaction_id"
-                        placeholder="Enter your Transaction ID"
-                        required
-                    />
+                    <input type="text" name="transaction_id" id="transaction_id" placeholder="Enter your Transaction ID" required />
                 </div>
-
                 <div class="col-12">
                     <label for="message"><strong>Additional Message</strong></label>
-                    <textarea
-                        name="message"
-                        id="message"
-                        rows="4"
-                        placeholder="Describe the issue (optional but recommended)"
-                    ></textarea>
+                    <textarea name="message" id="message" rows="4" placeholder="Describe the issue (optional but recommended)"></textarea>
                 </div>
-
                 <div class="col-12">
-                    <button
-                        type="submit"
-                        class="button primary fit"
-                        style="background:#e67e22;"
-                    >
-                        Submit Refund Request
-                    </button>
+                    <button type="submit" class="button primary fit" style="background:#e67e22;">Submit Refund Request</button>
                 </div>
-
             </div>
         </form>
-
         <hr />
-
-        <p style="font-size:13px;color:#aaa;text-align:center;">
-            ⚠ Refunds are subject to verification.
-            Processing time may take 3 to 5 business days.
-        </p>
-
+        <p style="font-size:13px;color:#aaa;text-align:center;">⚠ Refunds are subject to verification. Processing time may take 3 to 5 business days.</p>
     </section>
-
 </section>
+
+
+<!-- ══ MOBILE / MODERN VIEW ══ -->
+<div class="refund-page">
+  <div class="refund-shell">
+
+    <!-- Flash messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="r-flash">
+            <span class="material-symbols-rounded">check_circle</span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Step progress -->
+    <div class="r-steps">
+        <div class="r-step active">
+            <div class="r-step-dot">1</div>
+            <div class="r-step-label">Request</div>
+        </div>
+        <div class="r-step done">
+            <div class="r-step-dot">2</div>
+            <div class="r-step-label">Verification</div>
+        </div>
+        <div class="r-step done">
+            <div class="r-step-dot">3</div>
+            <div class="r-step-label">Refunded</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="r-header">
+        <div class="r-icon-wrap">
+            <span class="material-symbols-rounded">currency_rupee</span>
+        </div>
+        <div class="r-title-block">
+            <h2 class="r-title">Request Refund</h2>
+            <p class="r-subtitle">Provide your Transaction ID for faster processing</p>
+        </div>
+    </div>
+
+    <!-- Form card -->
+    <form method="post" action="/getrefund/">
+        {% csrf_token %}
+
+        <div class="r-card">
+
+            <!-- Transaction ID -->
+            <div class="r-field">
+                <label class="r-label" for="m-transaction-id">
+                    <span class="material-symbols-rounded">tag</span>
+                    Transaction ID
+                </label>
+                <input
+                    type="text"
+                    id="m-transaction-id"
+                    name="transaction_id"
+                    class="r-input mono"
+                    placeholder="e.g. TXN-20240521-00123"
+                    required
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                >
+            </div>
+
+            <!-- Message -->
+            <div class="r-field">
+                <label class="r-label" for="m-message">
+                    <span class="material-symbols-rounded">edit_note</span>
+                    Additional Message
+                    <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--muted);margin-left:4px;">(optional)</span>
+                </label>
+                <textarea
+                    id="m-message"
+                    name="message"
+                    class="r-textarea"
+                    rows="4"
+                    placeholder="Describe the issue — e.g. wrong amount deducted, duplicate charge..."
+                ></textarea>
+            </div>
+
+        </div>
+
+        <!-- Notice -->
+        <div class="r-notice">
+            <span class="material-symbols-rounded">info</span>
+            <div>
+                <div class="r-notice-title">Verification Required</div>
+                <div class="r-notice-sub">Refunds are subject to review. Processing may take 3–5 business days after approval.</div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="r-submit">
+            <span class="material-symbols-rounded">send</span>
+            Submit Refund Request
+        </button>
+
+    </form>
+
+  </div>
+</div>
+
+<style>
+/* Show/hide logic */
+@media (min-width: 769px) {
+    .refund-page { display: none; }
+}
+@media (max-width: 768px) {
+    .desktop-refund { display: none !important; }
+}
+</style>
 
 {% endblock content %}

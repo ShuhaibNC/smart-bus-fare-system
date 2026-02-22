@@ -132,7 +132,7 @@
 		}
 
 	strong, b {
-		color: #cdcdcd;
+		color: #ffffff;
 		font-weight: 400;
 	}
 
@@ -145,7 +145,7 @@
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #cdcdcd;
+		color: #ffffff;
 		font-weight: 300;
 		line-height: 1em;
 		margin: 0 0 0.5em 0;
@@ -2691,7 +2691,7 @@
 		}
 
 		table th {
-			color: #cdcdcd;
+			color: #ffffff;
 			font-size: 0.9em;
 			font-weight: 300;
 			padding: 0 0.75em 0.75em 0.75em;
@@ -3163,7 +3163,7 @@
 	#banner {
 		background-attachment: scroll,							fixed;
 		/* background-color: #141419; */
-		background-image: url("images/overlay.png"), url("../../images/banner.jpg");
+		background-image: url("images/overlay.png"), url("../../images/transportation4.jpg");
 		background-position: top left,						center center;
 		background-repeat: repeat,							no-repeat;
 		background-size: auto,							cover;
@@ -3923,7 +3923,7 @@ body.dark .box {
 }
 
 body.dark #header {
-  background: #141419;
+  background: #1a1a22;
   color: #eaeaea;
 }
 
@@ -3970,6 +3970,6 @@ body.dark pre {
 }
 
 body.dark #banner {
-  background-color: #141419;
+  background-color: #1a1a22;
   color: #f2f2f7;
 }

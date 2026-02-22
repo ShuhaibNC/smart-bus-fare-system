@@ -1,336 +1,597 @@
 {% extends "base.html" %}
 {% load static %}
 {% block header %}{% endblock header %}
+
 {% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" />
 
 <style>
-/* reuse your variables */
 :root {
-    color-scheme: dark;
-    --bg-main: #0f1115;
-    --bg-card: #181b22;
-    --bg-input: #1f242d;
-    --border-soft: #2b3040;
-    --text-main: #e6e9ef;
-    --text-muted: #9aa0ac;
-    --primary: #007bff;
-    --primary-hover: #0056b3;
-    --nfc-gradient-1: #667eea;
-    --nfc-gradient-2: #764ba2;
+  --app-bg:       #0a0d12;
+  --app-surface:  #111520;
+  --app-card:     #161c2a;
+  --app-card2:    #1a2235;
+  --app-border:   #1f2d45;
+  --app-primary:  #3b82f6;
+  --app-primary2: #1d4ed8;
+  --app-accent:   #38bdf8;
+  --app-navy:     #0f3460;
+  --app-green:    #22c55e;
+  --app-yellow:   #f59e0b;
+  --app-red:      #ef4444;
+  --app-purple:   #8b5cf6;
+  --app-text:     #e2e8f0;
+  --app-muted:    #64748b;
+  --app-muted2:   #94a3b8;
 }
 
-body {
-    background: var(--bg-main);
-    min-height: 100vh;
-    padding: 40px 20px;
+body, #page-wrapper {
+  background: var(--app-bg) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  color: var(--app-text) !important;
 }
 
+.page-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 60px;
+}
+
+/* ── Main card ── */
 .modern-card {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 32px;
-    border-radius: 14px;
-    background: var(--bg-card);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-    color: var(--text-main);
+  width: 100%;
+  max-width: 680px;
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  overflow: hidden;
 }
 
-.title {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 30px;
+/* ── Card header band ── */
+.card-header-band {
+  background: linear-gradient(135deg, var(--app-navy) 0%, var(--app-primary2) 100%);
+  padding: 28px 32px 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Input table */
+.card-header-band::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+
+.card-header-band::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: 30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(56,189,248,0.08);
+  pointer-events: none;
+}
+
+.card-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.header-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.header-icon-wrap .msym {
+  font-family: 'Material Symbols Rounded';
+  font-size: 26px;
+  line-height: 1;
+  font-variation-settings: 'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+  color: #fff;
+}
+
+.header-text h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin: 0 0 2px;
+}
+
+.header-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+}
+
+/* ── Body ── */
+.card-body {
+  padding: 32px;
+}
+
+/* ── Input table ── */
 .input-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 28px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  overflow: hidden;
 }
 
-.input-table th,
-.input-table td {
-    border: 1px solid var(--border-soft);
-    padding: 14px;
-    text-align: left;
+.input-table tr:not(:last-child) td,
+.input-table tr:not(:last-child) th {
+  border-bottom: 1px solid var(--app-border);
 }
 
 .input-table th {
-    width: 30%;
-    color: var(--text-muted);
-    font-weight: 600;
+  width: 35%;
+  background: var(--app-surface);
+  padding: 14px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--app-muted);
+  vertical-align: middle;
+}
+
+.input-table td {
+  background: var(--app-card2);
+  padding: 10px 14px;
+  vertical-align: middle;
 }
 
 .input-table input {
-    width: 100%;
-    background: var(--bg-input);
-    border: 1px solid var(--border-soft);
-    border-radius: 8px;
-    padding: 10px 12px;
-    color: var(--text-main);
-    font-size: 15px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--app-text);
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  outline: none;
+  padding: 4px 0;
 }
 
-/* Write button */
+.input-table input[readonly] {
+  color: var(--app-muted2);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: not-allowed;
+}
+
+.input-table input::placeholder { color: var(--app-muted); }
+
+/* ── Write button ── */
 .write-btn {
-    display: block;
-    margin: 0 auto;
-    padding: 16px 50px;
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 14px;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-    color: #fff;
-    box-shadow: 0 6px 20px rgba(0,123,255,0.5);
-    transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-primary2));
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(59,130,246,0.4);
+  transition: transform .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.write-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
 }
 
 .write-btn:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(59,130,246,0.55);
 }
 
-/* NFC write section */
+.write-btn:active { transform: translateY(0); }
+
+.write-btn .msym {
+  font-family: 'Material Symbols Rounded';
+  font-size: 20px;
+  line-height: 1;
+  font-variation-settings: 'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 24;
+}
+
+/* ── NFC write section ── */
 .write-section {
-    display: none;
-    margin-top: 60px;
-    text-align: center;
+  display: none;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--app-border);
 }
 
-/* bigger NFC animation */
-.nfc-container {
-    max-width: 420px;
-    margin: 0 auto 20px;
-    perspective: 1000px;
+/* ── Redesigned NFC Card ── */
+.nfc-scene {
+  perspective: 1200px;
+  max-width: 380px;
+  margin: 0 auto 28px;
 }
 
 .nfc-card {
-    width: 100%;
-    aspect-ratio: 1.586;
-    animation: cardFloat 5s ease-in-out infinite;
+  width: 100%;
+  aspect-ratio: 1.586;
+  animation: cardFloat 5s ease-in-out infinite;
+  transform-style: preserve-3d;
 }
 
 @keyframes cardFloat {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
+  0%,100% { transform: translateY(0) rotateX(2deg); }
+  50%      { transform: translateY(-16px) rotateX(-2deg); }
 }
 
 .card-face {
-    height: 100%;
-    border-radius: 18px;
-    padding: 26px;
-    background: linear-gradient(135deg, var(--nfc-gradient-1), var(--nfc-gradient-2));
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(102,126,234,0.5);
+  height: 100%;
+  border-radius: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, #0f3460 0%, #1d4ed8 45%, #38bdf8 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 20px 50px rgba(29,78,216,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* waves */
+/* Holographic shimmer overlay */
+.card-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Decorative circle */
+.card-face::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(56,189,248,0.12);
+  pointer-events: none;
+}
+
+/* ── NFC RF Waves ── */
 .nfc-waves {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; height: 100%;
+  pointer-events: none;
 }
 
-/* Common wave style */
 .rf-wave {
-    position: absolute;
-    top: 50%;
-    width: 100px;
-    height: 100px;
-    border: 3px solid rgba(255,255,255,0.8);
-    border-radius: 50%;
-    opacity: 0;
+  position: absolute;
+  top: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%;
+  opacity: 0;
 }
 
-/* Right side waves */
 .rf-wave.right {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
-    animation: rfPulseRight 2s infinite ease-out;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+  animation: rfPulseRight 2.4s infinite ease-out;
 }
 
-/* Left side waves */
 .rf-wave.left {
-    right: 50%;
-    transform: translate(50%, -50%);
-    clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%);
-    animation: rfPulseLeft 2s infinite ease-out;
+  right: 50%;
+  transform: translate(50%, -50%);
+  clip-path: polygon(0% 0%, 50% 0%, 50% 100%, 0% 100%);
+  animation: rfPulseLeft 2.4s infinite ease-out;
 }
 
-/* Delays for staggered effect */
 .rf-wave.delay1 { animation-delay: 0s; }
-.rf-wave.delay2 { animation-delay: 0.5s; }
-.rf-wave.delay3 { animation-delay: 1s; }
+.rf-wave.delay2 { animation-delay: 0.6s; }
+.rf-wave.delay3 { animation-delay: 1.2s; }
 
-/* Right wave animation */
 @keyframes rfPulseRight {
-    0% {
-        width: 60px;
-        height: 60px;
-        opacity: 0;
-        left: 50%;
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        width: 200px;
-        height: 200px;
-        opacity: 0;
-        left: 65%;
-    }
+  0%   { width: 50px; height: 50px; opacity: 0; left: 50%; }
+  15%  { opacity: 0.9; }
+  100% { width: 180px; height: 180px; opacity: 0; left: 62%; }
 }
 
-/* Left wave animation */
 @keyframes rfPulseLeft {
-    0% {
-        width: 60px;
-        height: 60px;
-        opacity: 0;
-        right: 50%;
-    }
-    20% {
-        opacity: 1;
-    }
-    100% {
-        width: 200px;
-        height: 200px;
-        opacity: 0;
-        right: 65%;
-    }
+  0%   { width: 50px; height: 50px; opacity: 0; right: 50%; }
+  15%  { opacity: 0.9; }
+  100% { width: 180px; height: 180px; opacity: 0; right: 62%; }
 }
 
-/* chip */
+/* ── Card top row ── */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.card-brand {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+}
+
+.card-nfc-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+/* ── EMV Chip ── */
 .card-chip {
-    width: 56px;
-    height: 44px;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
+  width: 48px; height: 36px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #d4a843, #f5d06e, #c9952a);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
 }
 
-/* instruction text */
-.rfid-text {
-    font-size: 20px;
-    font-weight: 600;
-    margin-top: 20px;
-    color: var(--text-main);
+.card-chip::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: rgba(0,0,0,0.2);
+  transform: translateY(-50%);
 }
+
+.card-chip::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(0,0,0,0.15);
+  transform: translateX(-50%);
+}
+
+/* ── Card bottom ── */
+.card-bottom {
+  position: relative;
+  z-index: 2;
+}
+
+.card-name-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+}
+
+.card-uid {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+/* ── Instruction row ── */
+.rfid-instruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin: 0 auto;
+  max-width: 340px;
+}
+
+.rfid-instruction .msym {
+  font-family: 'Material Symbols Rounded';
+  font-size: 24px;
+  line-height: 1;
+  font-variation-settings: 'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+  color: var(--app-accent);
+  animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(0.9); }
+}
+
+.rfid-instruction span.txt {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--app-muted2);
+}
+
 </style>
 
+<div class="page-wrap">
 <div class="modern-card">
-    <h2 class="title">Write NFC Card Data</h2>
 
+  <!-- Header band -->
+  <div class="card-header-band">
+    <div class="card-header-inner">
+      <div class="header-icon-wrap">
+        <span class="msym">contactless</span>
+      </div>
+      <div class="header-text">
+        <h2>Write NFC Card</h2>
+        <p>Fill in the details and tap Write to program the card</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="card-body">
     <form method="post" action="{% url 'nfcwriter' card_id %}" id="writeForm">
-    {% csrf_token %}
+      {% csrf_token %}
 
-    <table class="input-table">
+      <table class="input-table">
         <tr>
-            <th>Card Holder Full Name</th>
-            <td>
-                <input
-                    type="text"
-                    name="card_name"
-                    id="cardName"
-                    value="{{ names.first_name }} {{ names.last_name }}"
-                    required
-                >
-            </td>
+          <th>Card Holder Name</th>
+          <td>
+            <input type="text" name="card_name" id="cardName"
+              value="{{ names.first_name }} {{ names.last_name }}" required>
+          </td>
         </tr>
-
         <tr>
-            <th>CARD ID</th>
-            <td>
-                {% if card_id %}
-                    <input
-                        type="text"
-                        name="card_uid"
-                        id="cardUID"
-                        value="{{ card_id }}"
-                        readonly
-                    >
-                {% else %}
-                    XXXX-XXXX-XXXX
-                {% endif %}
-            </td>
+          <th>Card UID</th>
+          <td>
+            {% if card_id %}
+              <input type="text" name="card_uid" id="cardUID" value="{{ card_id }}" readonly>
+            {% else %}
+              <input type="text" value="XXXX-XXXX-XXXX" readonly>
+            {% endif %}
+          </td>
         </tr>
-    </table>
+      </table>
 
-    <button type="submit" class="write-btn" id="writeBtn">
-    WRITE DATA
-</button>
+      <button type="submit" class="write-btn" id="writeBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- NFC arcs -->
+          <path d="M12.5 4C17.19 4 21 7.81 21 12.5C21 17.19 17.19 21 12.5 21" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
+          <path d="M12.5 7.5C15.26 7.5 17.5 9.74 17.5 12.5C17.5 15.26 15.26 17.5 12.5 17.5" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+          <path d="M12.5 11C13.33 11 14 11.67 14 12.5C14 13.33 13.33 14 12.5 14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <!-- Card -->
+          <rect x="2" y="8" width="10.5" height="9" rx="1.5" fill="white" opacity="0.15" stroke="white" stroke-width="1.5"/>
+          <!-- Pen -->
+          <path d="M5.5 14.5 L7.8 12.2 L9.8 14.2 L7.5 16.5 L5.5 14.5Z" fill="white"/>
+          <path d="M7.8 12.2 L9.5 10.5 L11.5 12.5 L9.8 14.2Z" fill="white" opacity="0.65"/>
+          <path d="M5.5 14.5 L4.8 16.2 L6.5 15.5Z" fill="white" opacity="0.45"/>
+        </svg>
+        Write to NFC Card
+      </button>
+    </form>
 
-</form>
-
-
+    <!-- NFC animation section -->
     <div class="write-section" id="writeSection">
-        <div class="nfc-container">
-    <div class="nfc-card">
-        <div class="card-face">
+
+      <div class="nfc-scene">
+        <div class="nfc-card">
+          <div class="card-face">
+
             <div class="nfc-waves">
-    <!-- Right side -->
-    <div class="rf-wave right delay1"></div>
-    <div class="rf-wave right delay2"></div>
-    <div class="rf-wave right delay3"></div>
+              <div class="rf-wave right delay1"></div>
+              <div class="rf-wave right delay2"></div>
+              <div class="rf-wave right delay3"></div>
+              <div class="rf-wave left delay1"></div>
+              <div class="rf-wave left delay2"></div>
+              <div class="rf-wave left delay3"></div>
+            </div>
 
-    <!-- Left side -->
-    <div class="rf-wave left delay1"></div>
-    <div class="rf-wave left delay2"></div>
-    <div class="rf-wave left delay3"></div>
-</div>
+            <!-- Top row -->
+            <div class="card-top">
+              <div class="card-brand">SBFS</div>
+              <div class="card-nfc-logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3C16.97 3 21 7.03 21 12C21 16.97 16.97 21 12 21" stroke="white" stroke-width="1.6" stroke-linecap="round" opacity="0.4"/>
+                  <path d="M12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17" stroke="white" stroke-width="1.6" stroke-linecap="round" opacity="0.65"/>
+                  <path d="M12 11C12.55 11 13 11.45 13 12C13 12.55 12.55 13 12 13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
 
-
+            <!-- Chip -->
             <div class="card-chip"></div>
 
-            <div class="card-content">
-                <div>
-                    <div class="card-name" id="cardNamePreview">
-                            {{ names.first_name }} {{ names.last_name }}
-                    </div>
-                </div>
-
-                <div>
-                    <div class="card-number" id="cardUIDPreview">
-                        {% if card_id %}
-                            {{ card_id }} 
-                        {% else %}
-                            XXXX-XXXX-XXXX
-                        {% endif %}
-                    </div>
-                </div>
+            <!-- Bottom -->
+            <div class="card-bottom">
+              <div class="card-name-label">Card Holder</div>
+              <div class="card-name" id="cardNamePreview">
+                {{ names.first_name }} {{ names.last_name }}
+              </div>
+              <div class="card-uid" id="cardUIDPreview">
+                {% if card_id %}{{ card_id }}{% else %}XXXX-XXXX-XXXX{% endif %}
+              </div>
             </div>
+
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
+      <div class="rfid-instruction">
+        <span class="msym">contactless</span>
+        <span class="txt">Place NFC card on the reader</span>
+      </div>
 
-        <div class="rfid-text">
-            Please place NFC card to RFID
-        </div>
-    </div>
-</div>
+    </div><!-- /write-section -->
+  </div><!-- /card-body -->
+</div><!-- /modern-card -->
+</div><!-- /page-wrap -->
 
-    {% comment %} {% if write_status == "reading" %}
-        <script>
-            document.getElementById("writeSection").style.display = "block";
-        </script>
-    {% endif %} {% endcomment %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const writeBtn = document.getElementById("writeBtn");
-    const writeSection = document.getElementById("writeSection");
+  const writeBtn  = document.getElementById("writeBtn");
+  const writeSection = document.getElementById("writeSection");
+  const cardName  = document.getElementById("cardName");
+  const cardUID   = document.getElementById("cardUID");
+  const namePreview = document.getElementById("cardNamePreview");
+  const uidPreview  = document.getElementById("cardUIDPreview");
 
-    if (!writeBtn || !writeSection) return;
+  if (!writeBtn || !writeSection) return;
 
-    writeBtn.addEventListener("click", function () {
-        writeSection.style.display = "block";
+  // Live preview
+  if (cardName && namePreview) {
+    cardName.addEventListener("input", () => {
+      namePreview.textContent = cardName.value || "—";
     });
+  }
+
+  writeBtn.addEventListener("click", function () {
+    writeSection.style.display = "block";
+    writeSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
 });
 </script>
 

@@ -1,70 +1,371 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
-{% block services %}{% endblock services %}
-{% block status %}<a href="/" class="button">Login</a>{% endblock %}
 
-{% block header %}
-<header>
-  <h2>SIGN UP</h2>
-  {% if info %}
-  <p class="info">{{ info }}</p>
-  {% else %}
-  <p>Register Form for Student</p>
-  {% endif %}
-  <style>
-    div{
-      margin:10px;
-    }
-    .info {
-    border: 1px solid var(--success);
-    color: var(--success);
-    border-radius: 9px;
+{% block bottom_nav %}{% endblock %}
+{% block topbar_menu %}{% endblock %}
+
+{% block addstyle %}
+<style>
+/* ── Kill all spacing like login page ── */
+#mobile-topbar { display:none !important; }
+
+#page-wrapper,
+#main,
+#main.container {
+  padding:0 !important;
+  margin:0 !important;
+  max-width:100% !important;
+  width:100% !important;
 }
-  </style>
-</header>
+
+/* ── Full-screen signup layout ── */
+.signup-screen {
+  display:none;
+  flex-direction:column;
+  min-height:100vh;
+  background:var(--md-bg);
+  width:100%;
+}
+
+/* Brand area */
+.signup-brand {
+  padding:28px 32px 20px;
+  text-align:center;
+}
+
+.brand-icon {
+  width:72px; height:72px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#1d4ed8,#5b8dee);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 16px;
+  box-shadow:0 8px 24px rgba(91,141,238,0.4);
+}
+
+.brand-name {
+  font-size:28px;
+  font-weight:800;
+  color:var(--md-text);
+  letter-spacing:1px;
+  margin-bottom:4px;
+}
+.brand-name span { color:var(--md-primary); }
+
+.brand-tagline {
+  font-size:13px;
+  color:var(--md-muted);
+}
+
+/* Card sheet */
+.signup-card {
+  flex:1;
+  background:var(--md-surface);
+  border-radius:28px 28px 0 0;
+  padding:32px 24px 48px;
+  box-shadow:0 -4px 24px rgba(0,0,0,0.4);
+  width:100%;
+  box-sizing:border-box;
+}
+
+.signup-card-title {
+  font-size:20px;
+  font-weight:700;
+  color:var(--md-text);
+  margin-bottom:4px;
+}
+
+.signup-card-sub {
+  font-size:13px;
+  color:var(--md-muted);
+  margin-bottom:24px;
+}
+
+/* Success info banner */
+.signup-info-banner {
+  background:rgba(76,175,125,0.1);
+  border:1px solid rgba(76,175,125,0.35);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+  color:#6ee7b7;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* Two column row for first/last name */
+.md-field-row {
+  display:flex;
+  gap:12px;
+  width:100%;
+}
+
+.md-field-row .md-field { flex:1; }
+
+/* Fields */
+.md-field { margin-bottom:14px; width:100%; }
+
+.md-field label {
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:var(--md-muted);
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  margin-bottom:6px;
+}
+
+.md-input-wrap {
+  position:relative;
+  display:flex;
+  align-items:center;
+  width:100%;
+}
+
+.md-input-wrap .material-symbols-rounded {
+  position:absolute;
+  left:14px;
+  color:var(--md-muted);
+  font-size:20px;
+  pointer-events:none;
+}
+
+.md-field input {
+  width:100% !important;
+  padding:13px 16px 13px 46px !important;
+  font-size:16px !important;
+  background:var(--md-surface2) !important;
+  border:1.5px solid var(--md-border) !important;
+  border-radius:14px !important;
+  color:var(--md-text) !important;
+  outline:none !important;
+  box-sizing:border-box !important;
+  transition:border-color .2s !important;
+}
+
+.md-field input:focus {
+  border-color:var(--md-primary) !important;
+}
+
+.pwd-toggle {
+  position:absolute;
+  right:14px;
+  background:none;
+  border:none;
+  color:var(--md-muted);
+  cursor:pointer;
+  padding:4px;
+  display:flex;
+  align-items:center;
+}
+
+/* Signup button */
+.signup-btn {
+  width:100%;
+  height:52px;
+  background:linear-gradient(135deg,#1d4ed8,#5b8dee);
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(91,141,238,0.4);
+  margin-top:8px;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-sizing:border-box;
+}
+.signup-btn:active { opacity:.85; }
+
+/* Login link */
+.login-row {
+  text-align:center;
+  font-size:14px;
+  color:var(--md-muted);
+}
+.login-row a {
+  color:var(--md-primary);
+  font-weight:600;
+  text-decoration:none;
+}
+
+/* Show mobile / hide desktop */
+@media(max-width:768px){
+  .signup-screen  { display:flex; }
+  .desktop-signup { display:none; }
+}
+@media(min-width:769px){
+  .signup-screen  { display:none; }
+  .desktop-signup { display:block; }
+}
+</style>
 {% endblock %}
+
+{% block header %}{% endblock %}
+
 {% block content %}
-<div class="row aln-center">
-<div class="col-7">
-  <form method="post" class="form">
-    {% csrf_token %}
 
-    <div class="field">
-      <label for="first_name">First Name</label>
-      <input type="text" name="firstname" id="first_name" placeholder="John" required>
+<!-- ── MOBILE ── -->
+<div class="signup-screen">
+  <div class="signup-brand">
+    <div class="brand-icon">
+      <span class="material-symbols-rounded" style="color:#fff;font-size:36px;">directions_bus</span>
     </div>
+    <div class="brand-name"><span>SB</span>FS</div>
+    <div class="brand-tagline">Smart Bus Fare System</div>
+  </div>
 
-    <div class="field">
-      <label for="last_name">Last Name</label>
-      <input type="text" name="lastname" id="last_name" placeholder="Doe" required>
-    </div>
+  <div class="signup-card">
+    <div class="signup-card-title">Create account</div>
+    <div class="signup-card-sub">Register as a new student</div>
 
-    <div class="field">
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" placeholder="john" required>
+    {% if info %}
+    <div class="signup-info-banner">
+      <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
+      {{ info }}
     </div>
+    {% endif %}
 
-    <div class="field">
-      <label for="email">Email</label>
-      <input type="email" name="email" id="email" placeholder="john@example.com" required>
-    </div>
+    <form method="post" style="width:100%;">
+      {% csrf_token %}
 
-    <div class="field">
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" placeholder="•••••••••••" required>
-    </div>
+      <!-- First & Last name side by side -->
+      <div class="md-field-row">
+        <div class="md-field">
+          <label for="first_name_m">First Name</label>
+          <div class="md-input-wrap">
+            <span class="material-symbols-rounded">person</span>
+            <input type="text" name="firstname" id="first_name_m" placeholder="John" required />
+          </div>
+        </div>
+        <div class="md-field">
+          <label for="last_name_m">Last Name</label>
+          <div class="md-input-wrap">
+            <span class="material-symbols-rounded">person</span>
+            <input type="text" name="lastname" id="last_name_m" placeholder="Doe" required />
+          </div>
+        </div>
+      </div>
 
-    <div class="field">
-      <label for="confirm_password">Confirm Password</label>
-      <input type="password" name="confirm_password" id="confirm_password" placeholder="•••••••••••" required>
+      <div class="md-field">
+        <label for="username_m">Username</label>
+        <div class="md-input-wrap">
+          <span class="material-symbols-rounded">alternate_email</span>
+          <input type="text" name="username" id="username_m" placeholder="john" required autocomplete="username" />
+        </div>
+      </div>
+
+      <div class="md-field">
+        <label for="email_m">Email</label>
+        <div class="md-input-wrap">
+          <span class="material-symbols-rounded">mail</span>
+          <input type="email" name="email" id="email_m" placeholder="john@example.com" required autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="md-field">
+        <label for="password_m">Password</label>
+        <div class="md-input-wrap">
+          <span class="material-symbols-rounded">lock</span>
+          <input type="password" name="password" id="password_m" placeholder="•••••••••••" required autocomplete="new-password" />
+          <button type="button" class="pwd-toggle" onclick="togglePwd('password_m','eye1')">
+            <span class="material-symbols-rounded" id="eye1">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="md-field">
+        <label for="confirm_password_m">Confirm Password</label>
+        <div class="md-input-wrap">
+          <span class="material-symbols-rounded">lock_check</span>
+          <input type="password" name="confirm_password" id="confirm_password_m" placeholder="•••••••••••" required autocomplete="new-password" />
+          <button type="button" class="pwd-toggle" onclick="togglePwd('confirm_password_m','eye2')">
+            <span class="material-symbols-rounded" id="eye2">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="signup-btn">
+        <span class="material-symbols-rounded">how_to_reg</span>
+        Create Account
+      </button>
+    </form>
+
+    <div class="login-row">
+      Already have an account? <a href="/">Login here</a>
     </div>
-<div>
-    <button type="submit" class="button primary">Sign Up</button>  <p>{{ info }}</p>
-    <p class="note">
-      Already have an account?
-      <a href="/">Login</a>
-    </p>
-  </form>
+  </div>
 </div>
+
+<!-- ── DESKTOP ── -->
+<div class="desktop-signup">
+  <div class="row aln-center">
+    <div class="col-7">
+      <header>
+        <h2>SIGN UP</h2>
+        {% if info %}
+        <p class="info">{{ info }}</p>
+        {% else %}
+        <p>Register Form for Student</p>
+        {% endif %}
+      </header>
+      <form method="post" class="form">
+        {% csrf_token %}
+        <div class="field">
+          <label for="first_name">First Name</label>
+          <input type="text" name="firstname" id="first_name" placeholder="John" required>
+        </div>
+        <div class="field">
+          <label for="last_name">Last Name</label>
+          <input type="text" name="lastname" id="last_name" placeholder="Doe" required>
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" placeholder="john" required>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" placeholder="john@example.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" placeholder="•••••••••••" required>
+        </div>
+        <div class="field">
+          <label for="confirm_password">Confirm Password</label>
+          <input type="password" name="confirm_password" id="confirm_password" placeholder="•••••••••••" required>
+        </div>
+        <div>
+          <button type="submit" class="button primary">Sign Up</button>
+          <p>{{ info }}</p>
+          <p class="note">Already have an account? <a href="/">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+<script>
+function togglePwd(inputId, eyeId){
+  const input = document.getElementById(inputId);
+  const eye   = document.getElementById(eyeId);
+  if(input.type === 'password'){
+    input.type = 'text';
+    eye.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    eye.textContent = 'visibility';
+  }
+}
+</script>
+
 {% endblock %}

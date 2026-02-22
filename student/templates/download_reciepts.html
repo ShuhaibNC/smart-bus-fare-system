@@ -3,103 +3,455 @@
 {% block header %}{% endblock header %}
 {% block content %}
 
-<section class="container" style="max-width:950px;margin-top:60px;">
+<style>
+:root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface-2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8ecf4;
+    --muted: #6b7590;
+    --primary: #3d7eff;
+    --primary-glow: rgba(61,126,255,0.25);
+    --completed: #22c55e;
+    --completed-bg: rgba(34,197,94,0.1);
+    --completed-border: rgba(34,197,94,0.2);
+    --pending: #f59e0b;
+    --pending-bg: rgba(245,158,11,0.1);
+    --pending-border: rgba(245,158,11,0.2);
+    --failed: #ef4444;
+    --failed-bg: rgba(239,68,68,0.1);
+    --failed-border: rgba(239,68,68,0.2);
+    --refunded: #60a5fa;
+    --refunded-bg: rgba(96,165,250,0.1);
+    --refunded-border: rgba(96,165,250,0.2);
+    --font: 'DM Sans', 'Segoe UI', sans-serif;
+}
 
-    <section class="box special">
-        <header class="major">
-            <h2>Transaction History & Receipts</h2>
-            <p>
-                View your recharge transactions and download receipts for completed payments.
-            </p>
-        </header>
+/* ── Scoped page wrapper — overrides base template table/box styles ── */
+.txn-page {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    font-family: var(--font);
+    color: var(--text);
+    box-sizing: border-box;
+}
 
-        {% if transactions %}
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Refundable</th>
-                        <th>Receipt</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for txn in transactions %}
-                    <tr>
-                        <!-- Public UUID -->
-                        <td>{{ txn.transaction_id }}</td>
+/* ── Header ── */
+.txn-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+.txn-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 4px;
+    color: var(--text);
+}
+.txn-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+}
+.txn-header-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.txn-header-icon .material-symbols-rounded {
+    font-size: 24px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
 
-                        <!-- Formatted Date -->
-                        <td>{{ txn.created_at|date:"d M Y, H:i" }}</td>
+/* ── Summary pills ── */
+.txn-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+}
+.txn-sum-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+.txn-sum-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 4px;
+}
+.txn-sum-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    font-weight: 600;
+}
 
-                        <!-- Amount -->
-                        <td>₹ {{ txn.amount }}</td>
+/* ── Section label ── */
+.txn-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding: 0 2px;
+}
 
-                        <!-- Status with proper color mapping -->
-                        <td>
-                            {% if txn.status == "completed" %}
-                                <span style="color:#27ae60;font-weight:600;">
-                                    Completed
-                                </span>
-                            {% elif txn.status == "pending" %}
-                                <span style="color:#f39c12;font-weight:600;">
-                                    Pending
-                                </span>
-                            {% elif txn.status == "failed" %}
-                                <span style="color:#e74c3c;font-weight:600;">
-                                    Failed
-                                </span>
-                            {% elif txn.status == "refunded" %}
-                                <span style="color:#3498db;font-weight:600;">
-                                    Refunded
-                                </span>
-                            {% endif %}
-                        </td>
+/* ── Transaction card list ── */
+.txn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
 
-                        <!-- Refund Eligibility -->
-                        <td>
-                            {% if txn.is_refundable %}
-                                <span style="color:#2ecc71;">Yes</span>
-                            {% else %}
-                                <span style="color:#888;">No</span>
-                            {% endif %}
-                        </td>
+.txn-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 18px 18px 22px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
 
-                        <!-- Receipt -->
-                        <td>
-                            {% if txn.status == "completed" %}
-                                <form method="post" action="{% url 'download_receipt_file' txn.transaction_id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button small primary">
-                                        Download
-                                    </button>
-                                </form>
-                            {% else %}
-                                <span style="color:#888;">Not Available</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+/* left accent bar */
+.txn-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 18px; bottom: 18px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+}
+.txn-card.completed::before { background: var(--completed); }
+.txn-card.pending::before   { background: var(--pending); }
+.txn-card.failed::before    { background: var(--failed); }
+.txn-card.refunded::before  { background: var(--refunded); }
+
+/* Main info — grows to fill space */
+.txn-info {
+    flex: 1;
+    min-width: 0;
+}
+.txn-id {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.txn-date {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.txn-date .material-symbols-rounded {
+    font-size: 12px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.txn-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Status badge */
+.txn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.txn-badge .material-symbols-rounded {
+    font-size: 13px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.txn-badge.completed { background: var(--completed-bg); border: 1px solid var(--completed-border); color: #86efac; }
+.txn-badge.pending   { background: var(--pending-bg);   border: 1px solid var(--pending-border);   color: #fcd34d; }
+.txn-badge.failed    { background: var(--failed-bg);    border: 1px solid var(--failed-border);    color: #fca5a5; }
+.txn-badge.refunded  { background: var(--refunded-bg);  border: 1px solid var(--refunded-border);  color: #93c5fd; }
+
+.txn-refundable {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.15);
+    color: #86efac;
+}
+
+/* Right side — amount + action */
+.txn-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.txn-amount {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.txn-amount .currency {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.55;
+    margin-right: 1px;
+}
+
+/* Download button */
+.txn-dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #6a9fff);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 10px var(--primary-glow);
+    white-space: nowrap;
+}
+.txn-dl-btn:active { opacity: 0.82; transform: scale(0.96); }
+.txn-dl-btn .material-symbols-rounded {
+    font-size: 14px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+/* ── Mobile: stack card vertically ── */
+@media (max-width: 600px) {
+    .txn-page { padding: 20px 14px 56px; }
+    .txn-title { font-size: 21px; }
+
+    .txn-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 16px 16px 16px 20px;
+    }
+    .txn-card::before { top: 14px; bottom: 14px; }
+
+    .txn-right {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+    }
+
+    .txn-id {
+        font-size: 11px;
+        white-space: normal;
+        word-break: break-all;
+    }
+
+    .txn-sum-value { font-size: 18px; }
+}
+
+/* ── Empty state ── */
+.txn-empty {
+    text-align: center;
+    padding: 56px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+}
+.txn-empty-icon {
+    width: 64px; height: 64px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+}
+.txn-empty-icon .material-symbols-rounded {
+    font-size: 30px; color: var(--muted);
+    font-variation-settings: 'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;
+}
+.txn-empty-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.txn-empty-sub   { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* ── Footer notice ── */
+.txn-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(61,126,255,0.05);
+    border: 1px solid rgba(61,126,255,0.12);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 16px;
+    box-sizing: border-box;
+}
+.txn-notice .material-symbols-rounded {
+    font-size: 15px; flex-shrink: 0; margin-top: 1px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+</style>
+
+<div class="txn-page">
+
+    <!-- Header -->
+    <div class="txn-header">
+        <div>
+            <h2 class="txn-title">Transactions</h2>
+            <p class="txn-subtitle">History & receipts</p>
         </div>
-        {% else %}
-            <p style="text-align:center;color:#aaa;">
-                No transactions found.
-            </p>
-        {% endif %}
+        <div class="txn-header-icon">
+            <span class="material-symbols-rounded">receipt_long</span>
+        </div>
+    </div>
 
-        <hr />
+    {% if transactions %}
 
-        <p style="font-size:13px;color:#aaa;text-align:center;">
-            Only completed transactions are eligible for receipt download.
-        </p>
+    <!-- Summary pills -->
+    <div class="txn-summary">
+        <div class="txn-sum-pill">
+            <div class="txn-sum-value">{{ transactions|length }}</div>
+            <div class="txn-sum-label">Total</div>
+        </div>
+        <div class="txn-sum-pill">
+            <div class="txn-sum-value" id="s-completed" style="color:var(--completed);">—</div>
+            <div class="txn-sum-label">Completed</div>
+        </div>
+        <div class="txn-sum-pill">
+            <div class="txn-sum-value" id="s-amount" style="color:var(--primary);">—</div>
+            <div class="txn-sum-label">Recharged</div>
+        </div>
+    </div>
 
-    </section>
+    <div class="txn-section-label">Recent Transactions</div>
 
-</section>
+    <!-- Cards -->
+    <div class="txn-list">
+        {% for txn in transactions %}
+        <div class="txn-card {{ txn.status }}"
+             data-status="{{ txn.status }}"
+             data-amount="{{ txn.amount }}">
+
+            <!-- Left: info -->
+            <div class="txn-info">
+                <div class="txn-id">{{ txn.transaction_id }}</div>
+                <div class="txn-date">
+                    <span class="material-symbols-rounded">schedule</span>
+                    {{ txn.created_at|date:"d M Y, H:i" }}
+                </div>
+                <div class="txn-badges">
+                    <span class="txn-badge {{ txn.status }}">
+                        {% if txn.status == "completed" %}
+                            <span class="material-symbols-rounded">check_circle</span>Completed
+                        {% elif txn.status == "pending" %}
+                            <span class="material-symbols-rounded">pending</span>Pending
+                        {% elif txn.status == "failed" %}
+                            <span class="material-symbols-rounded">cancel</span>Failed
+                        {% elif txn.status == "refunded" %}
+                            <span class="material-symbols-rounded">replay</span>Refunded
+                        {% endif %}
+                    </span>
+                    {% if txn.is_refundable %}
+                    <span class="txn-refundable">Refundable</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right: amount + download -->
+            <div class="txn-right">
+                <div class="txn-amount">
+                    <span class="currency">₹</span>{{ txn.amount }}
+                </div>
+                {% if txn.status == "completed" %}
+                <form method="post" action="{% url 'download_receipt_file' txn.transaction_id %}" style="margin:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="txn-dl-btn">
+                        <span class="material-symbols-rounded">download</span>
+                        Receipt
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+
+    <div class="txn-empty">
+        <div class="txn-empty-icon">
+            <span class="material-symbols-rounded">receipt_long</span>
+        </div>
+        <div class="txn-empty-title">No Transactions Yet</div>
+        <div class="txn-empty-sub">Your transaction history will appear here once you recharge your wallet.</div>
+    </div>
+
+    {% endif %}
+
+    <div class="txn-notice">
+        <span class="material-symbols-rounded">info</span>
+        Only completed transactions are eligible for receipt download.
+    </div>
+
+</div>
+
+<script>
+(function () {
+    var cards = document.querySelectorAll('.txn-card');
+    var completed = 0, total = 0;
+    cards.forEach(function(c) {
+        if (c.dataset.status === 'completed') {
+            completed++;
+            total += parseFloat(c.dataset.amount) || 0;
+        }
+    });
+    var sc = document.getElementById('s-completed');
+    var sa = document.getElementById('s-amount');
+    if (sc) sc.textContent = completed;
+    if (sa) sa.textContent = '₹' + total.toLocaleString('en-IN');
+})();
+</script>
 
 {% endblock content %}

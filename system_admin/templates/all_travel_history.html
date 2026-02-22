@@ -1,101 +1,565 @@
 {% extends "base.html" %}
 {% load static %}
 {% block header %}{% endblock header %}
+
 {% block content %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" />
 
 <style>
-.dark-box {
-    background-color: #1e1e2f;
-    color: #e4e6eb;
-    padding: 30px;
-    border-radius: 10px;
+:root {
+  --app-bg:       #0a0d12;
+  --app-surface:  #111520;
+  --app-card:     #161c2a;
+  --app-card2:    #1a2235;
+  --app-border:   #1f2d45;
+  --app-primary:  #3b82f6;
+  --app-primary2: #1d4ed8;
+  --app-accent:   #38bdf8;
+  --app-green:    #22c55e;
+  --app-yellow:   #f59e0b;
+  --app-red:      #ef4444;
+  --app-purple:   #8b5cf6;
+  --app-text:     #e2e8f0;
+  --app-muted:    #64748b;
+  --app-muted2:   #94a3b8;
 }
 
-.dark-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-    background-color: #252538;
-    color: #e4e6eb;
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: #1a2235;
+  color: #f2f2f7;
+  border: 1px solid var(--app-border);
 }
 
-.dark-table thead {
-    background-color: #12121c;
+body, #page-wrapper {
+  background: var(--app-bg) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  color: var(--app-text) !important;
 }
 
-.dark-table th {
-    padding: 12px;
-    border-bottom: 2px solid #33334d;
-    font-weight: 600;
+.msym {
+  font-family: 'Material Symbols Rounded';
+  line-height: 1;
+  font-variation-settings: 'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
 }
 
-.dark-table td {
-    padding: 10px;
-    border-bottom: 1px solid #33334d;
+/* ── Page wrapper ── */
+.history-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px 60px;
 }
 
-.dark-table tbody tr:hover {
-    background-color: #32324a;
-    transition: 0.2s ease;
+/* ── Main card ── */
+.history-card {
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+  overflow: hidden;
 }
 
-.no-data {
-    padding: 20px;
-    color: #aaa;
+/* ── Header band ── */
+.history-header {
+  background: linear-gradient(135deg, #0f3460 0%, var(--app-primary2) 100%);
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.history-header::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+
+.history-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: 50px;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: rgba(56,189,248,0.08);
+  pointer-events: none;
+}
+
+.history-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.header-icon-wrap .msym { font-size: 26px; color: #fff; }
+
+.header-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 3px;
+  letter-spacing: -0.3px;
+}
+
+.header-title p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+}
+
+/* Record count badge */
+.record-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+}
+
+.record-badge .msym { font-size: 16px; }
+
+/* ── Search / filter bar ── */
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface);
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--app-card2);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  padding: 0 14px;
+  flex: 1;
+  min-width: 200px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.search-wrap:focus-within {
+  border-color: var(--app-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+.search-wrap .msym {
+  font-size: 18px;
+  color: var(--app-muted);
+  flex-shrink: 0;
+}
+
+.search-wrap input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--app-text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 10px 0;
+  width: 100%;
+}
+
+.search-wrap input::placeholder { color: var(--app-muted); }
+
+.toolbar-stat {
+  font-size: 12px;
+  color: var(--app-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toolbar-stat .msym { font-size: 15px; color: var(--app-accent); }
+
+/* ── Table ── */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.tap-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.tap-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.tap-table thead th {
+  background: var(--app-surface);
+  padding: 12px 18px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--app-muted);
+  border-bottom: 1px solid var(--app-border);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.tap-table thead th:first-child { padding-left: 24px; }
+.tap-table thead th:last-child  { padding-right: 24px; }
+
+.tap-table tbody tr {
+  transition: background .12s;
+}
+
+.tap-table tbody tr:hover td {
+  background: var(--app-card2);
+}
+
+.tap-table tbody td {
+  padding: 13px 18px;
+  border-bottom: 1px solid rgba(31,45,69,0.6);
+  color: var(--app-text);
+  vertical-align: middle;
+  background: var(--app-card);
+  text-align: left;
+}
+
+.tap-table tbody td:first-child { padding-left: 24px; }
+.tap-table tbody td:last-child  { padding-right: 24px; }
+
+.tap-table tbody tr:last-child td { border-bottom: none; }
+
+/* ── Cell specific styles ── */
+
+/* Row number */
+.cell-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--app-muted);
+  width: 52px;
+}
+
+/* Card ID chip */
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #60a5fa;
+  white-space: nowrap;
+}
+
+.card-chip .msym { font-size: 13px; }
+
+/* Student name */
+.student-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--app-primary2), var(--app-accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.student-name {
+  font-weight: 600;
+  color: var(--app-text);
+  font-size: 13px;
+}
+
+/* Date cell */
+.date-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--app-muted2);
+  white-space: nowrap;
+}
+
+.date-cell .msym { font-size: 15px; color: var(--app-muted); }
+
+/* Time cell */
+.time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.18);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #4ade80;
+  white-space: nowrap;
+}
+
+.time-chip .msym { font-size: 13px; }
+
+/* Location cell */
+.location-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--app-muted2);
+}
+
+.location-cell .msym { font-size: 16px; color: var(--app-accent); flex-shrink: 0; }
+
+/* ── Empty state ── */
+.empty-state {
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 64px; height: 64px;
+  border-radius: 20px;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.15);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.empty-icon .msym { font-size: 30px; color: var(--app-muted); }
+
+.empty-state h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-muted2);
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  font-size: 13px;
+  color: var(--app-muted);
+}
+
+/* ── Table footer ── */
+.table-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--app-border);
+  background: var(--app-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-info {
+  font-size: 12px;
+  color: var(--app-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-info .msym { font-size: 14px; color: var(--app-muted); }
+
+/* search highlight */
+.highlight {
+  background: rgba(59,130,246,0.25);
+  color: #93c5fd;
+  border-radius: 3px;
+  padding: 0 2px;
 }
 </style>
 
-<section class="container" style="margin-top:60px;">
+<div class="history-page">
+  <div class="history-card">
 
-    <section class="dark-box">
-        <header class="major">
-            <h2 style="color:white;">All Students Tap History</h2>
-            <p style="color:#bbb;">
-                Tap record log of all students including card ID,
-                student name, date, time, and location.
-            </p>
-        </header>
-
-    
-
-        <div style="overflow-x:auto;">
-
-            <table class="dark-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Card ID</th>
-                        <th>Student Name</th>
-                        <th>Tap Date</th>
-                        <th>Tap Time</th>
-                        <th>Location</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for record in tap_records %}
-                    <tr>
-                        <td>{{ record.id }}</td>
-                        <td>{{ record.card_id }}</td>
-                        <td>{{ record.student_name }}</td>
-                        <td>{{ record.tap_date }}</td>
-                        <td>{{ record.tap_time|time:"H:i:s" }}</td>
-                        <td>{{ record.location }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="no-data">
-                            No tap records found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
+    <!-- Header -->
+    <div class="history-header">
+      <div class="history-header-inner">
+        <div class="header-left">
+          <div class="header-icon-wrap">
+            <span class="msym">history</span>
+          </div>
+          <div class="header-title">
+            <h2>All Students Tap History</h2>
+            <p>Card tap log — ID, student, date, time & location</p>
+          </div>
         </div>
+        <div class="record-badge">
+          <span class="msym">contactless</span>
+          <span id="totalCount">{{ tap_records|length }}</span> Records
+        </div>
+      </div>
+    </div>
 
-    </section>
+    <!-- Toolbar -->
+    <div class="table-toolbar">
+      <div class="search-wrap">
+        <span class="msym">search</span>
+        <input type="text" id="searchInput" placeholder="Search by name, card ID, location…">
+      </div>
+      <div class="toolbar-stat">
+        <span class="msym">filter_list</span>
+        <span id="visibleCount">{{ tap_records|length }}</span> shown
+      </div>
+    </div>
 
-</section>
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="tap-table" id="tapTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Card ID</th>
+            <th>Student Name</th>
+            <th>Tap Date</th>
+            <th>Tap Time</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          {% for record in tap_records %}
+          <tr>
+            <td class="cell-id">{{ record.id }}</td>
+
+            <td>
+              <div class="card-chip">
+                <span class="msym">credit_card</span>
+                {{ record.card_id }}
+              </div>
+            </td>
+
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar">
+                  {{ record.student_name|slice:":1"|upper }}
+                </div>
+                <span class="student-name">{{ record.student_name }}</span>
+              </div>
+            </td>
+
+            <td>
+              <div class="date-cell">
+                <span class="msym">calendar_today</span>
+                {{ record.tap_date }}
+              </div>
+            </td>
+
+            <td>
+              <div class="time-chip">
+                <span class="msym">schedule</span>
+                {{ record.tap_time|time:"H:i:s" }}
+              </div>
+            </td>
+
+            <td>
+              <div class="location-cell">
+                <span class="msym">location_on</span>
+                {{ record.location }}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" style="padding:0; border:none;">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <span class="msym">history_toggle_off</span>
+                </div>
+                <h4>No tap records found</h4>
+                <p>When students tap their NFC cards, records will appear here.</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="table-footer">
+      <div class="footer-info">
+        <span class="msym">info</span>
+        Showing <strong id="footerCount">{{ tap_records|length }}</strong> of <strong>{{ tap_records|length }}</strong> total records
+      </div>
+      <div class="footer-info">
+        <span class="msym">update</span>
+        Live tap log
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  const searchInput  = document.getElementById('searchInput');
+  const tableBody    = document.getElementById('tableBody');
+  const visibleCount = document.getElementById('visibleCount');
+  const footerCount  = document.getElementById('footerCount');
+  const totalCount   = document.getElementById('totalCount');
+  const rows         = Array.from(tableBody.querySelectorAll('tr'));
+  const total        = rows.length;
+
+  searchInput.addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    let shown = 0;
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      if (!q || text.includes(q)) {
+        row.style.display = '';
+        shown++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    visibleCount.textContent = shown;
+    footerCount.textContent  = shown;
+  });
+})();
+</script>
 
 {% endblock content %}

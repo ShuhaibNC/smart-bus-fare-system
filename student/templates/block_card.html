@@ -2,119 +2,445 @@
 {% load static %}
 {% block addstyle %}
 <style>
-/* Dark mode dropdown */
-select#reason {
-    background-color: #1c1f26;
-    color: #ffffff;
-    border: 1px solid #333;
-    padding: 10px;
-    border-radius: 6px;
+:root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface-2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8ecf4;
+    --muted: #6b7590;
+    --danger: #ef4444;
+    --danger-bg: rgba(239,68,68,0.08);
+    --danger-border: rgba(239,68,68,0.25);
+    --danger-glow: rgba(239,68,68,0.2);
+    --success-bg: rgba(34,197,94,0.1);
+    --success-border: rgba(34,197,94,0.25);
+    --font: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+.block-page {
     width: 100%;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 32px 18px 60px;
+    font-family: var(--font);
+    color: var(--text);
+    box-sizing: border-box;
 }
 
-/* Dropdown options */
-select#reason option {
-    background-color: #1c1f26;
-    color: #ffffff;
+/* ── Flash ── */
+.b-flash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: #86efac;
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    animation: slideDown 0.3s ease;
+}
+.b-flash .material-symbols-rounded {
+    font-size: 20px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Focus effect */
-select#reason:focus {
+/* ── Warning banner ── */
+.b-warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-sizing: border-box;
+}
+.b-warning-banner .material-symbols-rounded {
+    font-size: 22px;
+    color: var(--danger);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.b-warning-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fca5a5;
+    margin-bottom: 3px;
+}
+.b-warning-sub {
+    font-size: 12px;
+    color: rgba(252,165,165,0.7);
+    line-height: 1.5;
+}
+
+/* ── Header ── */
+.b-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.b-icon-wrap {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.b-icon-wrap .material-symbols-rounded {
+    font-size: 26px;
+    color: var(--danger);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.b-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 3px;
+    color: var(--text);
+}
+.b-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ── Card ── */
+.b-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 14px;
+    box-sizing: border-box;
+}
+
+/* ── Fields ── */
+.b-field {
+    margin-bottom: 18px;
+}
+.b-field:last-child { margin-bottom: 0; }
+
+.b-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+.b-label .material-symbols-rounded {
+    font-size: 14px;
+    color: var(--danger);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+.b-input,
+.b-select,
+.b-textarea {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: var(--font);
     outline: none;
-    border-color: #c0392b;
-    box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.3);
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.b-input {
+    height: 52px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+.b-input::placeholder {
+    color: var(--muted);
+    font-weight: 400;
+    font-family: var(--font);
+    letter-spacing: 0;
+}
+.b-select {
+    height: 52px;
+    padding: 0 40px 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7590' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+.b-select option {
+    background: #1c1f26;
+    color: #fff;
+}
+.b-textarea {
+    padding: 14px 16px;
+    font-size: 14px;
+    resize: none;
+    line-height: 1.5;
+}
+.b-input:focus,
+.b-select:focus,
+.b-textarea:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px var(--danger-glow);
+}
+.b-input::placeholder,
+.b-textarea::placeholder { color: var(--muted); font-weight: 400; }
+
+/* ── Reason pills ── */
+.b-reason-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.b-reason-pill {
+    height: 48px;
+    border-radius: 13px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s;
+}
+.b-reason-pill .material-symbols-rounded {
+    font-size: 16px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+.b-reason-pill.selected {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+    color: #fca5a5;
+}
+.b-reason-pill:active { opacity: 0.8; transform: scale(0.97); }
+
+/* ── Submit button ── */
+.b-btn {
+    width: 100%;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #b91c1c, var(--danger));
+    color: #fff;
+    border: none;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px var(--danger-glow);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s, opacity 0.15s;
+    letter-spacing: 0.2px;
+    box-sizing: border-box;
+}
+.b-btn:active { transform: scale(0.97); opacity: 0.88; }
+.b-btn .material-symbols-rounded {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
+/* ── Footer notice ── */
+.b-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.12);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 14px;
+    box-sizing: border-box;
+}
+.b-notice .material-symbols-rounded {
+    font-size: 15px; flex-shrink: 0; margin-top: 1px;
+    color: var(--danger);
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
 </style>
+
 <script>
-document.querySelector("form").addEventListener("submit", function(e) {
-    const confirmBlock = confirm("Are you sure you want to block your NFC card?");
-    if (!confirmBlock) {
-        e.preventDefault();
+// Confirm on submit
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector(".b-form");
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            const ok = confirm("Are you sure you want to block your NFC card? This action cannot be undone.");
+            if (!ok) e.preventDefault();
+        });
     }
+
+    // Reason pills sync with hidden select
+    const pills = document.querySelectorAll(".b-reason-pill");
+    const select = document.getElementById("b-reason-select");
+    pills.forEach(function (pill) {
+        pill.addEventListener("click", function () {
+            pills.forEach(p => p.classList.remove("selected"));
+            pill.classList.add("selected");
+            if (select) select.value = pill.dataset.value;
+        });
+    });
 });
 </script>
-
 {% endblock addstyle %}
+
 {% block header %}{% endblock header %}
 {% block content %}
 
-<section class="container" style="max-width:520px;margin-top:60px;">
+<div class="block-page">
+
+    <!-- Flash messages -->
     {% if messages %}
         {% for message in messages %}
-            <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
-                {{ message }}
-            </div>
+        <div class="b-flash">
+            <span class="material-symbols-rounded">check_circle</span>
+            {{ message }}
+        </div>
         {% endfor %}
     {% endif %}
 
-    <section class="box special">
-        <header class="major">
-            <h2>Block Lost NFC Card</h2>
-            <p>
-                If your NFC card is lost or stolen, block it immediately
-                to prevent unauthorized usage.
-            </p>
-        </header>
+    <!-- Header -->
+    <div class="b-header">
+        <div class="b-icon-wrap">
+            <span class="material-symbols-rounded">block</span>
+        </div>
+        <div>
+            <h2 class="b-title">Block NFC Card</h2>
+            <p class="b-subtitle">Lost or stolen? Block it immediately</p>
+        </div>
+    </div>
 
-        <form method="post" action="/block/">
-            {% csrf_token %}
+    <!-- Warning banner -->
+    <div class="b-warning-banner">
+        <span class="material-symbols-rounded">warning</span>
+        <div>
+            <div class="b-warning-title">Irreversible Action</div>
+            <div class="b-warning-sub">Once blocked, the card cannot be used for bus travel. Contact admin for re-issue.</div>
+        </div>
+    </div>
 
-            <div class="row gtr-50 gtr-uniform">
-                <div class="col-12">
-                    <label for="card_id"><strong>NFC Card ID</strong></label>
-                    <input
-                        type="text"
-                        name="card_id"
-                        id="card_id"
-                        placeholder="Enter your NFC Card ID"
-                        required
-                    />
-                </div>
+    <!-- Form -->
+    <form method="post" action="/block/" class="b-form">
+        {% csrf_token %}
 
-                <div class="col-12">
-                    <label for="reason"><strong>Reason</strong></label>
-                    <select name="reason" id="reason" required>
-                        <option value="">-- Select Reason --</option>
-                        <option value="lost">Card Lost</option>
-                        <option value="stolen">Card Stolen</option>
-                        <option value="damaged">Card Damaged</option>
-                    </select>
-                </div>
+        <div class="b-card">
 
-                <div class="col-12">
-                    <label for="remarks"><strong>Additional Remarks</strong></label>
-                    <textarea
-                        name="remarks"
-                        id="remarks"
-                        rows="3"
-                        placeholder="Optional message"
-                    ></textarea>
-                </div>
+            <!-- Card ID -->
+            <div class="b-field">
+                <label class="b-label" for="card_id">
+                    <span class="material-symbols-rounded">contactless</span>
+                    NFC Card ID
+                </label>
+                <input
+                    type="text"
+                    name="card_id"
+                    id="card_id"
+                    class="b-input"
+                    placeholder="Enter your NFC Card ID"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
+                    required
+                />
+            </div>
 
-                <div class="col-12">
-                    <button
-                        type="submit"
-                        class="button primary fit"
-                        style="background:#c0392b;"
-                    >
-                        Block My Card
+            <!-- Reason pills -->
+            <div class="b-field">
+                <label class="b-label">
+                    <span class="material-symbols-rounded">help</span>
+                    Reason
+                </label>
+                <div class="b-reason-pills">
+                    <button type="button" class="b-reason-pill" data-value="lost">
+                        <span class="material-symbols-rounded">search_off</span>
+                        Lost
+                    </button>
+                    <button type="button" class="b-reason-pill" data-value="stolen">
+                        <span class="material-symbols-rounded">gpp_bad</span>
+                        Stolen
+                    </button>
+                    <button type="button" class="b-reason-pill" data-value="damaged">
+                        <span class="material-symbols-rounded">broken_image</span>
+                        Damaged
                     </button>
                 </div>
+                <!-- Hidden select submitted with form -->
+                <select name="reason" id="b-reason-select" required
+                    style="position:absolute;opacity:0;pointer-events:none;height:0;">
+                    <option value="">-- Select Reason --</option>
+                    <option value="lost">Card Lost</option>
+                    <option value="stolen">Card Stolen</option>
+                    <option value="damaged">Card Damaged</option>
+                </select>
             </div>
-        </form>
 
-        <hr />
+            <!-- Remarks -->
+            <div class="b-field">
+                <label class="b-label" for="remarks">
+                    <span class="material-symbols-rounded">edit_note</span>
+                    Additional Remarks
+                    <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:var(--muted);margin-left:2px;">(optional)</span>
+                </label>
+                <textarea
+                    name="remarks"
+                    id="remarks"
+                    class="b-textarea"
+                    rows="3"
+                    placeholder="Any additional details..."
+                ></textarea>
+            </div>
 
-        <p style="font-size:13px;color:#aaa;text-align:center;">
-            ⚠ Once blocked, the card cannot be used for bus travel.
-            Please contact admin for re-issue.
-        </p>
+        </div>
 
-    </section>
+        <!-- Submit -->
+        <button type="submit" class="b-btn">
+            <span class="material-symbols-rounded">block</span>
+            Block My Card
+        </button>
 
-</section>
+    </form>
+
+    <!-- Footer notice -->
+    <div class="b-notice">
+        <span class="material-symbols-rounded">info</span>
+        Only block your card if it is lost, stolen, or damaged. False reports may affect your account.
+    </div>
+
+</div>
 
 {% endblock content %}

@@ -8,118 +8,640 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'assets/css/wallet.css' %}">
+
+<style>
+:root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface-2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8ecf4;
+    --muted: #6b7590;
+    --primary: #3d7eff;
+    --primary-glow: rgba(61,126,255,0.25);
+    --healthy: #22c55e;
+    --healthy-bg: rgba(34,197,94,0.08);
+    --healthy-border: rgba(34,197,94,0.2);
+    --low: #f59e0b;
+    --low-bg: rgba(245,158,11,0.08);
+    --low-border: rgba(245,158,11,0.25);
+    --blocked: #ef4444;
+    --blocked-bg: rgba(239,68,68,0.08);
+    --blocked-border: rgba(239,68,68,0.25);
+    --success: #22c55e;
+    --success-bg: rgba(34,197,94,0.1);
+    --success-border: rgba(34,197,94,0.25);
+    --card-healthy-1: #1a3a6b;
+    --card-healthy-2: #0f2447;
+    --card-low-1: #3d2a0a;
+    --card-low-2: #251a06;
+    --font: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ── Desktop: hide mobile layer ── */
+@media (min-width: 769px) {
+    .m-recharge { display: none; }
+}
+
+/* ── Mobile: hide desktop layer ── */
+@media (max-width: 768px) {
+    .wallet-page,
+    .wallet-page ~ *:not(.m-recharge),
+    .m-flash-desktop { display: none !important; }
+    .m-recharge { display: block !important; }
+
+    * { box-sizing: border-box; }
+
+    body, html {
+        background: var(--bg);
+        font-family: var(--font);
+        color: var(--text);
+        margin: 0; padding: 0;
+    }
+
+    /* ── Page wrapper ── */
+    .m-recharge {
+        padding: 24px 18px 48px;
+        max-width: 430px;
+        margin: 0 auto;
+    }
+
+    /* ── Flash messages ── */
+    .m-flash {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--success-bg);
+        border: 1px solid var(--success-border);
+        color: #86efac;
+        border-radius: 14px;
+        padding: 13px 15px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        animation: slideDown 0.3s ease;
+    }
+    .m-flash .material-symbols-rounded {
+        font-size: 20px;
+        flex-shrink: 0;
+        font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+    }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Header ── */
+    .m-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+    .m-back-btn {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--muted);
+        text-decoration: none;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s;
+    }
+    .m-back-btn:active { background: var(--surface); }
+    .m-back-btn .material-symbols-rounded {
+        font-size: 20px;
+        font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
+    }
+    .m-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: var(--text);
+        margin: 0;
+    }
+    .m-title span { color: var(--primary); }
+
+    /* ── NFC Card ── */
+    .m-card-wrap {
+        perspective: 900px;
+        margin-bottom: 24px;
+    }
+    .m-nfc-card {
+        width: 100%;
+        aspect-ratio: 1.586;
+        border-radius: 22px;
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transform-style: preserve-3d;
+        animation: cardFloat 7s ease-in-out infinite;
+    }
+    .m-nfc-card.healthy {
+        background: linear-gradient(140deg, var(--card-healthy-1) 0%, var(--card-healthy-2) 100%);
+        box-shadow: 0 20px 50px rgba(0,30,80,0.6), 0 0 0 1px rgba(61,126,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .m-nfc-card.low {
+        background: linear-gradient(140deg, var(--card-low-1) 0%, var(--card-low-2) 100%);
+        box-shadow: 0 20px 50px rgba(60,30,0,0.5), 0 0 0 1px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .m-nfc-card.no-card {
+        background: linear-gradient(140deg, #1a1e28 0%, #0d0f14 100%);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    @keyframes cardFloat {
+        0%,100% { transform: translateY(0) rotateX(1deg); }
+        40%      { transform: translateY(-8px) rotateX(-1deg); }
+        70%      { transform: translateY(-4px) rotateX(0.5deg); }
+    }
+    /* Holographic sheen */
+    .m-nfc-card::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 60%, transparent 80%);
+        background-size: 200% 200%;
+        animation: sheen 4s ease infinite;
+        border-radius: 22px;
+        pointer-events: none; z-index: 1;
+    }
+    @keyframes sheen {
+        0%   { background-position: 200% 0%; }
+        100% { background-position: -200% 0%; }
+    }
+    /* Grid texture */
+    .m-nfc-card::after {
+        content: '';
+        position: absolute; inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        background-size: 24px 24px;
+        border-radius: 22px;
+        pointer-events: none; z-index: 0;
+    }
+    .m-card-inner { position: relative; z-index: 2; }
+
+    /* Card top row */
+    .m-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .m-chip {
+        width: 44px; height: 34px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #d4a608 0%, #f5d24b 45%, #c9960a 100%);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+        position: relative; overflow: hidden;
+    }
+    .m-chip::before {
+        content: '';
+        position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+        background: repeating-linear-gradient(90deg, rgba(180,130,0,0.8) 0px, rgba(180,130,0,0.8) 2px, rgba(230,180,20,0.4) 2px, rgba(230,180,20,0.4) 4px);
+        border-radius: 2px;
+    }
+    .m-waves { display: flex; align-items: center; gap: 3px; }
+    .m-wave-arc {
+        width: 10px; height: 18px;
+        border: 2px solid rgba(255,255,255,0.5);
+        border-left: none;
+        border-radius: 0 30px 30px 0;
+        animation: waveAnim 1.8s ease-in-out infinite;
+    }
+    .m-wave-arc:nth-child(2) { width: 14px; height: 24px; animation-delay: 0.2s; }
+    .m-wave-arc:nth-child(3) { width: 18px; height: 30px; animation-delay: 0.4s; }
+    @keyframes waveAnim { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    .m-card-name {
+        font-size: 17px; font-weight: 700; color: #fff;
+        letter-spacing: 0.5px; margin: 0 0 2px;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+    .m-card-system {
+        font-size: 10px; color: rgba(255,255,255,0.5);
+        letter-spacing: 1.5px; text-transform: uppercase; font-weight: 500;
+    }
+
+    .m-card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+    .m-balance-label {
+        font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+        color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: 600;
+    }
+    .m-balance-amount {
+        font-size: 28px; font-weight: 800; color: #fff;
+        letter-spacing: -0.5px; text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        font-variant-numeric: tabular-nums;
+    }
+    .m-balance-amount .currency { font-size: 16px; font-weight: 600; opacity: 0.8; margin-right: 2px; }
+    .m-card-status {
+        padding: 5px 12px; border-radius: 30px;
+        font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+        backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2);
+    }
+    .m-card-status.healthy { background: rgba(34,197,94,0.25); color: #86efac; }
+    .m-card-status.low     { background: rgba(245,158,11,0.25); color: #fcd34d; }
+    .m-card-status.blocked { background: rgba(239,68,68,0.25);  color: #fca5a5; }
+    .m-card-id-strip {
+        font-size: 11px; color: rgba(255,255,255,0.3);
+        font-family: 'Courier New', monospace; letter-spacing: 2px; text-align: right;
+    }
+
+    /* ── Quick-amount pills ── */
+    .m-section-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-bottom: 10px;
+    }
+    .m-quick-amounts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    .m-quick-pill {
+        height: 42px;
+        border-radius: 12px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .m-quick-pill:active,
+    .m-quick-pill.selected {
+        background: rgba(61,126,255,0.15);
+        border-color: var(--primary);
+        color: #7ab3ff;
+    }
+
+    /* ── Recharge form ── */
+    .m-form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    .m-input-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+        margin-bottom: 10px;
+    }
+    .m-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .m-currency-prefix {
+        position: absolute;
+        left: 16px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--muted);
+        pointer-events: none;
+        z-index: 1;
+    }
+    .m-amount-input {
+        width: 100%;
+        height: 60px;
+        background: var(--surface-2);
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        color: var(--text);
+        font-size: 26px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        padding: 0 16px 0 40px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-family: var(--font);
+        -webkit-appearance: none;
+    }
+    .m-amount-input::placeholder { color: var(--muted); font-weight: 400; font-size: 18px; }
+    .m-amount-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    /* hide number spinners */
+    .m-amount-input::-webkit-outer-spin-button,
+    .m-amount-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .m-amount-input[type=number] { -moz-appearance: textfield; }
+
+    /* New balance preview */
+    .m-preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 14px;
+        padding: 12px 14px;
+        background: var(--surface-2);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
+    .m-preview-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .m-preview-value {
+        font-size: 16px; font-weight: 800;
+        color: var(--healthy);
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Action buttons ── */
+    .m-actions {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 10px;
+    }
+    .m-btn {
+        height: 54px;
+        border-radius: 16px;
+        font-size: 15px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        letter-spacing: 0.2px;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 0.15s, opacity 0.15s;
+    }
+    .m-btn:active { transform: scale(0.97); opacity: 0.85; }
+    .m-btn-outline {
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+    }
+    .m-btn-primary {
+        background: linear-gradient(135deg, #1d4ed8, #5b8dee);
+        color: #fff;
+        box-shadow: 0 4px 20px var(--primary-glow);
+    }
+    .m-btn .material-symbols-rounded {
+        font-size: 18px;
+        font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+    }
+
+    /* ── No card ── */
+    .m-no-card-body { text-align: center; padding: 20px 0 10px; }
+    .m-no-card-icon {
+        width: 64px; height: 64px; border-radius: 20px;
+        background: var(--surface-2); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 16px;
+    }
+    .m-no-card-icon .material-symbols-rounded {
+        font-size: 32px; color: var(--muted);
+        font-variation-settings: 'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;
+    }
+    .m-no-card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .m-no-card-sub   { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+} /* end @media */
+</style>
+
+
+<!-- ══ ORIGINAL DESKTOP MARKUP (hidden on mobile) ══ -->
+<div class="m-flash-desktop">
 {% if messages %}
     {% for message in messages %}
-        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">
-            {{ message }}
-        </div>
+        <div style="background:#27ae60;color:white;padding:10px;border-radius:6px;margin-bottom:15px;text-align:center;">{{ message }}</div>
     {% endfor %}
 {% endif %}
-<div class="wallet-page box">
+</div>
 
+<div class="wallet-page box">
     <h2 class="wallet-title">Recharge Wallet</h2>
+    {% if card %}
+    <div class="nfc-card {% if card.status == 'BLOCKED' %}low{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
+        <div class="nfc-watermark">NFC</div>
+        <div class="nfc-content">
+            <div>
+                {% if student_info %}<h3>{{ student_info.get_full_name }}</h3>{% else %}<h3>{{ card.username }}</h3>{% endif %}
+                <p class="system-name">Smart Bus Fare System</p>
+            </div>
+            <div class="balance-row">
+                <div><span class="label">Current Balance</span><span class="amount">₹ {{ card.balance }}</span></div>
+                <div class="status">
+                    {% if card.status == 'BLOCKED' %}<span class="low-balance">BLOCKED</span>
+                    {% elif card.balance < 100 %}<span class="low-balance">LOW</span>
+                    {% else %}<span class="ok-balance">HEALTHY</span>{% endif %}
+                </div>
+            </div>
+            <div style="flex-grow:1;"></div>
+            <p class="cardholder-name">CARD ID: {{ card.card_id }}</p>
+            <div style="height:6px;"></div>
+        </div>
+    </div>
+    <form method="post" class="recharge-form">
+        {% csrf_token %}
+        <label for="amount">Enter recharge amount (₹)</label>
+        <input type="number" id="amount" name="amount" min="1" step="1" placeholder="e.g. 200" required>
+        <div class="wallet-actions">
+            <a href="/student_wallet/" class="btn-outline">Cancel</a>
+            <button type="submit" class="btn-primary">Recharge</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="nfc-card low">
+        <div class="nfc-content">
+            <h3>No NFC Card Found</h3>
+            <p class="warning">Your NFC card is not issued or not activated yet.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+
+<!-- ══ MOBILE VIEW ══ -->
+<div class="m-recharge">
+
+    <!-- Flash messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="m-flash">
+            <span class="material-symbols-rounded">check_circle</span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Header -->
+    <div class="m-header">
+        <a href="/student_wallet/" class="m-back-btn">
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
+        <h2 class="m-title">Recharge <span>Wallet</span></h2>
+    </div>
 
     {% if card %}
 
-    <!-- NFC CARD (SAME GRAPHICS AS WALLET) -->
-    <div class="nfc-card
-        {% if card.status == 'BLOCKED' %}
-            low
-        {% elif card.balance < 100 %}
-            low
-        {% else %}
-            healthy
-        {% endif %}
-    ">
-
-        <div class="nfc-watermark">NFC</div>
-
-        <div class="nfc-content">
-
-            <!-- TOP BLOCK -->
-            <div>
-                {% if student_info %}
-                    <h3>{{ student_info.get_full_name }}</h3>
-                {% else %}
-                    <h3>{{ card.username }}</h3>
-                {% endif %}
-
-                <p class="system-name">Smart Bus Fare System</p>
-            </div>
-
-            <!-- BALANCE BLOCK -->
-            <div class="balance-row">
-                <div>
-                    <span class="label">Current Balance</span>
-                    <span class="amount">₹ {{ card.balance }}</span>
+    <!-- NFC Card -->
+    <div class="m-card-wrap">
+        <div class="m-nfc-card {% if card.status == 'BLOCKED' %}low{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
+            <div class="m-card-inner">
+                <div class="m-card-top">
+                    <div class="m-chip"></div>
+                    <div class="m-waves">
+                        <div class="m-wave-arc"></div>
+                        <div class="m-wave-arc"></div>
+                        <div class="m-wave-arc"></div>
+                    </div>
                 </div>
-
-                <div class="status">
+            </div>
+            <div class="m-card-inner">
+                <div class="m-card-name">
+                    {% if student_info %}{{ student_info.get_full_name }}{% else %}{{ card.username }}{% endif %}
+                </div>
+                <div class="m-card-system">Smart Bus Fare System</div>
+            </div>
+            <div class="m-card-inner">
+                <div class="m-card-bottom">
+                    <div>
+                        <div class="m-balance-label">Current Balance</div>
+                        <div class="m-balance-amount" id="m-current-balance" data-balance="{{ card.balance }}">
+                            <span class="currency">₹</span>{{ card.balance }}
+                        </div>
+                    </div>
                     {% if card.status == 'BLOCKED' %}
-                        <span class="low-balance">BLOCKED</span>
+                        <div class="m-card-status blocked">Blocked</div>
                     {% elif card.balance < 100 %}
-                        <span class="low-balance">LOW</span>
+                        <div class="m-card-status low">Low</div>
                     {% else %}
-                        <span class="ok-balance">HEALTHY</span>
+                        <div class="m-card-status healthy">Healthy</div>
                     {% endif %}
                 </div>
+                <div class="m-card-id-strip">{{ card.card_id }}</div>
             </div>
-
-            <!-- FLEX BUFFER (PREVENTS CLIPPING) -->
-            <div style="flex-grow: 1;"></div>
-
-            <!-- CARD META -->
-            <p class="cardholder-name">
-                CARD ID: {{ card.card_id }}
-            </p>
-
-            <!-- SAFETY BUFFER -->
-            <div style="height: 6px;"></div>
-
         </div>
     </div>
-    
-    <!-- RECHARGE FORM -->
-    <form method="post" class="recharge-form">
+
+    <!-- Quick amounts -->
+    <div class="m-section-label">Quick Add</div>
+    <div class="m-quick-amounts">
+        <button type="button" class="m-quick-pill" data-amount="50">₹50</button>
+        <button type="button" class="m-quick-pill" data-amount="100">₹100</button>
+        <button type="button" class="m-quick-pill" data-amount="200">₹200</button>
+        <button type="button" class="m-quick-pill" data-amount="500">₹500</button>
+    </div>
+
+    <!-- Recharge form -->
+    <form method="post" id="m-recharge-form">
         {% csrf_token %}
 
-        <label for="amount">Enter recharge amount (₹)</label>
+        <div class="m-form-card">
+            <label class="m-input-label" for="m-amount-input">Recharge Amount</label>
+            <div class="m-input-wrap">
+                <span class="m-currency-prefix">₹</span>
+                <input
+                    type="number"
+                    id="m-amount-input"
+                    name="amount"
+                    min="1"
+                    step="1"
+                    placeholder="0"
+                    required
+                    class="m-amount-input"
+                    inputmode="numeric"
+                >
+            </div>
 
-        <input
-            type="number"
-            id="amount"
-            name="amount"
-            min="1"
-            step="1"
-            placeholder="e.g. 200"
-            required
-        >
+            <!-- New balance preview -->
+            <div class="m-preview">
+                <span class="m-preview-label">New Balance After Recharge</span>
+                <span class="m-preview-value" id="m-new-balance">₹ —</span>
+            </div>
+        </div>
 
-        <div class="wallet-actions">
-            <a href="/student_wallet/" class="btn-outline">
+        <div class="m-actions">
+            <a href="/student_wallet/" class="m-btn m-btn-outline">
+                <span class="material-symbols-rounded">close</span>
                 Cancel
             </a>
-
-            <button type="submit" class="btn-primary">
-                Recharge
+            <button type="submit" class="m-btn m-btn-primary">
+                <span class="material-symbols-rounded">add_card</span>
+                Recharge Now
             </button>
         </div>
     </form>
 
     {% else %}
 
-    <!-- NO CARD CASE -->
-    <div class="nfc-card low">
-        <div class="nfc-content">
-            <h3>No NFC Card Found</h3>
-            <p class="warning">
-                Your NFC card is not issued or not activated yet.
-            </p>
+    <!-- No card -->
+    <div class="m-card-wrap">
+        <div class="m-nfc-card no-card">
+            <div class="m-card-inner">
+                <div class="m-no-card-body">
+                    <div class="m-no-card-icon">
+                        <span class="material-symbols-rounded">credit_card_off</span>
+                    </div>
+                    <div class="m-no-card-title">No NFC Card Found</div>
+                    <div class="m-no-card-sub">Your NFC card hasn't been issued or activated yet. Please contact your administrator.</div>
+                </div>
+            </div>
         </div>
     </div>
 
     {% endif %}
 
 </div>
+
+<script>
+(function () {
+    const currentBalance = parseFloat(document.getElementById('m-current-balance')?.dataset.balance || 0);
+    const amountInput    = document.getElementById('m-amount-input');
+    const newBalanceEl   = document.getElementById('m-new-balance');
+    const quickPills     = document.querySelectorAll('.m-quick-pill');
+
+    // Live new-balance preview
+    function updatePreview() {
+        const v = parseFloat(amountInput.value);
+        if (amountInput && newBalanceEl) {
+            newBalanceEl.textContent = (!isNaN(v) && v > 0)
+                ? '₹ ' + (currentBalance + v).toLocaleString('en-IN')
+                : '₹ —';
+        }
+    }
+
+    amountInput?.addEventListener('input', () => {
+        quickPills.forEach(p => p.classList.remove('selected'));
+        updatePreview();
+    });
+
+    // Quick pills
+    quickPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const amt = pill.dataset.amount;
+            if (amountInput) {
+                amountInput.value = amt;
+                amountInput.focus();
+            }
+            quickPills.forEach(p => p.classList.remove('selected'));
+            pill.classList.add('selected');
+            updatePreview();
+        });
+    });
+
+    // Gyroscope tilt
+    const card = document.querySelector('.m-nfc-card');
+    if (card && window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (e) => {
+            const rx = Math.min(Math.max((e.beta  || 0) * 0.25, -12), 12);
+            const ry = Math.min(Math.max((e.gamma || 0) * 0.25, -12), 12);
+            card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+            card.style.animationPlayState = 'paused';
+        }, { passive: true });
+    }
+})();
+</script>
 
 {% endblock content %}
