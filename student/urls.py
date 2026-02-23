@@ -18,4 +18,5 @@ urlpatterns = [
     path("receipt/<uuid:transaction_id>", views.download_receipt_file, name="download_receipt_file"),
     path("receipt_downloader/", views.receipt_downloader, name="receipt_downloader"),
     path("travel_history/", views.travel_history, name="travel_history"),
+    path("my_transactions/", views.my_transactions, name="my_transactions"),
 ]

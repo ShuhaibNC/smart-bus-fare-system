@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from student.models import Login, StudentNFCCard, InfoSubmit
-from .models import BusFee, BusLog
+from .models import BusFee, BusLog, Transaction
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.utils import timezone
@@ -201,3 +201,20 @@ def create_new_route(request):
 def all_travel_history(request):
     tap_records = BusLog.objects.all().order_by("-tap_date", "-tap_time")
     return render(request, "all_travel_history.html", {"tap_records": tap_records})
+
+def transaction_list(request):
+    transactions = Transaction.objects.all()
+
+    # Optional: filter by status via query param e.g. ?status=completed
+    status_filter = request.GET.get("status")
+    if status_filter in ("pending", "completed", "failed", "refunded"):
+        transactions = transactions.filter(status=status_filter)
+
+    context = {
+        "transactions":     transactions,
+        "completed_count":  Transaction.objects.filter(status="completed").count(),
+        "pending_count":    Transaction.objects.filter(status="pending").count(),
+        "failed_count":     Transaction.objects.filter(status="failed").count(),
+        "refunded_count":   Transaction.objects.filter(status="refunded").count(),
+    }
+    return render(request, "transactions.html", context)

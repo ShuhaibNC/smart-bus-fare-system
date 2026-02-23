@@ -375,123 +375,122 @@ def get_refund(request):
     return render(request, "getrefund.html")
 
 def download_receipt_file(request, transaction_id):
-
     username = request.session.get("username")
 
     if not username:
         messages.error(request, "You must be logged in.")
         return redirect("login")
 
-    txn = get_object_or_404(
-        Transaction,
-        transaction_id=transaction_id,
-        username=username
-    )
+    # Validate transaction exists and belongs to user
+    try:
+        txn = Transaction.objects.get(
+            transaction_id=transaction_id,
+            username=username
+        )
+    except Transaction.DoesNotExist:
+        messages.error(request, "Transaction not found or access denied.")
+        return redirect("receipt_downloader")
 
     if txn.status != "completed":
-        messages.error(request, "Receipt not available for this transaction.")
-        return redirect("transaction_list")
+        messages.error(request, f"Receipt unavailable — transaction is '{txn.status.capitalize()}'. Only completed transactions have receipts.")
+        return redirect("receipt_downloader")
 
-    buffer = BytesIO()
+    # Build PDF
+    try:
+        buffer = BytesIO()
 
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=A4,
-        rightMargin=50,
-        leftMargin=50,
-        topMargin=60,
-        bottomMargin=40
-    )
+        doc = SimpleDocTemplate(
+            buffer,
+            pagesize=A4,
+            rightMargin=50,
+            leftMargin=50,
+            topMargin=60,
+            bottomMargin=40
+        )
 
-    elements = []
+        elements = []
+        styles = getSampleStyleSheet()
 
-    styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            "TitleStyle",
+            parent=styles["Heading1"],
+            fontSize=22,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#1a237e"),
+            spaceAfter=20
+        )
 
-    # Custom Styles
-    title_style = ParagraphStyle(
-        "TitleStyle",
-        parent=styles["Heading1"],
-        fontSize=22,
-        alignment=TA_CENTER,
-        textColor=colors.HexColor("#1a237e"),
-        spaceAfter=20
-    )
+        amount_style = ParagraphStyle(
+            "AmountStyle",
+            parent=styles["Heading2"],
+            fontSize=18,
+            textColor=colors.HexColor("#2e7d32"),
+            spaceAfter=10
+        )
 
-    amount_style = ParagraphStyle(
-        "AmountStyle",
-        parent=styles["Heading2"],
-        fontSize=18,
-        textColor=colors.HexColor("#2e7d32"),
-        spaceAfter=10
-    )
+        right_style = ParagraphStyle(
+            "RightStyle",
+            parent=styles["Normal"],
+            alignment=TA_RIGHT,
+            fontSize=9,
+            textColor=colors.grey
+        )
 
-    right_style = ParagraphStyle(
-        "RightStyle",
-        parent=styles["Normal"],
-        alignment=TA_RIGHT,
-        fontSize=9,
-        textColor=colors.grey
-    )
+        normal_style = styles["Normal"]
 
-    normal_style = styles["Normal"]
-    # Header
-    elements.append(Paragraph("PAYMENT RECEIPT", title_style))
-    elements.append(HRFlowable(width="100%", thickness=1, color=colors.grey))
-    elements.append(Spacer(1, 0.3 * inch))
-    # Amount Highlight
-    elements.append(Paragraph(f"Amount Paid: ₹ {txn.amount}", amount_style))
-    elements.append(Spacer(1, 0.2 * inch))
-    # Transaction Table
-    data = [
-        ["Transaction ID", str(txn.transaction_id)],
-        ["Username", txn.username],
-        ["Status", txn.status.capitalize()],
-        ["Payment Date", txn.created_at.strftime("%d %b %Y, %H:%M")],
-    ]
+        elements.append(Paragraph("PAYMENT RECEIPT", title_style))
+        elements.append(HRFlowable(width="100%", thickness=1, color=colors.grey))
+        elements.append(Spacer(1, 0.3 * inch))
+        elements.append(Paragraph(f"Amount Paid: ₹ {txn.amount}", amount_style))
+        elements.append(Spacer(1, 0.2 * inch))
 
-    table = Table(data, colWidths=[160, 300])
+        data = [
+            ["Transaction ID", str(txn.transaction_id)],
+            ["Username",       txn.username],
+            ["Status",         txn.status.capitalize()],
+            ["Payment Date",   txn.created_at.strftime("%d %b %Y, %H:%M")],
+        ]
 
-    table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.whitesmoke),
-        ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#d0d0d0")),
-        ("INNERGRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#eeeeee")),
-        ("FONTNAME", (0, 0), (-1, -1), "Helvetica"),
-        ("FONTSIZE", (0, 0), (-1, -1), 11),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
-    ]))
+        table = Table(data, colWidths=[160, 300])
+        table.setStyle(TableStyle([
+            ("BACKGROUND",    (0, 0), (-1, 0),  colors.whitesmoke),
+            ("BOX",           (0, 0), (-1, -1), 0.8, colors.HexColor("#d0d0d0")),
+            ("INNERGRID",     (0, 0), (-1, -1), 0.5, colors.HexColor("#eeeeee")),
+            ("FONTNAME",      (0, 0), (-1, -1), "Helvetica"),
+            ("FONTSIZE",      (0, 0), (-1, -1), 11),
+            ("LEFTPADDING",   (0, 0), (-1, -1), 10),
+            ("RIGHTPADDING",  (0, 0), (-1, -1), 10),
+            ("TOPPADDING",    (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
+        ]))
 
-    elements.append(table)
-    elements.append(Spacer(1, 0.5 * inch))
+        elements.append(table)
+        elements.append(Spacer(1, 0.5 * inch))
+        elements.append(HRFlowable(width="100%", thickness=0.8, color=colors.grey))
+        elements.append(Spacer(1, 0.2 * inch))
+        elements.append(Paragraph(
+            "This is a system generated receipt. No signature required.",
+            normal_style
+        ))
+        elements.append(Spacer(1, 0.1 * inch))
+        elements.append(Paragraph(
+            f"Generated on {datetime.now().strftime('%d %b %Y, %H:%M')}",
+            right_style
+        ))
 
-    elements.append(HRFlowable(width="100%", thickness=0.8, color=colors.grey))
-    elements.append(Spacer(1, 0.2 * inch))
+        doc.build(elements)
 
-    # Footer
-    elements.append(Paragraph(
-        "This is a system generated receipt. No signature required.",
-        normal_style
-    ))
+        pdf = buffer.getvalue()
+        buffer.close()
 
-    elements.append(Spacer(1, 0.1 * inch))
-
-    elements.append(Paragraph(
-        f"Generated on {datetime.now().strftime('%d %b %Y, %H:%M')}",
-        right_style
-    ))
-
-    doc.build(elements)
-
-    pdf = buffer.getvalue()
-    buffer.close()
+    except Exception as e:
+        messages.error(request, f"Failed to generate receipt. Please try again later. ({type(e).__name__})")
+        return redirect("receipt_downloader")
 
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = (
         f'attachment; filename="receipt_{txn.transaction_id}.pdf"'
     )
-
     return response
 
 
@@ -502,3 +501,21 @@ def travel_history(request):
     username = request.session["username"]
     tap_records = BusLog.objects.filter(student_name=username).order_by("-tap_date", "-tap_time")
     return render(request, "travel_history.html", {"tap_records": tap_records})
+
+def my_transactions(request):
+    """Logged-in user's own transactions only."""
+    username = request.session.get("username")
+    if not username:
+        return redirect("login")   # adjust to your login URL name
+
+    transactions = Transaction.objects.filter(username=username)
+
+    context = {
+        "transactions":    transactions,
+        "username":        username,
+        "completed_count": transactions.filter(status="completed").count(),
+        "pending_count":   transactions.filter(status="pending").count(),
+        "failed_count":    transactions.filter(status="failed").count(),
+        "refunded_count":  transactions.filter(status="refunded").count(),
+    }
+    return render(request, "my_transactions.html", context)
