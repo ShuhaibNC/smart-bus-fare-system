@@ -308,9 +308,9 @@ def generate_card_id(user):
     return formatted_id
 
 def recharge_wallet(request):
-    user = request.session.get("username")
-    card = StudentNFCCard.objects.filter(username=user).first()
-    student_info = InfoSubmit.objects.filter(user=user).first()
+    username = request.session.get("username")
+    card = StudentNFCCard.objects.filter(username=username).first()
+    student_info = InfoSubmit.objects.filter(user=username).first()
     if not card:
         messages.error(request, "Card not found")
         return redirect("recharge_wallet")
@@ -336,6 +336,7 @@ def recharge_wallet(request):
                 # 1. Create transaction record (pending)
                 txn = Transaction.objects.create(
                     transaction_id=uuid.uuid4(),
+                    username=username,
                     amount=amount,
                     status="pending",
                     description="Wallet Recharge"

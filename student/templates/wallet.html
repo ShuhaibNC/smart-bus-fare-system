@@ -37,105 +37,110 @@
     --font: 'DM Sans', 'Segoe UI', sans-serif;
 }
 
-/* ─── Page shell ─── */
-.wallet-page {
+/* ─── Reset & Shell ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+.nw-page {
     min-height: 100vh;
     background: var(--bg);
     font-family: var(--font);
     color: var(--text);
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px 64px;
 }
 
-/* ─── Mobile-only styles ─── */
-@media (max-width: 768px) {
-
-.m-wallet {
-    padding: 24px 18px 40px;
-    max-width: 430px;
-    margin: 0 auto;
+.nw-wrap {
+    width: 100%;
+    max-width: 480px;
 }
 
-/* Header */
-.m-header {
+/* ─── Header ─── */
+.nw-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
 }
-.m-title {
-    font-size: 24px;
+.nw-title {
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.5px;
     color: var(--text);
     margin: 0;
 }
-.m-title span {
-    color: var(--primary);
-}
-.m-header-icon {
-    width: 40px; height: 40px;
-    border-radius: 12px;
+.nw-title span { color: var(--primary); }
+
+.nw-header-icon {
+    width: 44px; height: 44px;
+    border-radius: 14px;
     background: var(--surface-2);
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
     color: var(--muted);
 }
-.m-header-icon .material-symbols-rounded {
-    font-size: 20px;
+.nw-header-icon .material-symbols-rounded {
+    font-size: 22px;
     font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
 
-/* ── NFC CARD ── */
-.m-card-wrap {
-    perspective: 900px;
+/* ─── Card Wrapper ─── */
+.nw-card-wrap {
+    perspective: 1100px;
     margin-bottom: 24px;
 }
 
-.m-nfc-card {
+/* ─── NFC Card ─── */
+.nw-nfc-card {
     width: 100%;
     aspect-ratio: 1.586;
-    border-radius: 22px;
-    padding: 22px;
+    border-radius: 24px;
+    padding: 26px;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-sizing: border-box;
     transform-style: preserve-3d;
-    animation: mCardFloat 7s ease-in-out infinite;
+    animation: nwCardFloat 7s ease-in-out infinite;
     transition: transform 0.3s;
 }
 
-.m-nfc-card.healthy {
+.nw-nfc-card.healthy {
     background: linear-gradient(140deg, var(--card-healthy-1) 0%, var(--card-healthy-2) 100%);
     box-shadow:
-        0 20px 50px rgba(0,30,80,0.6),
-        0 0 0 1px rgba(61,126,255,0.15),
-        inset 0 1px 0 rgba(255,255,255,0.08);
+        0 24px 60px rgba(0,30,80,0.65),
+        0 0 0 1px rgba(61,126,255,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.09);
 }
-.m-nfc-card.low {
+.nw-nfc-card.low {
     background: linear-gradient(140deg, var(--card-low-1) 0%, var(--card-low-2) 100%);
     box-shadow:
-        0 20px 50px rgba(60,30,0,0.5),
-        0 0 0 1px rgba(245,158,11,0.2),
-        inset 0 1px 0 rgba(255,255,255,0.06);
+        0 24px 60px rgba(60,30,0,0.55),
+        0 0 0 1px rgba(245,158,11,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.07);
 }
-.m-nfc-card.no-card {
+.nw-nfc-card.blocked-card {
+    background: linear-gradient(140deg, #2a1010 0%, #160808 100%);
+    box-shadow:
+        0 24px 60px rgba(80,0,0,0.55),
+        0 0 0 1px rgba(239,68,68,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.nw-nfc-card.no-card {
     background: linear-gradient(140deg, #1a1e28 0%, #0d0f14 100%);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
 }
 
-@keyframes mCardFloat {
+@keyframes nwCardFloat {
     0%,100% { transform: translateY(0) rotateX(1deg); }
-    40%      { transform: translateY(-8px) rotateX(-1deg); }
-    70%      { transform: translateY(-4px) rotateX(0.5deg); }
+    40%      { transform: translateY(-10px) rotateX(-1.2deg); }
+    70%      { transform: translateY(-5px) rotateX(0.6deg); }
 }
 
 /* Holographic sheen */
-.m-nfc-card::before {
+.nw-nfc-card::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -143,56 +148,57 @@
         115deg,
         transparent 20%,
         rgba(255,255,255,0.04) 40%,
-        rgba(255,255,255,0.09) 50%,
+        rgba(255,255,255,0.10) 50%,
         rgba(255,255,255,0.04) 60%,
         transparent 80%
     );
     background-size: 200% 200%;
-    animation: sheen 4s ease infinite;
-    border-radius: 22px;
+    animation: nwSheen 4s ease infinite;
+    border-radius: 24px;
     pointer-events: none;
     z-index: 1;
 }
-@keyframes sheen {
+@keyframes nwSheen {
     0%   { background-position: 200% 0%; }
     100% { background-position: -200% 0%; }
 }
 
-/* Circuit texture */
-.m-nfc-card::after {
+/* Grid texture */
+.nw-nfc-card::after {
     content: '';
     position: absolute;
     inset: 0;
     background-image:
         linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-    background-size: 24px 24px;
-    border-radius: 22px;
+    background-size: 26px 26px;
+    border-radius: 24px;
     pointer-events: none;
     z-index: 0;
 }
 
-/* Card inner content */
-.m-card-inner { position: relative; z-index: 2; }
-.m-card-top {
+/* Card inner layers */
+.nw-card-inner { position: relative; z-index: 2; }
+
+.nw-card-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
 }
 
-/* Chip */
-.m-chip {
-    width: 44px; height: 34px;
+/* ── Chip ── */
+.nw-chip {
+    width: 48px; height: 36px;
     border-radius: 6px;
     background: linear-gradient(135deg, #d4a608 0%, #f5d24b 45%, #c9960a 100%);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
     position: relative;
     overflow: hidden;
 }
-.m-chip::before {
+.nw-chip::before {
     content: '';
     position: absolute;
-    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    top: 7px; left: 7px; right: 7px; bottom: 7px;
     background: repeating-linear-gradient(
         90deg,
         rgba(180,130,0,0.8) 0px, rgba(180,130,0,0.8) 2px,
@@ -201,71 +207,77 @@
     border-radius: 2px;
 }
 
-/* NFC waves */
-.m-waves {
+/* ── NFC waves ── */
+.nw-waves {
     display: flex;
     align-items: center;
     gap: 3px;
 }
-.m-wave-arc {
-    width: 10px; height: 18px;
+.nw-wave-arc {
+    width: 11px; height: 20px;
     border: 2px solid rgba(255,255,255,0.5);
     border-left: none;
     border-radius: 0 30px 30px 0;
-    animation: waveAnim 1.8s ease-in-out infinite;
+    animation: nwWave 1.8s ease-in-out infinite;
 }
-.m-wave-arc:nth-child(2) { width: 14px; height: 24px; animation-delay: 0.2s; }
-.m-wave-arc:nth-child(3) { width: 18px; height: 30px; animation-delay: 0.4s; }
-@keyframes waveAnim {
+.nw-wave-arc:nth-child(2) { width: 15px; height: 26px; animation-delay: 0.2s; }
+.nw-wave-arc:nth-child(3) { width: 20px; height: 32px; animation-delay: 0.4s; }
+@keyframes nwWave {
     0%,100% { opacity: 0.3; }
     50%      { opacity: 1; }
 }
 
 /* Card name & system */
-.m-card-name {
-    font-size: 18px;
+.nw-card-name {
+    font-size: 20px;
     font-weight: 700;
     color: #fff;
     letter-spacing: 0.5px;
-    margin: 0 0 2px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    margin: 0 0 3px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
 }
-.m-card-system {
+.nw-card-system {
     font-size: 10px;
     color: rgba(255,255,255,0.5);
-    letter-spacing: 1.5px;
+    letter-spacing: 1.8px;
     text-transform: uppercase;
     font-weight: 500;
 }
 
-/* Balance area */
-.m-card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
-.m-balance-label {
+/* Card bottom row */
+.nw-card-bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.nw-balance-label {
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.4px;
     color: rgba(255,255,255,0.5);
     margin-bottom: 4px;
     font-weight: 600;
 }
-.m-balance-amount {
-    font-size: 28px;
+.nw-balance-amount {
+    font-size: 32px;
     font-weight: 800;
     color: #fff;
     letter-spacing: -0.5px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.35);
     font-variant-numeric: tabular-nums;
+    line-height: 1;
 }
-.m-balance-amount .currency {
-    font-size: 16px;
+.nw-balance-amount .currency {
+    font-size: 18px;
     font-weight: 600;
     opacity: 0.8;
     margin-right: 2px;
 }
 
-/* Status pill on card */
-.m-card-status {
-    padding: 5px 12px;
+/* Status pill */
+.nw-card-status {
+    padding: 6px 14px;
     border-radius: 30px;
     font-size: 10px;
     font-weight: 800;
@@ -274,74 +286,77 @@
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.2);
 }
-.m-card-status.healthy { background: rgba(34,197,94,0.25); color: #86efac; }
-.m-card-status.low     { background: rgba(245,158,11,0.25); color: #fcd34d; }
-.m-card-status.blocked { background: rgba(239,68,68,0.25); color: #fca5a5; }
+.nw-card-status.healthy { background: rgba(34,197,94,0.25);  color: #86efac; }
+.nw-card-status.low     { background: rgba(245,158,11,0.25); color: #fcd34d; }
+.nw-card-status.blocked { background: rgba(239,68,68,0.25);  color: #fca5a5; }
 
-/* Card ID strip at bottom */
-.m-card-id-strip {
+/* Card ID strip */
+.nw-card-id-strip {
     font-size: 11px;
     color: rgba(255,255,255,0.35);
     font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-align: right;
+    margin-top: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* ── Alert banners ── */
-.m-alert {
+/* ─── Alert banners ─── */
+.nw-alert {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    border-radius: 14px;
-    padding: 12px 14px;
+    gap: 12px;
+    border-radius: 16px;
+    padding: 14px 16px;
     margin-bottom: 12px;
     font-size: 13px;
     line-height: 1.4;
 }
-.m-alert.warn {
+.nw-alert.warn {
     background: var(--low-bg);
     border: 1px solid var(--low-border);
     color: #fcd34d;
 }
-.m-alert.danger {
+.nw-alert.danger {
     background: var(--blocked-bg);
     border: 1px solid var(--blocked-border);
     color: #fca5a5;
 }
-.m-alert .material-symbols-rounded {
-    font-size: 18px;
+.nw-alert .material-symbols-rounded {
+    font-size: 20px;
     flex-shrink: 0;
     margin-top: 1px;
     font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
-.m-alert-title { font-weight: 700; margin-bottom: 1px; }
-.m-alert-sub   { opacity: 0.75; font-size: 12px; }
+.nw-alert-title { font-weight: 700; margin-bottom: 2px; }
+.nw-alert-sub   { opacity: 0.75; font-size: 12px; }
 
-/* ── Info row ── */
-.m-info-row {
+/* ─── Info row ─── */
+.nw-info-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     color: var(--muted);
     font-size: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     padding: 0 2px;
 }
-.m-info-row .material-symbols-rounded {
+.nw-info-row .material-symbols-rounded {
     font-size: 15px;
     font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
 
-/* ── Action buttons ── */
-.m-actions {
+/* ─── Action buttons ─── */
+.nw-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 4px;
 }
 
-.m-btn {
-    height: 52px;
+.nw-btn {
+    height: 54px;
     border-radius: 16px;
     font-size: 14px;
     font-weight: 700;
@@ -350,114 +365,64 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 8px;
     text-decoration: none;
     letter-spacing: 0.2px;
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.15s, opacity 0.15s;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
 }
-.m-btn:active { transform: scale(0.97); opacity: 0.85; }
+.nw-btn:hover  { transform: translateY(-1px); opacity: 0.92; }
+.nw-btn:active { transform: scale(0.97); opacity: 0.82; }
 
-.m-btn-outline {
+.nw-btn-outline {
     background: var(--surface-2);
     border: 1px solid var(--border);
     color: var(--text);
 }
-.m-btn-primary {
+.nw-btn-outline:hover { border-color: rgba(255,255,255,0.15); }
+
+.nw-btn-primary {
     background: linear-gradient(135deg, var(--primary), #6a9fff);
     color: #fff;
     box-shadow: 0 4px 20px var(--primary-glow);
 }
-.m-btn .material-symbols-rounded {
-    font-size: 18px;
+.nw-btn-primary:hover { box-shadow: 0 6px 28px rgba(61,126,255,0.45); }
+
+.nw-btn .material-symbols-rounded {
+    font-size: 19px;
     font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
 
-/* no card state */
-.m-no-card-body {
+/* ─── No-card state ─── */
+.nw-no-card-body {
     text-align: center;
-    padding: 20px 0 10px;
+    padding: 28px 16px 16px;
 }
-.m-no-card-icon {
-    width: 64px; height: 64px;
-    border-radius: 20px;
+.nw-no-card-icon {
+    width: 68px; height: 68px;
+    border-radius: 22px;
     background: var(--surface-2);
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 16px;
+    margin: 0 auto 18px;
     border: 1px solid var(--border);
 }
-.m-no-card-icon .material-symbols-rounded {
-    font-size: 32px;
+.nw-no-card-icon .material-symbols-rounded {
+    font-size: 34px;
     color: var(--muted);
     font-variation-settings: 'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;
 }
-.m-no-card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-.m-no-card-sub   { font-size: 13px; color: var(--muted); line-height: 1.5; }
-
-} /* end @media */
-
-/* ─── Desktop (keep original .wallet-page behaviour) ─── */
-@media (min-width: 769px) {
-    .m-wallet { display: none; }
-}
-@media (max-width: 768px) {
-    /* hide the original desktop layout if it exists */
-    .wallet-page > *:not(.m-wallet) { display: none !important; }
-    .m-wallet { display: block !important; }
-}
+.nw-no-card-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+.nw-no-card-sub   { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 260px; margin: 0 auto; }
 </style>
 
-<!-- ══ ORIGINAL DESKTOP MARKUP (untouched, hidden on mobile via CSS) ══ -->
-<div class="wallet-page box" style="display:contents">
-
-    <h2 class="wallet-title">NFC Wallet</h2>
-
-    {% if card %}
-    <div class="nfc-card {% if card.status == 'BLOCKED' %}low{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
-        <div class="nfc-watermark">NFC</div>
-        <div class="nfc-content">
-            {% if student_info %}<h3>{{ student_info.get_full_name }}</h3>{% else %}<h3>{{ card.username }}</h3>{% endif %}
-            <p class="system-name">Smart Bus Fare System</p>
-            <div class="balance-row">
-                <div>
-                    <span class="label">Balance</span>
-                    <span class="amount">₹ {{ card.balance }}</span>
-                </div>
-                <div class="status">
-                    {% if card.status == 'BLOCKED' %}<span class="low-balance">BLOCKED</span>
-                    {% elif card.balance < 100 %}<span class="low-balance">LOW</span>
-                    {% else %}<span class="ok-balance">HEALTHY</span>{% endif %}
-                </div>
-            </div>
-            <p class="cardholder-name">CARD ID: {{ card.card_id }}</p>
-        </div>
-    </div>
-    <p class="min-info">Minimum balance required: ₹100</p>
-    {% if card.status == 'BLOCKED' %}<p class="warning">Card is blocked{% if card.block_reason %} ({{ card.get_block_reason_display }}){% endif %}</p>{% endif %}
-    {% if card.balance < 100 %}<p class="warning">Recharge required to continue travel</p>{% endif %}
-    <div class="wallet-actions">
-        <a href="/transactions/" class="btn-outline">View Transactions</a>
-        <a href="/recharge_wallet/" class="btn-primary">Recharge Wallet</a>
-    </div>
-    {% else %}
-    <div class="nfc-card low">
-        <div class="nfc-content">
-            <h3>No NFC Card Found</h3>
-            <p class="warning">Your NFC card is not issued or not activated yet.</p>
-        </div>
-    </div>
-    {% endif %}
-
-</div>
-
-
-<!-- ══ MOBILE VIEW ══ -->
-<div class="m-wallet">
+<!-- ══ UNIFIED WALLET VIEW (desktop + mobile) ══ -->
+<div class="nw-page">
+<div class="nw-wrap">
 
     <!-- Header -->
-    <div class="m-header">
-        <h2 class="m-title">NFC <span>Wallet</span></h2>
-        <div class="m-header-icon">
+    <div class="nw-header">
+        <h2 class="nw-title">NFC <span>Wallet</span></h2>
+        <div class="nw-header-icon">
             <span class="material-symbols-rounded">contactless</span>
         </div>
     </div>
@@ -465,49 +430,49 @@
     {% if card %}
 
     <!-- ── NFC Card Visual ── -->
-    <div class="m-card-wrap">
-        <div class="m-nfc-card {% if card.status == 'BLOCKED' %}low{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
+    <div class="nw-card-wrap">
+        <div class="nw-nfc-card {% if card.status == 'BLOCKED' %}blocked-card{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
 
-            <!-- Top row: chip + NFC waves -->
-            <div class="m-card-inner">
-                <div class="m-card-top">
-                    <div class="m-chip"></div>
-                    <div class="m-waves">
-                        <div class="m-wave-arc"></div>
-                        <div class="m-wave-arc"></div>
-                        <div class="m-wave-arc"></div>
+            <!-- Top: chip + NFC waves -->
+            <div class="nw-card-inner">
+                <div class="nw-card-top">
+                    <div class="nw-chip"></div>
+                    <div class="nw-waves">
+                        <div class="nw-wave-arc"></div>
+                        <div class="nw-wave-arc"></div>
+                        <div class="nw-wave-arc"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Middle: name -->
-            <div class="m-card-inner">
-                <div class="m-card-name">
+            <!-- Middle: name + system -->
+            <div class="nw-card-inner">
+                <div class="nw-card-name">
                     {% if student_info %}{{ student_info.get_full_name }}{% else %}{{ card.username }}{% endif %}
                 </div>
-                <div class="m-card-system">Smart Bus Fare System</div>
+                <div class="nw-card-system">Smart Bus Fare System</div>
             </div>
 
-            <!-- Bottom: balance + status -->
-            <div class="m-card-inner">
-                <div class="m-card-bottom">
+            <!-- Bottom: balance + status + card ID -->
+            <div class="nw-card-inner">
+                <div class="nw-card-bottom">
                     <div>
-                        <div class="m-balance-label">Balance</div>
-                        <div class="m-balance-amount">
+                        <div class="nw-balance-label">Balance</div>
+                        <div class="nw-balance-amount">
                             <span class="currency">₹</span>{{ card.balance }}
                         </div>
                     </div>
                     <div>
                         {% if card.status == 'BLOCKED' %}
-                            <div class="m-card-status blocked">Blocked</div>
+                            <div class="nw-card-status blocked">Blocked</div>
                         {% elif card.balance < 100 %}
-                            <div class="m-card-status low">Low</div>
+                            <div class="nw-card-status low">Low</div>
                         {% else %}
-                            <div class="m-card-status healthy">Healthy</div>
+                            <div class="nw-card-status healthy">Healthy</div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="m-card-id-strip">{{ card.card_id }}</div>
+                <div class="nw-card-id-strip">{{ card.card_id }}</div>
             </div>
 
         </div>
@@ -515,38 +480,38 @@
 
     <!-- ── Alerts ── -->
     {% if card.status == 'BLOCKED' %}
-    <div class="m-alert danger">
+    <div class="nw-alert danger">
         <span class="material-symbols-rounded">block</span>
         <div>
-            <div class="m-alert-title">Card Blocked</div>
-            <div class="m-alert-sub">
+            <div class="nw-alert-title">Card Blocked</div>
+            <div class="nw-alert-sub">
                 {% if card.block_reason %}{{ card.get_block_reason_display }}{% else %}Contact support to unblock your card{% endif %}
             </div>
         </div>
     </div>
     {% elif card.balance < 100 %}
-    <div class="m-alert warn">
+    <div class="nw-alert warn">
         <span class="material-symbols-rounded">warning</span>
         <div>
-            <div class="m-alert-title">Low Balance</div>
-            <div class="m-alert-sub">Recharge required to continue travel</div>
+            <div class="nw-alert-title">Low Balance</div>
+            <div class="nw-alert-sub">Recharge required to continue travel</div>
         </div>
     </div>
     {% endif %}
 
-    <!-- min info -->
-    <div class="m-info-row">
+    <!-- Min balance info -->
+    <div class="nw-info-row">
         <span class="material-symbols-rounded">info</span>
         Minimum balance required: ₹100
     </div>
 
     <!-- ── Action Buttons ── -->
-    <div class="m-actions">
-        <a href="/transactions/" class="m-btn m-btn-outline">
+    <div class="nw-actions">
+        <a href="/transactions/" class="nw-btn nw-btn-outline">
             <span class="material-symbols-rounded">receipt_long</span>
             Transactions
         </a>
-        <a href="/recharge_wallet/" class="m-btn m-btn-primary">
+        <a href="/recharge_wallet/" class="nw-btn nw-btn-primary">
             <span class="material-symbols-rounded">add_card</span>
             Recharge
         </a>
@@ -554,16 +519,16 @@
 
     {% else %}
 
-    <!-- ── No Card ── -->
-    <div class="m-card-wrap">
-        <div class="m-nfc-card no-card">
-            <div class="m-card-inner">
-                <div class="m-no-card-body">
-                    <div class="m-no-card-icon">
+    <!-- ── No Card State ── -->
+    <div class="nw-card-wrap">
+        <div class="nw-nfc-card no-card">
+            <div class="nw-card-inner">
+                <div class="nw-no-card-body">
+                    <div class="nw-no-card-icon">
                         <span class="material-symbols-rounded">credit_card_off</span>
                     </div>
-                    <div class="m-no-card-title">No NFC Card Found</div>
-                    <div class="m-no-card-sub">Your NFC card hasn't been issued or activated yet. Please contact your administrator.</div>
+                    <div class="nw-no-card-title">No NFC Card Found</div>
+                    <div class="nw-no-card-sub">Your NFC card hasn't been issued or activated yet. Please contact your administrator.</div>
                 </div>
             </div>
         </div>
@@ -572,18 +537,34 @@
     {% endif %}
 
 </div>
+</div>
 
-<!-- Gyroscope card tilt for mobile -->
+<!-- Gyroscope tilt -->
 <script>
 (function () {
-    const card = document.querySelector('.m-nfc-card');
+    const card = document.querySelector('.nw-nfc-card');
     if (!card || !window.DeviceOrientationEvent) return;
     window.addEventListener('deviceorientation', (e) => {
-        const rx = Math.min(Math.max((e.beta  || 0) * 0.25, -12), 12);
-        const ry = Math.min(Math.max((e.gamma || 0) * 0.25, -12), 12);
-        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        const rx = Math.min(Math.max((e.beta  || 0) * 0.25, -14), 14);
+        const ry = Math.min(Math.max((e.gamma || 0) * 0.25, -14), 14);
+        card.style.transform = `perspective(1100px) rotateX(${rx}deg) rotateY(${ry}deg)`;
         card.style.animationPlayState = 'paused';
     }, { passive: true });
+
+    /* Mouse parallax for desktop */
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const cx = rect.left + rect.width  / 2;
+        const cy = rect.top  + rect.height / 2;
+        const rx = ((e.clientY - cy) / (rect.height / 2)) * -10;
+        const ry = ((e.clientX - cx) / (rect.width  / 2)) *  10;
+        card.style.transform = `perspective(1100px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        card.style.animationPlayState = 'paused';
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.animationPlayState = 'running';
+    });
 })();
 </script>
 
