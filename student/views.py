@@ -43,11 +43,11 @@ def block(request):
         remarks = request.POST.get("remarks")
         
         if not card or card.card_id != card_id:
-            messages.success(request, f"Invalid NFC Card ID. {card.card_id} and {card_id} not matching")
+            messages.error(request, f"Invalid NFC Card ID. {card.card_id} and {card_id} not matching")
             return redirect("block")
 
         if card.status == "BLOCKED":
-            messages.success(request, "Your card is already blocked.")
+            messages.error(request, "Your card is already blocked.")
             return redirect("block")
 
         card.status = "BLOCKED"
@@ -56,7 +56,7 @@ def block(request):
         card.blocked_at = timezone.now()
         card.save()
 
-        messages.success(request, "Your NFC card has been blocked successfully.")
+        messages.error(request, "Your NFC card has been blocked successfully.")
         return redirect('block_card')
 
     return render(request, "block_card.html", {

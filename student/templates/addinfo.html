@@ -205,14 +205,12 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
     </div>
     <div class="m-page-sub">Fill in your registration details below.</div>
 
-    {% if messages %}
-      {% for message in messages %}
-      <div class="m-alert {% if message.tags == 'success' %}success{% else %}error{% endif %}">
-        <span class="material-symbols-rounded">{% if message.tags == 'success' %}check_circle{% else %}error{% endif %}</span>
-        {{ message }}
-      </div>
-      {% endfor %}
-    {% endif %}
+   {% for message in messages %}
+<div class="m-alert {% if message.level_tag == 'success' %}success{% else %}error{% endif %}">
+  <span class="material-symbols-rounded">{% if message.level_tag == 'success' %}check_circle{% else %}error{% endif %}</span>
+  {{ message }}
+</div>
+{% endfor %}
 
     <!-- Personal details -->
     <div class="m-form-section">

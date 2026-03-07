@@ -23,218 +23,171 @@
   --app-text:     #e2e8f0;
   --app-muted:    #64748b;
   --app-muted2:   #94a3b8;
+
+  /* Safe area insets for notch/punch-hole devices */
+  --safe-top:    env(safe-area-inset-top,    0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left,   0px);
+  --safe-right:  env(safe-area-inset-right,  0px);
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Kill all scrollbars globally */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+html {
+  height: 100%;
+  overflow: hidden;
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--app-bg) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  color: var(--app-text) !important;
+  margin: 0;
+  padding: 0;
+  /* Prevent overscroll bounce */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
 
 body.dark input, body.dark select, body.dark textarea {
   background: #1a2235; color: #f2f2f7; border: 1px solid var(--app-border);
 }
 
-body, #page-wrapper {
-  background: var(--app-bg) !important;
-  font-family: 'DM Sans', sans-serif !important;
-  color: var(--app-text) !important;
+/* ── Full-screen app shell ── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* dynamic viewport height */
+  overflow: hidden;
+  padding-top: var(--safe-top);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 
-.msym {
-  font-family: 'Material Symbols Rounded';
-  line-height: 1;
-  font-variation-settings: 'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
-  display: inline-block;
-  vertical-align: middle;
+/* ── App header (sticky, app-native feel) ── */
+.app-header {
+  flex-shrink: 0;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
+  padding: 12px 16px 10px;
 }
 
-/* ── Page ── */
-.txn-page {
-  max-width: 1000px;
-  margin: 24px auto;
-  padding: 0 16px 60px;
-}
-
-/* ── Welcome banner ── */
 .welcome-banner {
   background: linear-gradient(135deg, #0f2545 0%, #1a3a6b 50%, #1d4ed8 100%);
-  border-radius: 20px;
-  padding: 24px 24px 22px;
-  margin-bottom: 18px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
 }
 
 .welcome-banner::before {
   content: '';
   position: absolute;
-  top: -60px; right: -40px;
-  width: 220px; height: 220px;
+  top: -40px; right: -30px;
+  width: 160px; height: 160px;
   border-radius: 50%;
   background: rgba(255,255,255,0.04);
   pointer-events: none;
 }
 
-.welcome-banner::after {
-  content: '';
-  position: absolute;
-  bottom: -50px; left: 120px;
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  background: rgba(56,189,248,0.07);
-  pointer-events: none;
-}
-
 .wb-avatar {
-  width: 56px; height: 56px;
+  width: 44px; height: 44px;
   border-radius: 50%;
   background: rgba(255,255,255,0.12);
   border: 2px solid rgba(255,255,255,0.2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 800; color: #fff;
+  font-size: 18px; font-weight: 800; color: #fff;
   flex-shrink: 0;
   position: relative; z-index: 1;
-  backdrop-filter: blur(8px);
 }
 
 .wb-info { flex: 1; position: relative; z-index: 1; min-width: 0; }
-
-.wb-info .greeting {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-  font-weight: 500;
-  margin-bottom: 3px;
-}
-
-.wb-info .name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.wb-info .greeting { font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 500; margin-bottom: 2px; }
+.wb-info .name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .wb-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 5px;
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 20px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  white-space: nowrap;
-  position: relative; z-index: 1;
-  flex-shrink: 0;
+  border-radius: 20px; padding: 6px 12px;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+  white-space: nowrap; position: relative; z-index: 1; flex-shrink: 0;
+}
+.wb-badge .msym { font-size: 14px; }
+
+/* ── Stats row (horizontal scroll, no scrollbar) ── */
+.stats-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
 }
 
-.wb-badge .msym { font-size: 15px; }
-
-/* ── Stats row ── */
 .stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
+  display: flex;
+  gap: 8px;
+  padding: 0 0 2px;
+  width: max-content;
 }
 
 .stat-card {
   background: var(--app-card);
   border: 1px solid var(--app-border);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 120px;
 }
 
 .stat-icon {
-  width: 40px; height: 40px;
-  border-radius: 12px;
+  width: 34px; height: 34px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-
-.stat-icon .msym { font-size: 20px; }
+.stat-icon .msym { font-size: 17px; }
 .stat-icon.green  { background: rgba(34,197,94,0.12);  color: #4ade80; }
 .stat-icon.yellow { background: rgba(245,158,11,0.12); color: #fbbf24; }
 .stat-icon.red    { background: rgba(239,68,68,0.12);  color: #f87171; }
 .stat-icon.purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
 .stat-icon.blue   { background: rgba(59,130,246,0.12); color: #60a5fa; }
 
-.stat-info { flex: 1; min-width: 0; }
-.stat-info .label {
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.8px; color: var(--app-muted); margin-bottom: 3px;
-}
-.stat-info .value {
-  font-size: 20px; font-weight: 700; color: var(--app-text); line-height: 1;
-}
-
-/* ── Main card ── */
-.txn-card {
-  background: var(--app-card);
-  border: 1px solid var(--app-border);
-  border-radius: 20px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-  overflow: hidden;
-}
-
-/* ── Card header (compact, no gradient — banner handles it) ── */
-.txn-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: var(--app-surface);
-  border-bottom: 1px solid var(--app-border);
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.card-header-left {
-  display: flex; align-items: center; gap: 10px;
-}
-
-.card-header-icon {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: rgba(59,130,246,0.12);
-  border: 1px solid rgba(59,130,246,0.2);
-  display: flex; align-items: center; justify-content: center;
-}
-
-.card-header-icon .msym { font-size: 18px; color: #60a5fa; }
-
-.card-header-title {
-  font-size: 15px; font-weight: 700; color: var(--app-text);
-}
-
-.card-header-sub {
-  font-size: 12px; color: var(--app-muted);
-}
+.stat-info .label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--app-muted); margin-bottom: 2px; }
+.stat-info .value { font-size: 18px; font-weight: 700; color: var(--app-text); line-height: 1; }
 
 /* ── Toolbar ── */
 .table-toolbar {
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--app-border);
   background: var(--app-card);
-  flex-wrap: wrap;
 }
 
 .search-wrap {
   display: flex; align-items: center; gap: 8px;
   background: var(--app-card2); border: 1px solid var(--app-border);
   border-radius: 10px; padding: 0 12px;
-  flex: 1; min-width: 180px;
   transition: border-color .15s, box-shadow .15s;
 }
 
@@ -247,35 +200,40 @@ body, #page-wrapper {
 
 .search-wrap input {
   background: transparent; border: none; outline: none;
-  color: var(--app-text); font-size: 13px;
+  color: var(--app-text); font-size: 14px;
   font-family: 'DM Sans', sans-serif;
-  padding: 9px 0; width: 100%; min-width: 0;
+  padding: 10px 0; width: 100%; min-width: 0;
+  /* Prevent iOS zoom on focus */
+  font-size: max(16px, 14px);
 }
 
 .search-wrap input::placeholder { color: var(--app-muted); }
 
 .filter-pills-wrap {
-  width: 100%; overflow-x: auto;
-  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
-.filter-pills-wrap::-webkit-scrollbar { display: none; }
 
 .filter-pills {
   display: flex; align-items: center; gap: 6px;
-  flex-wrap: nowrap; padding-bottom: 2px;
+  flex-wrap: nowrap; padding-bottom: 2px; width: max-content;
 }
 
 .filter-pill {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 20px;
+  padding: 6px 14px; border-radius: 20px;
   font-size: 12px; font-weight: 600; cursor: pointer;
   border: 1px solid var(--app-border);
   transition: all .15s; background: var(--app-card2);
   color: var(--app-muted2); user-select: none;
-  white-space: nowrap; flex-shrink: 0;
+  white-space: nowrap;
+  /* Larger tap target */
+  min-height: 32px;
+  touch-action: manipulation;
 }
 
-.filter-pill:hover { border-color: var(--app-muted); color: var(--app-text); }
+.filter-pill:active { opacity: 0.7; transform: scale(0.96); }
 .filter-pill.active-all      { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #60a5fa; }
 .filter-pill.active-completed{ background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.3);  color: #4ade80; }
 .filter-pill.active-pending  { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
@@ -283,141 +241,32 @@ body, #page-wrapper {
 .filter-pill.active-refunded { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.3); color: #a78bfa; }
 
 .toolbar-stat {
-  font-size: 12px; color: var(--app-muted); white-space: nowrap;
-  display: flex; align-items: center; gap: 5px; margin-left: auto;
-}
-.toolbar-stat .msym { font-size: 14px; color: var(--app-accent); }
-
-/* ══════════════════════════════════════
-   DESKTOP TABLE
-══════════════════════════════════════ */
-.table-wrap { overflow-x: auto; }
-
-table.txn-table {
-  width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px;
-}
-
-.txn-table thead { position: sticky; top: 0; z-index: 2; }
-
-.txn-table thead th {
-  background: var(--app-surface);
-  padding: 11px 16px;
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 1px; color: var(--app-muted);
-  border-bottom: 1px solid var(--app-border);
-  white-space: nowrap; text-align: left;
-}
-
-.txn-table thead th:first-child { padding-left: 20px; }
-.txn-table thead th:last-child  { padding-right: 20px; }
-
-.txn-table tbody tr { transition: background .12s; }
-.txn-table tbody tr:hover td { background: var(--app-card2); }
-
-.txn-table tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(31,45,69,0.6);
-  color: var(--app-text); vertical-align: middle;
-  background: var(--app-card); text-align: left;
-}
-
-.txn-table tbody td:first-child { padding-left: 20px; }
-.txn-table tbody td:last-child  { padding-right: 20px; }
-.txn-table tbody tr:last-child td { border-bottom: none; }
-
-/* ── Cell styles ── */
-.cell-id {
-  font-family: 'DM Mono', monospace; font-size: 11px;
-  color: var(--app-muted); width: 44px;
-}
-
-.txn-id-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18);
-  border-radius: 8px; padding: 4px 9px;
-  font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
-  white-space: nowrap; max-width: 160px;
-  overflow: hidden; text-overflow: ellipsis;
-  cursor: pointer; user-select: none;
-  transition: background .15s, border-color .15s;
-  position: relative;
-}
-.txn-id-chip:hover {
-  background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.35);
-}
-.txn-id-chip .msym { font-size: 12px; flex-shrink: 0; }
-.txn-id-chip .copy-icon { font-size: 12px; flex-shrink: 0; margin-left: auto; opacity: 0; transition: opacity .15s; }
-.txn-id-chip:hover .copy-icon { opacity: 1; }
-.txn-id-chip.copied {
-  background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80;
-}
-
-/* Mobile chip */
-.mc-txnid-wrap {
-  cursor: pointer; user-select: none; transition: background .15s, border-color .15s;
-}
-.mc-txnid-wrap:hover { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.35); }
-.mc-txnid-wrap.copied { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
-
-.amount-cell {
+  font-size: 11px; color: var(--app-muted);
   display: flex; align-items: center; gap: 5px;
-  font-family: 'DM Mono', monospace; font-size: 13px;
-  font-weight: 600; color: var(--app-text); white-space: nowrap;
 }
-.amount-cell .currency { font-size: 10px; color: var(--app-muted); font-weight: 500; }
+.toolbar-stat .msym { font-size: 13px; color: var(--app-accent); }
 
-.status-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  border-radius: 20px; padding: 4px 10px;
-  font-size: 12px; font-weight: 600; white-space: nowrap;
+/* ── Scrollable content area ── */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* iOS momentum scroll */
+  will-change: scroll-position;
 }
-.status-badge .msym { font-size: 13px; }
-.status-badge.completed { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.25);  color: #4ade80; }
-.status-badge.pending   { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
-.status-badge.failed    { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.25);  color: #f87171; }
-.status-badge.refunded  { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.25); color: #a78bfa; }
 
-.refundable-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  border-radius: 8px; padding: 4px 9px;
-  font-size: 11px; font-weight: 600;
-}
-.refundable-badge.yes { background: rgba(34,197,94,0.1);   border: 1px solid rgba(34,197,94,0.2);   color: #4ade80; }
-.refundable-badge.no  { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: var(--app-muted); }
-.refundable-badge .msym { font-size: 12px; }
-
-.datetime-cell { display: flex; flex-direction: column; gap: 3px; }
-.datetime-cell .date {
-  display: flex; align-items: center; gap: 5px;
-  color: var(--app-muted2); font-size: 12px; white-space: nowrap;
-}
-.datetime-cell .date .msym { font-size: 13px; color: var(--app-muted); }
-.datetime-cell .time-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.15);
-  border-radius: 6px; padding: 2px 7px;
-  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-accent);
-  width: fit-content;
-}
-.datetime-cell .time-chip .msym { font-size: 11px; }
-
-.desc-wrap {
-  max-width: 140px; overflow: hidden; text-overflow: ellipsis;
-  white-space: nowrap; color: var(--app-muted2); font-size: 12px;
-}
-.desc-empty { color: var(--app-muted); font-size: 12px; font-style: italic; }
-
-/* ══════════════════════════════════════
-   MOBILE CARDS
-══════════════════════════════════════ */
-.mobile-cards { display: none; }
-
+/* ── Mobile transaction cards ── */
 .mobile-txn-card {
   background: var(--app-card);
   border-bottom: 1px solid var(--app-border);
   padding: 14px 16px;
-  transition: background .12s;
+  transition: background .1s;
+  /* Ensure full width touch */
+  display: block;
 }
+
 .mobile-txn-card:last-child { border-bottom: none; }
 .mobile-txn-card:active { background: var(--app-card2); }
 
@@ -429,12 +278,19 @@ table.txn-table {
 .mc-txnid-wrap {
   display: inline-flex; align-items: center; gap: 5px;
   background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18);
-  border-radius: 7px; padding: 3px 8px;
-  font-family: 'DM Mono', monospace; font-size: 10px; color: #60a5fa;
+  border-radius: 7px; padding: 4px 10px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   flex: 1; min-width: 0;
+  cursor: pointer; user-select: none;
+  transition: background .15s, border-color .15s;
+  min-height: 28px;
+  touch-action: manipulation;
 }
-.mc-txnid-wrap .msym { font-size: 11px; flex-shrink: 0; }
+
+.mc-txnid-wrap:active { background: rgba(59,130,246,0.16); }
+.mc-txnid-wrap.copied { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+.mc-txnid-wrap .msym { font-size: 12px; flex-shrink: 0; }
 
 .mc-row-num {
   font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-muted);
@@ -447,25 +303,25 @@ table.txn-table {
 }
 
 .mc-amount {
-  font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700;
+  font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700;
   color: var(--app-text); display: flex; align-items: baseline; gap: 4px;
 }
 .mc-amount .currency { font-size: 11px; color: var(--app-muted); font-weight: 500; }
 
-.mc-badges { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+.mc-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 
 .mc-bottom {
   display: flex; align-items: center;
   justify-content: space-between; gap: 10px; flex-wrap: wrap;
 }
 
-.mc-datetime { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.mc-datetime { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
 .mc-date { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--app-muted2); }
 .mc-date .msym { font-size: 12px; color: var(--app-muted); }
 .mc-time-chip {
   display: inline-flex; align-items: center; gap: 4px;
   background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.15);
-  border-radius: 5px; padding: 2px 6px;
+  border-radius: 5px; padding: 2px 7px;
   font-family: 'DM Mono', monospace; font-size: 10px; color: var(--app-accent);
 }
 .mc-time-chip .msym { font-size: 11px; }
@@ -473,9 +329,38 @@ table.txn-table {
 .mc-desc {
   font-size: 12px; color: var(--app-muted2);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-width: 200px;
+  max-width: 190px;
 }
 .mc-desc.empty { color: var(--app-muted); font-style: italic; }
+
+/* ── Shared badge styles ── */
+.msym {
+  font-family: 'Material Symbols Rounded';
+  line-height: 1;
+  font-variation-settings: 'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.status-badge .msym { font-size: 12px; }
+.status-badge.completed { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.25);  color: #4ade80; }
+.status-badge.pending   { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+.status-badge.failed    { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.25);  color: #f87171; }
+.status-badge.refunded  { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.25); color: #a78bfa; }
+
+.refundable-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 8px; padding: 4px 9px;
+  font-size: 11px; font-weight: 600;
+}
+.refundable-badge.yes { background: rgba(34,197,94,0.1);   border: 1px solid rgba(34,197,94,0.2);   color: #4ade80; }
+.refundable-badge.no  { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: var(--app-muted); }
+.refundable-badge .msym { font-size: 11px; }
 
 /* ── Empty state ── */
 .empty-state { padding: 56px 24px; text-align: center; }
@@ -488,109 +373,220 @@ table.txn-table {
 .empty-state h4 { font-size: 15px; font-weight: 600; color: var(--app-muted2); margin-bottom: 6px; }
 .empty-state p  { font-size: 13px; color: var(--app-muted); margin: 0; }
 
-/* ── Footer ── */
-.table-footer {
-  padding: 12px 16px; border-top: 1px solid var(--app-border);
-  background: var(--app-surface); display: flex; align-items: center;
-  justify-content: space-between; flex-wrap: wrap; gap: 8px;
+/* ── Footer (pinned bottom, respects safe area) ── */
+.app-footer {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  padding-bottom: calc(10px + var(--safe-bottom));
+  border-top: 1px solid var(--app-border);
+  background: var(--app-surface);
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 8px;
 }
 .footer-info { font-size: 12px; color: var(--app-muted); display: flex; align-items: center; gap: 5px; }
-.footer-info .msym { font-size: 13px; color: var(--app-muted); }
+.footer-info .msym { font-size: 13px; }
 
-/* ══════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════ */
-@media (max-width: 768px) {
-  .txn-page { margin: 14px auto; padding: 0 12px 40px; }
-
-  .welcome-banner { padding: 18px 16px; border-radius: 16px; gap: 14px; }
-  .wb-avatar { width: 46px; height: 46px; font-size: 18px; }
-  .wb-info .name { font-size: 17px; }
-  .wb-badge { padding: 5px 10px; font-size: 11px; }
-
-  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .stats-row .stat-card:last-child { grid-column: span 2; }
-
-  .table-wrap   { display: none; }
-  .mobile-cards { display: block; }
+/* ── Toast notification ── */
+.copy-toast {
+  position: fixed;
+  bottom: calc(80px + var(--safe-bottom));
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #4ade80;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+  z-index: 999;
+  white-space: nowrap;
 }
+.copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.copy-toast .msym { font-size: 15px; }
 
-@media (max-width: 480px) {
-  .welcome-banner { flex-wrap: wrap; }
-  .wb-badge { width: 100%; justify-content: center; }
+/* ── Desktop table (shown only on large screens) ── */
+.table-wrap { display: none; }
+.mobile-cards { display: block; }
 
-  .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .stats-row .stat-card:last-child { grid-column: span 2; }
-  .stat-card { padding: 12px; border-radius: 12px; gap: 10px; }
-  .stat-icon { width: 36px; height: 36px; border-radius: 10px; }
-  .stat-icon .msym { font-size: 18px; }
-  .stat-info .value { font-size: 18px; }
+/* Only show desktop table on real desktop */
+@media (min-width: 900px) {
+  body { overflow: auto; }
+  html { overflow: auto; }
 
-  .txn-card { border-radius: 16px; }
-  .filter-pill { font-size: 11px; padding: 4px 10px; }
+  .app-shell {
+    height: auto;
+    overflow: visible;
+    display: block;
+    padding: 0;
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 16px 60px;
+  }
+
+  .app-header {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 18px;
+  }
+
+  .welcome-banner {
+    padding: 24px 24px 22px;
+    border-radius: 20px;
+    gap: 18px;
+  }
+
+  .wb-avatar { width: 56px; height: 56px; font-size: 22px; }
+  .wb-info .name { font-size: 20px; }
+
+  .stats-scroll { overflow: visible; }
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    width: auto;
+    margin-bottom: 18px;
+  }
+
+  .stat-card {
+    min-width: unset;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .stat-info .value { font-size: 20px; }
+  .stat-icon { width: 40px; height: 40px; }
+  .stat-icon .msym { font-size: 20px; }
+
+  .table-toolbar { padding: 14px 16px; flex-direction: row; flex-wrap: wrap; }
+  .search-wrap input { font-size: 13px; }
+  .filter-pills { flex-wrap: nowrap; width: auto; }
+  .filter-pills-wrap { overflow: visible; width: auto; }
+  .toolbar-stat { margin-left: auto; }
+
+  .scroll-area { overflow: visible; flex: none; }
+
+  .table-wrap { display: block; overflow-x: auto; }
+  .mobile-cards { display: none; }
+
+  .app-footer { padding: 12px 16px; }
+
+  table.txn-table {
+    width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px;
+  }
+  .txn-table thead { position: sticky; top: 0; z-index: 2; }
+  .txn-table thead th {
+    background: var(--app-surface);
+    padding: 11px 16px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--app-muted);
+    border-bottom: 1px solid var(--app-border);
+    white-space: nowrap; text-align: left;
+  }
+  .txn-table thead th:first-child { padding-left: 20px; }
+  .txn-table thead th:last-child  { padding-right: 20px; }
+  .txn-table tbody tr { transition: background .12s; }
+  .txn-table tbody tr:hover td { background: var(--app-card2); }
+  .txn-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(31,45,69,0.6);
+    color: var(--app-text); vertical-align: middle;
+    background: var(--app-card); text-align: left;
+  }
+  .txn-table tbody td:first-child { padding-left: 20px; }
+  .txn-table tbody td:last-child  { padding-right: 20px; }
+  .txn-table tbody tr:last-child td { border-bottom: none; }
+  .cell-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-muted); width: 44px; }
+  .txn-id-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18);
+    border-radius: 8px; padding: 4px 9px;
+    font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
+    white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis;
+    cursor: pointer; user-select: none; transition: background .15s, border-color .15s;
+  }
+  .txn-id-chip:hover { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.35); }
+  .txn-id-chip .msym { font-size: 12px; flex-shrink: 0; }
+  .txn-id-chip .copy-icon { font-size: 12px; flex-shrink: 0; margin-left: auto; opacity: 0; transition: opacity .15s; }
+  .txn-id-chip:hover .copy-icon { opacity: 1; }
+  .txn-id-chip.copied { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+  .amount-cell { display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: var(--app-text); white-space: nowrap; }
+  .amount-cell .currency { font-size: 10px; color: var(--app-muted); font-weight: 500; }
+  .status-badge { font-size: 12px; }
+  .datetime-cell { display: flex; flex-direction: column; gap: 3px; }
+  .datetime-cell .date { display: flex; align-items: center; gap: 5px; color: var(--app-muted2); font-size: 12px; white-space: nowrap; }
+  .datetime-cell .date .msym { font-size: 13px; color: var(--app-muted); }
+  .datetime-cell .time-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.15); border-radius: 6px; padding: 2px 7px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-accent); width: fit-content; }
+  .datetime-cell .time-chip .msym { font-size: 11px; }
+  .desc-wrap { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--app-muted2); font-size: 12px; }
+  .desc-empty { color: var(--app-muted); font-size: 12px; font-style: italic; }
+  .txn-card { background: var(--app-card); border: 1px solid var(--app-border); border-radius: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.45); overflow: hidden; }
+  .txn-card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: var(--app-surface); border-bottom: 1px solid var(--app-border); flex-wrap: wrap; gap: 10px; }
+  .card-header-left { display: flex; align-items: center; gap: 10px; }
+  .card-header-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center; }
+  .card-header-icon .msym { font-size: 18px; color: #60a5fa; }
+  .card-header-title { font-size: 15px; font-weight: 700; color: var(--app-text); }
+  .card-header-sub { font-size: 12px; color: var(--app-muted); }
+  .table-footer { padding: 12px 16px; border-top: 1px solid var(--app-border); background: var(--app-surface); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 }
 </style>
 
-<div class="txn-page">
+<div class="app-shell">
 
-  <!-- Welcome Banner -->
-  <div class="welcome-banner">
-    <div class="wb-avatar">{{ username|slice:":1"|upper }}</div>
-    <div class="wb-info">
-      <div class="greeting">Welcome back</div>
-      <div class="name">{{ username }}</div>
-    </div>
-    <div class="wb-badge">
-      <span class="msym">receipt_long</span>
-      <span>{{ transactions|length }}</span> Transactions
-    </div>
-  </div>
+  <!-- ══ HEADER (sticky on mobile) ══ -->
+  <div class="app-header">
 
-  <!-- Summary Stats -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-icon blue"><span class="msym">receipt_long</span></div>
-      <div class="stat-info"><div class="label">Total</div><div class="value">{{ transactions|length }}</div></div>
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="wb-avatar">{{ username|slice:":1"|upper }}</div>
+      <div class="wb-info">
+        <div class="greeting">Welcome back</div>
+        <div class="name">{{ username }}</div>
+      </div>
+      <div class="wb-badge">
+        <span class="msym">receipt_long</span>
+        <span>{{ transactions|length }}</span>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon green"><span class="msym">check_circle</span></div>
-      <div class="stat-info"><div class="label">Completed</div><div class="value">{{ completed_count }}</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon yellow"><span class="msym">hourglass_top</span></div>
-      <div class="stat-info"><div class="label">Pending</div><div class="value">{{ pending_count }}</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon red"><span class="msym">cancel</span></div>
-      <div class="stat-info"><div class="label">Failed</div><div class="value">{{ failed_count }}</div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon purple"><span class="msym">currency_exchange</span></div>
-      <div class="stat-info"><div class="label">Refunded</div><div class="value">{{ refunded_count }}</div></div>
-    </div>
-  </div>
 
-  <!-- Main Card -->
-  <div class="txn-card">
-
-    <!-- Card header -->
-    <div class="txn-card-header">
-      <div class="card-header-left">
-        <div class="card-header-icon"><span class="msym">payments</span></div>
-        <div>
-          <div class="card-header-title">My Transactions</div>
-          <div class="card-header-sub">Your personal transaction history</div>
+    <!-- Stats (horizontal scroll on mobile) -->
+    <div class="stats-scroll">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon blue"><span class="msym">receipt_long</span></div>
+          <div class="stat-info"><div class="label">Total</div><div class="value">{{ transactions|length }}</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><span class="msym">check_circle</span></div>
+          <div class="stat-info"><div class="label">Done</div><div class="value">{{ completed_count }}</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon yellow"><span class="msym">hourglass_top</span></div>
+          <div class="stat-info"><div class="label">Pending</div><div class="value">{{ pending_count }}</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><span class="msym">cancel</span></div>
+          <div class="stat-info"><div class="label">Failed</div><div class="value">{{ failed_count }}</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><span class="msym">currency_exchange</span></div>
+          <div class="stat-info"><div class="label">Refunded</div><div class="value">{{ refunded_count }}</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="table-toolbar">
-      <div class="search-wrap">
-        <span class="msym">search</span>
-        <input type="text" id="searchInput" placeholder="Search by transaction ID, description…">
-      </div>
-      <div class="filter-pills-wrap">
+  </div><!-- /app-header -->
+
+  <!-- ══ TOOLBAR ══ -->
+  <div class="table-toolbar">
+    <div class="search-wrap">
+      <span class="msym">search</span>
+      <input type="text" id="searchInput" placeholder="Search transactions…" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+      <div class="filter-pills-wrap" style="flex:1;">
         <div class="filter-pills">
           <span class="filter-pill active-all" data-filter="all">All</span>
           <span class="filter-pill" data-filter="completed">Completed</span>
@@ -601,137 +597,164 @@ table.txn-table {
       </div>
       <div class="toolbar-stat">
         <span class="msym">filter_list</span>
-        <span id="visibleCount">{{ transactions|length }}</span> shown
+        <span id="visibleCount">{{ transactions|length }}</span>
       </div>
     </div>
+  </div>
 
-    <!-- ══ DESKTOP TABLE ══ -->
-    <div class="table-wrap">
-      <table class="txn-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Transaction ID</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Refundable</th>
-            <th>Description</th>
-            <th>Date &amp; Time</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          {% for txn in transactions %}
-          <tr data-status="{{ txn.status }}">
-            <td class="cell-id">{{ forloop.counter }}</td>
-            <td>
-              <div class="txn-id-chip" data-id="{{ txn.transaction_id }}" title="Click to copy">
-                <span class="msym">tag</span>
-                <span class="chip-text">{{ txn.transaction_id }}</span>
-                <span class="msym copy-icon">content_copy</span>
-              </div>
-            </td>
-            <td>
-              <div class="amount-cell"><span class="currency">INR</span>{{ txn.amount }}</div>
-            </td>
-            <td>
+  <!-- ══ SCROLLABLE CONTENT ══ -->
+  <div class="scroll-area">
+
+    <!-- Desktop wrapper (shown @900px+) -->
+    <div class="txn-card" style="display:contents;">
+
+      <!-- Desktop card header -->
+      <div class="txn-card-header" style="display:none;" id="desktopHeader">
+        <div class="card-header-left">
+          <div class="card-header-icon"><span class="msym">payments</span></div>
+          <div>
+            <div class="card-header-title">My Transactions</div>
+            <div class="card-header-sub">Your personal transaction history</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DESKTOP TABLE ── -->
+      <div class="table-wrap">
+        <table class="txn-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Transaction ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Refundable</th>
+              <th>Description</th>
+              <th>Date &amp; Time</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            {% for txn in transactions %}
+            <tr data-status="{{ txn.status }}">
+              <td class="cell-id">{{ forloop.counter }}</td>
+              <td>
+                <div class="txn-id-chip" data-id="{{ txn.transaction_id }}" title="Click to copy">
+                  <span class="msym">tag</span>
+                  <span class="chip-text">{{ txn.transaction_id }}</span>
+                  <span class="msym copy-icon">content_copy</span>
+                </div>
+              </td>
+              <td><div class="amount-cell"><span class="currency">INR</span>{{ txn.amount }}</div></td>
+              <td>
+                {% if txn.status == "completed" %}<span class="status-badge completed"><span class="msym">check_circle</span> Completed</span>
+                {% elif txn.status == "pending" %}<span class="status-badge pending"><span class="msym">hourglass_top</span> Pending</span>
+                {% elif txn.status == "failed" %}<span class="status-badge failed"><span class="msym">cancel</span> Failed</span>
+                {% elif txn.status == "refunded" %}<span class="status-badge refunded"><span class="msym">currency_exchange</span> Refunded</span>{% endif %}
+              </td>
+              <td>
+                {% if txn.is_refundable %}<span class="refundable-badge yes"><span class="msym">check</span> Yes</span>
+                {% else %}<span class="refundable-badge no"><span class="msym">close</span> No</span>{% endif %}
+              </td>
+              <td>
+                {% if txn.description %}<span class="desc-wrap" title="{{ txn.description }}">{{ txn.description }}</span>
+                {% else %}<span class="desc-empty">No description</span>{% endif %}
+              </td>
+              <td>
+                <div class="datetime-cell">
+                  <div class="date"><span class="msym">calendar_today</span>{{ txn.created_at|date:"M d, Y" }}</div>
+                  <div class="time-chip"><span class="msym">schedule</span>{{ txn.created_at|time:"H:i:s" }}</div>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" style="padding:0;border:none;">
+                <div class="empty-state">
+                  <div class="empty-icon"><span class="msym">receipt_long</span></div>
+                  <h4>No transactions yet</h4>
+                  <p>Your transactions will appear here once you make one.</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── MOBILE CARDS ── -->
+      <div class="mobile-cards" id="mobileCards">
+        {% for txn in transactions %}
+        <div class="mobile-txn-card" data-status="{{ txn.status }}">
+
+          <div class="mc-top">
+            <div class="mc-txnid-wrap" data-id="{{ txn.transaction_id }}" title="Tap to copy">
+              <span class="msym">tag</span>
+              <span class="chip-text">{{ txn.transaction_id }}</span>
+            </div>
+            <span class="mc-row-num">#{{ forloop.counter }}</span>
+          </div>
+
+          <div class="mc-mid">
+            <div class="mc-amount"><span class="currency">INR</span>{{ txn.amount }}</div>
+            <div class="mc-badges">
               {% if txn.status == "completed" %}<span class="status-badge completed"><span class="msym">check_circle</span> Completed</span>
               {% elif txn.status == "pending" %}<span class="status-badge pending"><span class="msym">hourglass_top</span> Pending</span>
               {% elif txn.status == "failed" %}<span class="status-badge failed"><span class="msym">cancel</span> Failed</span>
               {% elif txn.status == "refunded" %}<span class="status-badge refunded"><span class="msym">currency_exchange</span> Refunded</span>{% endif %}
-            </td>
-            <td>
-              {% if txn.is_refundable %}<span class="refundable-badge yes"><span class="msym">check</span> Yes</span>
-              {% else %}<span class="refundable-badge no"><span class="msym">close</span> No</span>{% endif %}
-            </td>
-            <td>
-              {% if txn.description %}<span class="desc-wrap" title="{{ txn.description }}">{{ txn.description }}</span>
-              {% else %}<span class="desc-empty">No description</span>{% endif %}
-            </td>
-            <td>
-              <div class="datetime-cell">
-                <div class="date"><span class="msym">calendar_today</span>{{ txn.created_at|date:"M d, Y" }}</div>
-                <div class="time-chip"><span class="msym">schedule</span>{{ txn.created_at|time:"H:i:s" }}</div>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="7" style="padding:0;border:none;">
-              <div class="empty-state">
-                <div class="empty-icon"><span class="msym">receipt_long</span></div>
-                <h4>No transactions yet</h4>
-                <p>Your transactions will appear here once you make one.</p>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ══ MOBILE CARDS ══ -->
-    <div class="mobile-cards" id="mobileCards">
-      {% for txn in transactions %}
-      <div class="mobile-txn-card" data-status="{{ txn.status }}">
-
-        <!-- Top: txn id + row num -->
-        <div class="mc-top">
-          <div class="mc-txnid-wrap" data-id="{{ txn.transaction_id }}" title="Click to copy">
-            <span class="msym">tag</span>
-            <span class="chip-text">{{ txn.transaction_id }}</span>
+              {% if txn.is_refundable %}<span class="refundable-badge yes"><span class="msym">check</span> Refundable</span>
+              {% else %}<span class="refundable-badge no"><span class="msym">close</span> Non-refundable</span>{% endif %}
+            </div>
           </div>
-          <span class="mc-row-num">#{{ forloop.counter }}</span>
-        </div>
 
-        <!-- Mid: amount + badges -->
-        <div class="mc-mid">
-          <div class="mc-amount"><span class="currency">INR</span>{{ txn.amount }}</div>
-          <div class="mc-badges">
-            {% if txn.status == "completed" %}<span class="status-badge completed"><span class="msym">check_circle</span> Completed</span>
-            {% elif txn.status == "pending" %}<span class="status-badge pending"><span class="msym">hourglass_top</span> Pending</span>
-            {% elif txn.status == "failed" %}<span class="status-badge failed"><span class="msym">cancel</span> Failed</span>
-            {% elif txn.status == "refunded" %}<span class="status-badge refunded"><span class="msym">currency_exchange</span> Refunded</span>{% endif %}
-            {% if txn.is_refundable %}<span class="refundable-badge yes"><span class="msym">check</span> Refundable</span>
-            {% else %}<span class="refundable-badge no"><span class="msym">close</span> Non-refundable</span>{% endif %}
+          <div class="mc-bottom">
+            {% if txn.description %}
+              <div class="mc-desc" title="{{ txn.description }}">{{ txn.description }}</div>
+            {% else %}
+              <div class="mc-desc empty">No description</div>
+            {% endif %}
+            <div class="mc-datetime">
+              <div class="mc-date"><span class="msym">calendar_today</span>{{ txn.created_at|date:"M d, Y" }}</div>
+              <div class="mc-time-chip"><span class="msym">schedule</span>{{ txn.created_at|time:"H:i:s" }}</div>
+            </div>
           </div>
+
         </div>
-
-        <!-- Bottom: description + datetime -->
-        <div class="mc-bottom">
-          {% if txn.description %}
-            <div class="mc-desc" title="{{ txn.description }}">{{ txn.description }}</div>
-          {% else %}
-            <div class="mc-desc empty">No description</div>
-          {% endif %}
-          <div class="mc-datetime">
-            <div class="mc-date"><span class="msym">calendar_today</span>{{ txn.created_at|date:"M d, Y" }}</div>
-            <div class="mc-time-chip"><span class="msym">schedule</span>{{ txn.created_at|time:"H:i:s" }}</div>
-          </div>
+        {% empty %}
+        <div class="empty-state">
+          <div class="empty-icon"><span class="msym">receipt_long</span></div>
+          <h4>No transactions yet</h4>
+          <p>Your transactions will appear here once you make one.</p>
         </div>
+        {% endfor %}
+      </div>
 
+      <!-- Desktop footer (inside scroll area on desktop) -->
+      <div class="table-footer" id="desktopFooter" style="display:none;">
+        <div class="footer-info">
+          <span class="msym">info</span>
+          Showing <strong id="footerCountD">{{ transactions|length }}</strong> of <strong>{{ transactions|length }}</strong> records
+        </div>
+        <div class="footer-info"><span class="msym">person</span>{{ username }}</div>
       </div>
-      {% empty %}
-      <div class="empty-state">
-        <div class="empty-icon"><span class="msym">receipt_long</span></div>
-        <h4>No transactions yet</h4>
-        <p>Your transactions will appear here once you make one.</p>
-      </div>
-      {% endfor %}
+
+    </div><!-- /txn-card contents -->
+  </div><!-- /scroll-area -->
+
+  <!-- ══ APP FOOTER (pinned bottom on mobile) ══ -->
+  <div class="app-footer">
+    <div class="footer-info">
+      <span class="msym">info</span>
+      <span id="footerCount">{{ transactions|length }}</span> of <strong>{{ transactions|length }}</strong> shown
     </div>
-
-    <!-- Footer -->
-    <div class="table-footer">
-      <div class="footer-info">
-        <span class="msym">info</span>
-        Showing <strong id="footerCount">{{ transactions|length }}</strong> of <strong>{{ transactions|length }}</strong> records
-      </div>
-      <div class="footer-info">
-        <span class="msym">person</span>
-        {{ username }}
-      </div>
-    </div>
-
+    <div class="footer-info"><span class="msym">person</span>{{ username }}</div>
   </div>
+
+</div><!-- /app-shell -->
+
+<!-- Copy toast -->
+<div class="copy-toast" id="copyToast">
+  <span class="msym">check_circle</span>
+  ID copied!
 </div>
 
 <script>
@@ -739,9 +762,12 @@ table.txn-table {
   const searchInput  = document.getElementById('searchInput');
   const visibleCount = document.getElementById('visibleCount');
   const footerCount  = document.getElementById('footerCount');
+  const footerCountD = document.getElementById('footerCountD');
   const pills        = document.querySelectorAll('.filter-pill');
   const tableRows    = Array.from(document.querySelectorAll('#tableBody tr[data-status]'));
   const mobileRows   = Array.from(document.querySelectorAll('#mobileCards .mobile-txn-card[data-status]'));
+  const copyToast    = document.getElementById('copyToast');
+  let toastTimer;
 
   let activeFilter = 'all';
   let activeSearch = '';
@@ -760,9 +786,11 @@ table.txn-table {
       card.style.display = ok ? '' : 'none';
       if (ok) mobileShown++;
     });
-    const count = window.innerWidth <= 768 ? mobileShown : desktopShown;
+    const isMobile = window.innerWidth < 900;
+    const count = isMobile ? mobileShown : desktopShown;
     visibleCount.textContent = count;
     footerCount.textContent  = count;
+    if (footerCountD) footerCountD.textContent = count;
   }
 
   searchInput.addEventListener('input', function () {
@@ -781,47 +809,98 @@ table.txn-table {
 
   window.addEventListener('resize', applyFilters);
 
-  // ── Copy-to-clipboard for transaction ID chips ──
+  // ── Desktop view tweaks ──
+  function applyDesktopLayout() {
+    const isDesktop = window.innerWidth >= 900;
+    const dHeader = document.getElementById('desktopHeader');
+    const dFooter = document.getElementById('desktopFooter');
+    if (dHeader) dHeader.style.display = isDesktop ? 'flex' : 'none';
+    if (dFooter) dFooter.style.display = isDesktop ? 'flex' : 'none';
+  }
+  window.addEventListener('resize', applyDesktopLayout);
+  applyDesktopLayout();
+
+  // ── Copy to clipboard ──
+  function showToast() {
+    copyToast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => copyToast.classList.remove('show'), 2000);
+  }
+
+  function onCopied(el, id) {
+    const chipText = el.querySelector('.chip-text');
+    const icon = el.querySelector('.copy-icon');
+    el.classList.add('copied');
+    if (chipText) chipText.textContent = 'Copied!';
+    if (icon) { icon.textContent = 'check'; icon.style.opacity = '1'; }
+    showToast();
+    setTimeout(() => {
+      el.classList.remove('copied');
+      if (chipText) chipText.textContent = id;
+      if (icon) { icon.textContent = 'content_copy'; icon.style.opacity = ''; }
+    }, 1800);
+  }
+
   function copyId(el) {
     const id = el.dataset.id;
     if (!id) return;
 
-    navigator.clipboard.writeText(id).then(() => {
-      // Swap icon & text temporarily
-      const icon = el.querySelector('.copy-icon');
-      const text = el.querySelector('.chip-text');
-      el.classList.add('copied');
-      if (icon) { icon.textContent = 'check'; icon.style.opacity = '1'; }
-      if (text) { text.textContent = 'Copied!'; }
+    // Method 1: Android WebView JavascriptInterface (injected by AppActivity)
+    if (window.AndroidClipboard && window.AndroidClipboard.copy) {
+      try {
+        window.AndroidClipboard.copy(id);
+        onCopied(el, id);
+        return;
+      } catch(e) {}
+    }
 
-      setTimeout(() => {
-        el.classList.remove('copied');
-        if (icon) { icon.textContent = 'content_copy'; icon.style.opacity = ''; }
-        if (text) { text.textContent = id; }
-      }, 1800);
-    }).catch(() => {
-      // Fallback for older browsers / non-https
+    // Method 2: Modern Clipboard API (works on HTTPS or localhost)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(id).then(() => {
+        onCopied(el, id);
+      }).catch(() => fallbackCopy(el, id));
+      return;
+    }
+
+    // Method 3: execCommand fallback (works in older WebViews)
+    fallbackCopy(el, id);
+  }
+
+  function fallbackCopy(el, id) {
+    try {
       const ta = document.createElement('textarea');
       ta.value = id;
-      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;border:none;outline:none;pointer-events:none;';
       document.body.appendChild(ta);
+      ta.focus();
       ta.select();
-      document.execCommand('copy');
+      // setSelectionRange needed on iOS/some Android
+      ta.setSelectionRange(0, id.length);
+      const ok = document.execCommand('copy');
       document.body.removeChild(ta);
+      if (ok) { onCopied(el, id); return; }
+    } catch(e) {}
 
-      const text = el.querySelector('.chip-text');
-      el.classList.add('copied');
-      if (text) { text.textContent = 'Copied!'; }
-      setTimeout(() => {
-        el.classList.remove('copied');
-        if (text) { text.textContent = id; }
-      }, 1800);
-    });
+    // Method 4: Show the ID in a selectable prompt as last resort
+    window.prompt('Copy this transaction ID:', id);
   }
 
   document.querySelectorAll('.txn-id-chip, .mc-txnid-wrap').forEach(chip => {
     chip.addEventListener('click', () => copyId(chip));
   });
+
+  // ── Prevent pull-to-refresh in WebView ──
+  let startY = 0;
+  const scrollArea = document.querySelector('.scroll-area');
+  if (scrollArea) {
+    scrollArea.addEventListener('touchstart', e => { startY = e.touches[0].pageY; }, { passive: true });
+    scrollArea.addEventListener('touchmove', e => {
+      const deltaY = e.touches[0].pageY - startY;
+      if (scrollArea.scrollTop === 0 && deltaY > 0) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
 })();
 </script>
 

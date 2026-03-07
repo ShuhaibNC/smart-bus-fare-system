@@ -37,7 +37,6 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-/* ── Page shell ── */
 .rw-page {
     min-height: 100vh;
     background: var(--bg);
@@ -54,7 +53,7 @@
     max-width: 480px;
 }
 
-/* ── Flash messages ── */
+/* Flash messages */
 .rw-flash {
     display: flex;
     align-items: center;
@@ -79,7 +78,7 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Header ── */
+/* Header */
 .rw-header {
     display: flex;
     align-items: center;
@@ -113,7 +112,7 @@
 }
 .rw-title span { color: var(--primary); }
 
-/* ── NFC Card ── */
+/* NFC Card */
 .rw-card-wrap {
     perspective: 1100px;
     margin-bottom: 24px;
@@ -153,7 +152,6 @@
     40%      { transform: translateY(-10px) rotateX(-1.2deg); }
     70%      { transform: translateY(-5px) rotateX(0.6deg); }
 }
-/* Holographic sheen */
 .rw-nfc-card::before {
     content: '';
     position: absolute; inset: 0;
@@ -167,7 +165,6 @@
     0%   { background-position: 200% 0%; }
     100% { background-position: -200% 0%; }
 }
-/* Grid texture */
 .rw-nfc-card::after {
     content: '';
     position: absolute; inset: 0;
@@ -180,7 +177,6 @@
 }
 .rw-card-inner { position: relative; z-index: 2; }
 
-/* Card top */
 .rw-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
 .rw-chip {
     width: 48px; height: 36px;
@@ -207,7 +203,6 @@
 .rw-wave-arc:nth-child(3) { width: 20px; height: 32px; animation-delay: 0.4s; }
 @keyframes rwWave { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-/* Card middle */
 .rw-card-name {
     font-size: 20px; font-weight: 700; color: #fff;
     letter-spacing: 0.5px; margin: 0 0 3px;
@@ -218,7 +213,6 @@
     letter-spacing: 1.8px; text-transform: uppercase; font-weight: 500;
 }
 
-/* Card bottom */
 .rw-card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
 .rw-balance-label {
     font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px;
@@ -245,7 +239,7 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-/* ── Quick-amount pills ── */
+/* Quick-amount pills */
 .rw-section-label {
     font-size: 11px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 1px;
@@ -278,7 +272,7 @@
     color: #7ab3ff;
 }
 
-/* ── Recharge form card ── */
+/* Recharge form card */
 .rw-form-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -292,32 +286,49 @@
     text-transform: uppercase; letter-spacing: 0.8px;
     color: var(--muted); margin-bottom: 12px;
 }
-.rw-input-wrap { position: relative; display: flex; align-items: center; }
-.rw-currency-prefix {
-    position: absolute; left: 18px;
-    font-size: 22px; font-weight: 700;
-    color: var(--muted);
-    pointer-events: none; z-index: 1;
-}
-.rw-amount-input {
-    width: 100%; height: 64px;
+
+/* ── FIX: flex row so ₹ and input never overlap ── */
+.rw-input-wrap {
+    display: flex;
+    align-items: center;
     background: var(--surface-2);
     border: 1.5px solid var(--border);
     border-radius: 16px;
-    color: var(--text);
-    font-size: 28px; font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    padding: 0 18px 0 46px;
-    outline: none;
+    padding: 0 18px;
+    gap: 6px;
     transition: border-color 0.2s, box-shadow 0.2s;
-    font-family: var(--font);
-    -webkit-appearance: none;
 }
-.rw-amount-input::placeholder { color: var(--muted); font-weight: 400; font-size: 20px; }
-.rw-amount-input:focus {
+.rw-input-wrap:focus-within {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-glow);
 }
+.rw-currency-prefix {
+    font-size: 22px; font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+    /* Remove the old absolute positioning */
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+}
+.rw-amount-input {
+    /* flex child — takes remaining width */
+    flex: 1;
+    min-width: 0;
+    height: 64px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 28px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    padding: 0;                   /* no left padding needed — gap handles spacing */
+    font-family: var(--font);
+    -webkit-appearance: none;
+    /* Prevent iOS zoom: input font-size must be >= 16px */
+    font-size: max(16px, 28px);
+}
+.rw-amount-input::placeholder { color: var(--muted); font-weight: 400; }
 .rw-amount-input::-webkit-outer-spin-button,
 .rw-amount-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .rw-amount-input[type=number] { -moz-appearance: textfield; }
@@ -340,7 +351,7 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* ── Action buttons ── */
+/* Action buttons */
 .rw-actions {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -377,7 +388,7 @@
     font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
 }
 
-/* ── No card state ── */
+/* No card state */
 .rw-no-card-body { text-align: center; padding: 28px 16px 16px; }
 .rw-no-card-icon {
     width: 68px; height: 68px; border-radius: 22px;
@@ -392,7 +403,6 @@
 .rw-no-card-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
 .rw-no-card-sub   { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 260px; margin: 0 auto; }
 
-/* ── Responsive: shrink padding on small screens ── */
 @media (max-width: 500px) {
     .rw-page { padding: 24px 16px 56px; }
     .rw-title { font-size: 22px; }
@@ -400,15 +410,15 @@
     .rw-balance-amount { font-size: 26px; }
     .rw-quick-amounts { gap: 8px; }
     .rw-quick-pill { height: 42px; font-size: 13px; }
+    /* Slightly smaller amount font on very small screens */
+    .rw-amount-input { font-size: max(16px, 22px); }
+    .rw-currency-prefix { font-size: 18px; }
 }
 </style>
 
-
-<!-- ══ UNIFIED RECHARGE WALLET VIEW ══ -->
 <div class="rw-page">
 <div class="rw-wrap">
 
-    <!-- Flash messages -->
     {% if messages %}
         {% for message in messages %}
         <div class="rw-flash">
@@ -418,7 +428,6 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Header -->
     <div class="rw-header">
         <a href="/student_wallet/" class="rw-back-btn">
             <span class="material-symbols-rounded">arrow_back</span>
@@ -428,11 +437,8 @@
 
     {% if card %}
 
-    <!-- ── NFC Card Visual ── -->
     <div class="rw-card-wrap">
         <div class="rw-nfc-card {% if card.status == 'BLOCKED' %}blocked-card{% elif card.balance < 100 %}low{% else %}healthy{% endif %}">
-
-            <!-- Top: chip + NFC waves -->
             <div class="rw-card-inner">
                 <div class="rw-card-top">
                     <div class="rw-chip"></div>
@@ -443,16 +449,12 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Middle: name + system -->
             <div class="rw-card-inner">
                 <div class="rw-card-name">
                     {% if student_info %}{{ student_info.get_full_name }}{% else %}{{ card.username }}{% endif %}
                 </div>
                 <div class="rw-card-system">Smart Bus Fare System</div>
             </div>
-
-            <!-- Bottom: balance + status + card ID -->
             <div class="rw-card-inner">
                 <div class="rw-card-bottom">
                     <div>
@@ -473,11 +475,9 @@
                 </div>
                 <div class="rw-card-id-strip">{{ card.card_id }}</div>
             </div>
-
         </div>
     </div>
 
-    <!-- ── Quick Amounts ── -->
     <div class="rw-section-label">Quick Add</div>
     <div class="rw-quick-amounts">
         <button type="button" class="rw-quick-pill" data-amount="50">₹50</button>
@@ -486,12 +486,13 @@
         <button type="button" class="rw-quick-pill" data-amount="500">₹500</button>
     </div>
 
-    <!-- ── Recharge Form ── -->
     <form method="post" id="rw-recharge-form">
         {% csrf_token %}
 
         <div class="rw-form-card">
             <label class="rw-input-label" for="rw-amount-input">Recharge Amount</label>
+
+            <!-- ✅ FIXED: flex row — ₹ prefix and input are siblings, never overlap -->
             <div class="rw-input-wrap">
                 <span class="rw-currency-prefix">₹</span>
                 <input
@@ -507,7 +508,6 @@
                 >
             </div>
 
-            <!-- New balance preview -->
             <div class="rw-preview">
                 <span class="rw-preview-label">New Balance After Recharge</span>
                 <span class="rw-preview-value" id="rw-new-balance">₹ —</span>
@@ -528,7 +528,6 @@
 
     {% else %}
 
-    <!-- ── No Card State ── -->
     <div class="rw-card-wrap">
         <div class="rw-nfc-card no-card">
             <div class="rw-card-inner">
@@ -550,7 +549,7 @@
 
 <script>
 (function () {
-    const balanceEl  = document.getElementById('rw-current-balance');
+    const balanceEl   = document.getElementById('rw-current-balance');
     const amountInput = document.getElementById('rw-amount-input');
     const newBalanceEl = document.getElementById('rw-new-balance');
     const quickPills  = document.querySelectorAll('.rw-quick-pill');
@@ -558,7 +557,6 @@
 
     const currentBalance = parseFloat(balanceEl?.dataset.balance || 0);
 
-    /* Live new-balance preview */
     function updatePreview() {
         const v = parseFloat(amountInput.value);
         if (newBalanceEl) {
@@ -573,7 +571,6 @@
         updatePreview();
     });
 
-    /* Quick pills */
     quickPills.forEach(pill => {
         pill.addEventListener('click', () => {
             if (amountInput) {
@@ -586,7 +583,6 @@
         });
     });
 
-    /* Mouse parallax tilt (desktop) */
     if (card) {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -602,7 +598,6 @@
             card.style.animationPlayState = 'running';
         });
 
-        /* Gyroscope tilt (mobile) */
         if (window.DeviceOrientationEvent) {
             window.addEventListener('deviceorientation', (e) => {
                 const rx = Math.min(Math.max((e.beta  || 0) * 0.25, -14), 14);
