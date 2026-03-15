@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>SBFS</title>
+  <title>ScanGo</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0a0d12" />
@@ -814,7 +814,7 @@
 
   <!-- ── DESKTOP: original untouched ── -->
   <header id="header" class="alt">
-    <h1><a href="/home/">SBFS</a></h1>
+    <h1><a href="/home/">ScanGo</a></h1>
     <nav id="nav">
       <ul>
         <li><a href="/home/">Home</a></li>
@@ -849,13 +849,13 @@
     <h2>Admin Panel for {{ request.session.username }}</h2>
     {% else %}
     <h2><b>Hi, {{ request.session.username }}</b></h2>
-    <h2><b>Welcome to Smart Bus Fare System</b></h2>
+    <h2><b>Welcome to Smart College Bus Pass Verification And Management System</b></h2>
     {% endif %}
     <p>NFC-Based • Cashless • Secure<br />Automated Student Bus Fee Management</p>
     <ul class="actions special">
       {% if request.session.role == 'admin' %}
       <li><a href="/managenfc/" class="button primary">Manage NFC Applications</a></li>
-      <li><a href="/managefaresystem/" class="button alt">Manage Lost/Stolen Cards</a></li>
+      <li><a href="/managefaresystem/" class="button alt">Manage Routes</a></li>
       <li><a href="#" class="button">Learn More</a></li>
       {% else %}
       <li><a href="/setroute/" class="button primary">Apply for NFC Card</a></li>
@@ -869,7 +869,7 @@
     <section class="box special" style="margin-top:200px;">
       <header class="major">
         <h2>Contactless Bus Fare Collection System<br />using NFC and Cloud Technology</h2>
-        <p>SBFS allows students to pay bus fees by simply tapping an NFC card. All transactions are securely processed and stored in the cloud.</p>
+        <p>ScanGo allows students to pay bus fees by simply tapping an NFC card. All transactions are securely processed and stored in the cloud.</p>
       </header>
     </section>
     <section class="box special features">
@@ -901,7 +901,7 @@
   </section>
 
   <section id="cta">
-    <h2>Get Started with SBFS</h2>
+    <h2>Get Started with ScanGo</h2>
     <p>Register as a student and experience fast, secure, and contactless bus fare payments.</p>
   </section>
 
@@ -909,7 +909,7 @@
     <ul class="icons">
       <li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
     </ul>
-    <p style="font-size:12px;">© Smart Bus Fare System</p>
+    <p style="font-size:12px;">© Smart College Bus Pass Verification And Management System</p>
   </footer>
 
   <!-- ── MOBILE: App-style screen ── -->
@@ -919,7 +919,7 @@
         <span class="material-symbols-rounded">directions_bus</span>
       </div>
       <div>
-        <div class="topbar-title"><span>SB</span>FS</div>
+        <div class="topbar-title"><span>Scan</span>Go</div>
         <div class="topbar-greeting">Smart Bus Fare System</div>
       </div>
     </div>
@@ -978,7 +978,7 @@
       <div class="hero-sub">NFC-Based • Cashless • Secure</div>
       <div class="hero-badge">
         <span class="material-symbols-rounded">contactless</span>
-        Smart Bus Fare System
+        Smart College Bus Pass Verification And Management System
       </div>
     </div>
 
@@ -1034,7 +1034,7 @@
       </a>
     </div>
 
-    <div class="section-label">About SBFS</div>
+    <div class="section-label">About ScanGo</div>
     <div class="feature-list">
       <div class="feature-card">
         <div class="feature-icon ic-blue">
@@ -1075,7 +1075,7 @@
     </div>
 
     <div class="cta-card">
-      <h3>Get Started with SBFS</h3>
+      <h3>Get Started with ScanGo</h3>
       <p>Register and experience fast, secure, contactless bus fare payments.</p>
       <a href="/setroute/" class="cta-btn">
         <span class="material-symbols-rounded">contactless</span>
@@ -1084,7 +1084,7 @@
     </div>
     {% endif %}
 
-    <div class="app-footer">© Smart Bus Fare System</div>
+    <div class="app-footer">© Smart College Bus Pass Verification And Management System</div>
   </div>
 
   <!-- Mobile Bottom Nav -->

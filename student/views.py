@@ -37,11 +37,12 @@ def block(request):
         card = StudentNFCCard.objects.get(username=request.session["username"])
     except StudentNFCCard.DoesNotExist:
         card = None
+
     if request.method == "POST":
         card_id = request.POST.get("card_id")
         reason = request.POST.get("reason")
         remarks = request.POST.get("remarks")
-        
+
         if not card or card.card_id != card_id:
             messages.error(request, f"Invalid NFC Card ID. {card.card_id} and {card_id} not matching")
             return redirect("block")
@@ -50,13 +51,9 @@ def block(request):
             messages.error(request, "Your card is already blocked.")
             return redirect("block")
 
-        card.status = "BLOCKED"
-        card.block_reason = reason
-        card.remarks = remarks
-        card.blocked_at = timezone.now()
-        card.save()
+        card.delete()  # ← deletes the entry entirely
 
-        messages.error(request, "Your NFC card has been blocked successfully.")
+        messages.success(request, "Your NFC card has been blocked and removed successfully.")
         return redirect('block_card')
 
     return render(request, "block_card.html", {
@@ -72,12 +69,10 @@ def student_login(request):
         try:
             user = Login.objects.get(username=username)
         except Login.DoesNotExist:
-            messages.error(request, "Invalid username or password.")
             return render(request, "student_login.html", {"info": "Login failed"})
 
         # Verify password
         if not check_password(password, user.password_hash):
-            messages.error(request, "Invalid username or password.")
             return render(request, "student_login.html", {"info": "Login failed"})
 
         request.session["user_id"] = user.id
@@ -379,7 +374,6 @@ def download_receipt_file(request, transaction_id):
     username = request.session.get("username")
 
     if not username:
-        messages.error(request, "You must be logged in.")
         return redirect("login")
 
     # Validate transaction exists and belongs to user
@@ -389,12 +383,18 @@ def download_receipt_file(request, transaction_id):
             username=username
         )
     except Transaction.DoesNotExist:
-        messages.error(request, "Transaction not found or access denied.")
-        return redirect("receipt_downloader")
+        return redirect_with_error(
+            request,
+            "receipt_downloader",
+            "Transaction not found or access denied."
+        )
 
     if txn.status != "completed":
-        messages.error(request, f"Receipt unavailable — transaction is '{txn.status.capitalize()}'. Only completed transactions have receipts.")
-        return redirect("receipt_downloader")
+        return redirect_with_error(
+            request,
+            "receipt_downloader",
+            f"Receipt unavailable — transaction is '{txn.status.capitalize()}'. Only completed transactions have receipts."
+        )
 
     # Build PDF
     try:
@@ -485,8 +485,11 @@ def download_receipt_file(request, transaction_id):
         buffer.close()
 
     except Exception as e:
-        messages.error(request, f"Failed to generate receipt. Please try again later. ({type(e).__name__})")
-        return redirect("receipt_downloader")
+        return redirect_with_error(
+            request,
+            "receipt_downloader",
+            f"Failed to generate receipt. Please try again later. ({type(e).__name__})"
+        )
 
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = (
@@ -496,7 +499,14 @@ def download_receipt_file(request, transaction_id):
 
 
 def receipt_downloader(request):
-    return render(request, "receiptdownloader.html")
+    error = request.session.pop("receipt_error", None)
+    return render(request, "receiptdownloader.html", {"error": error})
+
+
+# ── Helper ──────────────────────────────────────────────────────────────────
+def redirect_with_error(request, view_name, message):
+    request.session["receipt_error"] = message
+    return redirect(view_name)
 
 def travel_history(request):
     username = request.session["username"]

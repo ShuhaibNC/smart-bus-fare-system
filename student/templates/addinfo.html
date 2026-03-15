@@ -194,6 +194,9 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
 .m-submit-btn:active { opacity: .85; }
 </style>
 
+{# ── Capture messages ONCE into a variable so both views share them without re-rendering ── #}
+{% with msgs=messages %}
+
 <!-- ══ MOBILE VIEW ══ -->
 <div class="mobile-view">
 <form method="post" action="{% url 'infosubmit' %}">
@@ -205,12 +208,19 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
     </div>
     <div class="m-page-sub">Fill in your registration details below.</div>
 
-   {% for message in messages %}
-<div class="m-alert {% if message.level_tag == 'success' %}success{% else %}error{% endif %}">
-  <span class="material-symbols-rounded">{% if message.level_tag == 'success' %}check_circle{% else %}error{% endif %}</span>
-  {{ message }}
-</div>
-{% endfor %}
+    {% for message in msgs %}
+    <div class="m-alert {% if message.level_tag == 'success' %}success{% else %}error{% endif %}">
+      <span class="material-symbols-rounded">{% if message.level_tag == 'success' %}check_circle{% else %}error{% endif %}</span>
+      {{ message }}
+    </div>
+    {% endfor %}
+
+    {% if info %}
+    <div class="m-alert success">
+      <span class="material-symbols-rounded">info</span>
+      {{ info }}
+    </div>
+    {% endif %}
 
     <!-- Personal details -->
     <div class="m-form-section">
@@ -318,13 +328,6 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
       </div>
     </div>
 
-    {% if info %}
-    <div class="m-alert success">
-      <span class="material-symbols-rounded">info</span>
-      {{ info }}
-    </div>
-    {% endif %}
-
     <button type="submit" class="m-submit-btn">
       <span class="material-symbols-rounded">{% if existing_info %}update{% else %}how_to_reg{% endif %}</span>
       {% if existing_info %}Update Information{% else %}Submit Information{% endif %}
@@ -340,10 +343,11 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
   {% csrf_token %}
   <div class="modern-card">
     <h2 class="title">Student Information</h2>
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-      {% endfor %}
+    {% for message in msgs %}
+      <div class="alert alert-{{ message.level_tag }}">{{ message }}</div>
+    {% endfor %}
+    {% if info %}
+      <p class="info-message">{{ info }}</p>
     {% endif %}
     <div class="form-grid">
       <div class="form-row">
@@ -406,7 +410,6 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
       </div>
     </div>
     <div class="form-actions">
-      {% if info %}<p class="info-message">{{ info }}</p>{% endif %}
       <button type="submit" class="primary-btn">
         {% if existing_info %}Update Information{% else %}Submit Information{% endif %}
       </button>
@@ -415,4 +418,5 @@ select.input-modern option { background-color: var(--bg-input); color: var(--tex
 </form>
 </div>
 
+{% endwith %}
 {% endblock content %}

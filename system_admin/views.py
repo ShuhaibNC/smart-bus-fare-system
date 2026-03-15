@@ -137,7 +137,8 @@ def nfcwriter(request, card_id):
             'names': {
             'first_name': card.first_name,
             'last_name': card.last_name,
-        }
+        },
+            'info': f'Card successfully written for {fullname}.',
         }
     )
     

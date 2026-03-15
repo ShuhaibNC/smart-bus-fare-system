@@ -52,6 +52,27 @@
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Error ── */
+.r-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    color: #fca5a5;
+    border-radius: 14px;
+    padding: 13px 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    animation: slideDown 0.3s ease;
+    line-height: 1.5;
+}
+.r-error .material-symbols-rounded {
+    font-size: 20px; flex-shrink: 0; margin-top: 1px;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+}
+
 /* ── Header ── */
 .r-header {
     display: flex;
@@ -251,6 +272,14 @@
         {% endfor %}
     {% endif %}
 
+    <!-- Error message -->
+    {% if error %}
+    <div class="r-error">
+        <span class="material-symbols-rounded">error</span>
+        {{ error }}
+    </div>
+    {% endif %}
+
     <!-- Header -->
     <div class="r-header">
         <div class="r-icon-wrap">
@@ -274,7 +303,7 @@
                     type="text"
                     id="transaction_id"
                     class="r-input"
-                    placeholder="e.g. TXN-20240521-00123"
+                    placeholder="e.g. xxxxxxxx-xxxx-xxxx-xxxx"
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="characters"
@@ -319,25 +348,63 @@
 </div>
 
 <script>
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function showInputError(message) {
+    const input = document.getElementById("transaction_id");
+    input.style.borderColor = "#ef4444";
+    input.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.2)";
+    input.focus();
+    setTimeout(() => {
+        input.style.borderColor = "";
+        input.style.boxShadow = "";
+    }, 2500);
+
+    // Create or reuse error box
+    let box = document.getElementById("js-error-box");
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "js-error-box";
+        box.className = "r-error";
+        box.innerHTML = `<span class="material-symbols-rounded">error</span><span id="js-error-msg"></span>`;
+        const card = document.querySelector(".r-card");
+        card.parentNode.insertBefore(box, card);
+    }
+    document.getElementById("js-error-msg").textContent = message;
+    box.style.display = "flex";
+}
+
+function hideError() {
+    const box = document.getElementById("js-error-box");
+    if (box) box.style.display = "none";
+}
+
 function downloadReceipt() {
     const txnId = document.getElementById("transaction_id").value.trim();
+
     if (!txnId) {
-        const input = document.getElementById("transaction_id");
-        input.style.borderColor = "#ef4444";
-        input.style.boxShadow = "0 0 0 3px rgba(239,68,68,0.2)";
-        input.focus();
-        setTimeout(() => {
-            input.style.borderColor = "";
-            input.style.boxShadow = "";
-        }, 2000);
+        showInputError("Please enter a Transaction ID.");
         return;
     }
+
+    if (!UUID_REGEX.test(txnId)) {
+        showInputError("Invalid Transaction ID — it should look like: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+        return;
+    }
+
+    hideError();
     window.location.href = "/receipt/" + txnId;
 }
 
-// Allow Enter key to trigger download
 document.getElementById("transaction_id").addEventListener("keydown", function(e) {
     if (e.key === "Enter") downloadReceipt();
+});
+
+// Clear error as user types
+document.getElementById("transaction_id").addEventListener("input", function() {
+    hideError();
+    this.style.borderColor = "";
+    this.style.boxShadow = "";
 });
 </script>
 

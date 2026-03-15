@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+import re
 from student.models import Login
 
 def index(request):
@@ -19,27 +20,32 @@ def signup(request):
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
-        # Basic validation
+        # Email validation — must have @ and a domain with a dot
+        email_pattern = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
+        if not re.match(email_pattern, email):
+            return render(request, "signup.html", {"error": "Enter a valid email address."})
+
+        # Check for duplicate email
+        if Login.objects.filter(email=email).exists():
+            return render(request, "signup.html", {"error": "Email already registered."})
+
         if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, "signup.html", {"info" : "Passwords do not match."})
+            return render(request, "signup.html", {"error": "Passwords do not match."})
 
-        # Optional uniqueness check
         if Login.objects.filter(username=username).exists():
-            return render(request, "signup.html", {"info" : "Username already taken."})
+            return render(request, "signup.html", {"error": "Username already taken."})
 
-        # Create the user
         Login.objects.create(
             firstname=firstname,
             lastname=lastname,
             username=username,
             email=email,
-            password_hash=make_password(password),  # secure hashing
+            password_hash=make_password(password),
             role="student"
         )
 
-        messages.success(request, "Account created successfully.")
-        return render(request, "signup.html", {"info" : "Account created successfully."}) # change to your login view name
+        return render(request, "signup.html", {"info": "Account created successfully."})
 
     return render(request, "signup.html")
+
 

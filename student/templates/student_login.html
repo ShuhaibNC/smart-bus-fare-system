@@ -1,273 +1,326 @@
-{% extends "base.html" %}
-{% block title %}Student Login{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-{% block bottom_nav %}{% endblock %}
-{% block topbar_menu %}{% endblock %}
+    :root {
+      --md-bg:      #0f1117;
+      --md-surface: #1e2330;
+      --md-surface2:#252b3b;
+      --md-border:  rgba(255,255,255,0.07);
+      --md-text:    #f1f5f9;
+      --md-muted:   #64748b;
+      --md-primary: #5b8dee;
+    }
 
-{% block addstyle %}
-<style>
-/* ── Full bleed login — kill all padding everywhere ── */
-#mobile-topbar { display:none !important; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--md-bg);
+      color: var(--md-text);
+      min-height: 100vh;
+    }
 
-#page-wrapper,
-#main,
-#main.container {
-  padding:0 !important;
-  margin:0 !important;
-  max-width:100% !important;
-  width:100% !important;
+    /* ── MOBILE ── */
+    .login-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--md-bg);
+      width: 100%;
+    }
+
+    /* Hero top section */
+    .login-hero {
+      position: relative;
+      padding: 56px 28px 80px;
+      text-align: center;
+      background: linear-gradient(160deg, #0f1117 0%, #131929 60%, #1a2340 100%);
+      overflow: hidden;
+    }
+
+    /* Decorative rings */
+    .login-hero::before,
+    .login-hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(91,141,238,0.12);
+      pointer-events: none;
+    }
+    .login-hero::before {
+      width: 280px; height: 280px;
+      top: -80px; right: -60px;
+    }
+    .login-hero::after {
+      width: 180px; height: 180px;
+      bottom: 20px; left: -50px;
+      border-color: rgba(91,141,238,0.07);
+    }
+
+    .brand-icon {
+      width: 68px; height: 68px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #1d4ed8, #5b8dee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      box-shadow: 0 8px 28px rgba(91,141,238,0.35);
+    }
+
+    .brand-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--md-text);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+    .brand-name span { color: var(--md-primary); }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: var(--md-muted);
+      letter-spacing: 0.3px;
+    }
+
+    /* Card sheet */
+    .login-card {
+      flex: 1;
+      background: var(--md-surface);
+      border-radius: 28px 28px 0 0;
+      padding: 32px 24px 48px;
+      margin-top: -24px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.5);
+    }
+
+    /* Drag handle pill */
+    .card-pill {
+      width: 36px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.12);
+      margin: 0 auto 28px;
+    }
+
+    .login-card-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--md-text);
+      margin-bottom: 4px;
+    }
+
+    .login-card-sub {
+      font-size: 14px;
+      color: var(--md-muted);
+      margin-bottom: 28px;
+    }
+
+    /* Shared fields */
+    .md-field { margin-bottom: 16px; width: 100%; }
+
+    .md-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--md-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .md-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .md-input-wrap .material-symbols-rounded {
+      position: absolute;
+      left: 14px;
+      color: var(--md-muted);
+      font-size: 20px;
+      pointer-events: none;
+      transition: color .2s;
+    }
+
+    .md-field input {
+      width: 100% !important;
+      padding: 15px 46px 15px 46px !important;
+
+      font-size: 15px !important;
+      background: var(--md-surface2) !important;
+      border: 1.5px solid var(--md-border) !important;
+      border-radius: 14px !important;
+      color: var(--md-text) !important;
+      outline: none !important;
+      transition: border-color .2s, background .2s !important;
+    }
+
+    .md-field input:focus {
+      border-color: var(--md-primary) !important;
+      background: #2a3149 !important;
+    }
+
+    .md-field input:focus + .material-symbols-rounded,
+    .md-input-wrap:focus-within .material-symbols-rounded {
+      color: var(--md-primary);
+    }
+
+    /* Fix eye toggle button */
+.pwd-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--md-muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
-/* ── Full-screen login layout ── */
-.login-screen{
-  display:none;
-  flex-direction:column;
-  min-height:100vh;
-  background:var(--md-bg);
-  width:100%;
+.pwd-toggle .material-symbols-rounded {
+  font-size: 20px;
+  pointer-events: none;
 }
 
-/* Brand area */
-.login-brand{
-  padding:28px 32px 20px;
-  text-align:center;
-}
+    .login-error {
+      background: rgba(239,83,80,0.1);
+      border: 1px solid rgba(239,83,80,0.3);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #fca5a5;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
 
-.brand-icon{
-  width:72px; height:72px;
-  border-radius:20px;
-  background:linear-gradient(135deg,#1d4ed8,#5b8dee);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:0 auto 16px;
-  box-shadow:0 8px 24px rgba(91,141,238,0.4);
-}
+    .forgot-link { text-align: right; margin-bottom: 24px; }
+    .forgot-link a {
+      font-size: 13px;
+      color: var(--md-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
 
-.brand-name{
-  font-size:28px;
-  font-weight:800;
-  color:var(--md-text);
-  letter-spacing:1px;
-  margin-bottom:4px;
-}
-.brand-name span{ color:var(--md-primary); }
+    .login-btn {
+      width: 100%;
+      height: 54px;
+      background: linear-gradient(135deg, #1d4ed8, #5b8dee);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(91,141,238,0.4);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+      transition: opacity .15s, transform .1s;
+    }
+    .login-btn:active { opacity: .85; transform: scale(0.98); }
 
-.brand-tagline{
-  font-size:13px;
-  color:var(--md-muted);
-}
+    .signup-row {
+      text-align: center;
+      font-size: 14px;
+      color: var(--md-muted);
+    }
+    .signup-row a {
+      color: var(--md-primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
 
-/* Card sheet */
-.login-card{
-  flex:1;
-  background:var(--md-surface);
-  border-radius:28px 28px 0 0;
-  padding:32px 24px 48px;
-  box-shadow:0 -4px 24px rgba(0,0,0,0.4);
-  width:100%;
-  box-sizing:border-box;
-}
+    /* ── DESKTOP ── */
+    .desktop-login {
+      display: none;
+      min-height: 100vh;
+      background: var(--md-bg);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
 
-.login-card-title{
-  font-size:20px;
-  font-weight:700;
-  color:var(--md-text);
-  margin-bottom:4px;
-}
+    .desktop-login-panel { width: 100%; max-width: 420px; }
 
-.login-card-sub{
-  font-size:13px;
-  color:var(--md-muted);
-  margin-bottom:28px;
-}
+    .desktop-form-card {
+      background: var(--md-surface);
+      border: 1px solid var(--md-border);
+      border-radius: 20px;
+      padding: 36px 36px 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
 
-/* Fields */
-.md-field{ margin-bottom:16px; width:100%; }
+    .desktop-form-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--md-text);
+      margin-bottom: 24px;
+    }
 
-.md-field label{
-  display:block;
-  font-size:12px;
-  font-weight:600;
-  color:var(--md-muted);
-  text-transform:uppercase;
-  letter-spacing:0.8px;
-  margin-bottom:8px;
-}
+    .desktop-forgot { text-align: right; margin-bottom: 24px; }
+    .desktop-forgot a {
+      font-size: 13px;
+      color: var(--md-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .desktop-forgot a:hover { text-decoration: underline; }
 
-.md-input-wrap{
-  position:relative;
-  display:flex;
-  align-items:center;
-  width:100%;
-}
+    .desktop-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--md-muted);
+    }
 
-.md-input-wrap .material-symbols-rounded{
-  position:absolute;
-  left:14px;
-  color:var(--md-muted);
-  font-size:20px;
-  pointer-events:none;
-}
+    /* ── Breakpoints ── */
+    @media (max-width: 768px) {
+      .login-screen  { display: flex; }
+      .desktop-login { display: none !important; }
+    }
+    @media (min-width: 769px) {
+      .login-screen  { display: none !important; }
+      .desktop-login { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
 
-.md-field input{
-  width:100% !important;
-  padding:14px 16px 14px 46px !important;
-  font-size:16px !important;
-  background:var(--md-surface2) !important;
-  border:1.5px solid var(--md-border) !important;
-  border-radius:14px !important;
-  color:var(--md-text) !important;
-  outline:none !important;
-  box-sizing:border-box !important;
-  transition:border-color .2s !important;
-}
-
-.md-field input:focus{
-  border-color:var(--md-primary) !important;
-}
-
-.pwd-toggle{
-  position:absolute;
-  right:14px;
-  background:none;
-  border:none;
-  color:var(--md-muted);
-  cursor:pointer;
-  padding:4px;
-  display:flex;
-  align-items:center;
-}
-
-/* Error */
-.login-error{
-  background:rgba(239,83,80,0.1);
-  border:1px solid rgba(239,83,80,0.3);
-  border-radius:10px;
-  padding:10px 14px;
-  font-size:13px;
-  color:#fca5a5;
-  margin-bottom:16px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  width:100%;
-  box-sizing:border-box;
-}
-
-/* Forgot */
-.forgot-link{
-  text-align:right;
-  margin-bottom:24px;
-}
-.forgot-link a{
-  font-size:13px;
-  color:var(--md-primary);
-  text-decoration:none;
-  font-weight:500;
-}
-
-/* Login button */
-.login-btn{
-  width:100%;
-  height:52px;
-  background:linear-gradient(135deg,#1d4ed8,#5b8dee);
-  color:#fff;
-  border:none;
-  border-radius:16px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:0 4px 16px rgba(91,141,238,0.4);
-  margin-bottom:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  box-sizing:border-box;
-}
-.login-btn:active{ opacity:.85; }
-
-/* Divider */
-.login-divider{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px;
-}
-.login-divider::before,
-.login-divider::after{
-  content:'';
-  flex:1;
-  height:1px;
-  background:var(--md-border);
-}
-.login-divider span{
-  font-size:12px;
-  color:var(--md-muted);
-}
-
-/* Admin button */
-.admin-btn{
-  width:100%;
-  height:48px;
-  background:var(--md-surface2);
-  color:var(--md-text);
-  border:1.5px solid var(--md-border);
-  border-radius:16px;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  margin-bottom:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  text-decoration:none;
-  box-sizing:border-box;
-}
-.admin-btn:active{ border-color:var(--md-primary); }
-
-/* Sign up */
-.signup-row{
-  text-align:center;
-  font-size:14px;
-  color:var(--md-muted);
-}
-.signup-row a{
-  color:var(--md-primary);
-  font-weight:600;
-  text-decoration:none;
-}
-
-/* Show mobile / hide desktop */
-@media(max-width:768px){
-  .login-screen  { display:flex; }
-  .desktop-login { display:none; }
-}
-@media(min-width:769px){
-  .login-screen  { display:none; }
-  .desktop-login { display:block; }
-}
-</style>
-{% endblock %}
-
-{% block header %}{% endblock %}
-
-{% block content %}
-
-<!-- ── MOBILE ── -->
+<!-- ── MOBILE: Student Login ── -->
 <div class="login-screen">
-  <div class="login-brand">
+
+  <div class="login-hero">
     <div class="brand-icon">
-      <span class="material-symbols-rounded" style="color:#fff;font-size:36px;">directions_bus</span>
+      <span class="material-symbols-rounded" style="color:#fff;font-size:34px;">directions_bus</span>
     </div>
-    <div class="brand-name"><span>SB</span>FS</div>
-    <div class="brand-tagline">Smart Bus Fare System</div>
+    <div class="brand-name"><span>Scan</span>Go</div>
+    <div class="brand-tagline">Smart College Bus Pass Verification And Management System</div>
   </div>
 
   <div class="login-card">
-    <div class="login-card-title">Welcome back</div>
+    <div class="card-pill"></div>
+
+    <div class="login-card-title">Welcome back 👋</div>
     <div class="login-card-sub">Sign in to your student account</div>
 
     <form method="post" style="width:100%;">
@@ -293,9 +346,9 @@
         <div class="md-input-wrap">
           <span class="material-symbols-rounded">lock</span>
           <input type="password" name="password" id="password-m" placeholder="Enter your password" required autocomplete="current-password" />
-          {% comment %} <button type="button" class="pwd-toggle" onclick="togglePwd()">
+          <button type="button" class="pwd-toggle" onclick="togglePwd()" aria-label="Toggle password">
             <span class="material-symbols-rounded" id="pwd-eye">visibility</span>
-          </button> {% endcomment %}
+          </button>
         </div>
       </div>
 
@@ -309,62 +362,74 @@
       </button>
     </form>
 
-    <div class="login-divider"><span>or</span></div>
-
-    <a href="/admin_login" class="admin-btn">
-      <span class="material-symbols-rounded" style="font-size:20px;">admin_panel_settings</span>
-      Admin Login
-    </a>
-
     <div class="signup-row">
       Don't have an account? <a href="/signup">Register here</a>
     </div>
   </div>
 </div>
 
-<!-- ── DESKTOP ── -->
+<!-- ── DESKTOP: Admin Login ── -->
 <div class="desktop-login">
-  <div class="row aln-center">
-    <div class="col-7">
-      <header>
-        <h2>STUDENT LOGIN</h2>
-        <p>Access your account</p>
-      </header>
-      <form method="post" class="form">
+  <div class="desktop-login-panel">
+
+    <div class="desktop-form-card">
+      <div class="desktop-form-title">Admin Login</div>
+
+      <form method="post" style="width:100%;">
         {% csrf_token %}
-        <div class="field">
-          <label for="username">Username</label>
-          <input type="text" name="username" id="username" required>
+
+        {% if info %}
+        <div class="login-error">
+          <span class="material-symbols-rounded" style="font-size:16px;">error</span>
+          {{ info }}
         </div>
-        <div class="field">
-          <label for="password">Password</label>
-          <input type="password" name="password" id="password" required>
+        {% endif %}
+
+        <div class="md-field">
+          <label for="username-d">Username</label>
+          <div class="md-input-wrap">
+            <span class="material-symbols-rounded">person</span>
+            <input type="text" name="username" id="username-d" placeholder="Enter admin username" required autocomplete="username" />
+          </div>
         </div>
-        <div>
-          <button type="submit" class="button primary">Login</button>
-          <p>{{ info }}</p>
+
+        <div class="md-field">
+          <label for="password-d">Password</label>
+          <div class="md-input-wrap">
+            <span class="material-symbols-rounded">lock</span>
+            <input type="password" name="password" id="password-d" placeholder="Enter your password" required autocomplete="current-password" />
+          </div>
         </div>
-        <div class="links">
+
+        <div class="desktop-forgot">
           <a href="#">Forgot password?</a>
         </div>
-        <p class="note">Don't have an account? <a href="/signup">Register</a></p>
+
+        <button type="submit" class="login-btn">
+          <span class="material-symbols-rounded">admin_panel_settings</span>
+          Sign In as Admin
+        </button>
       </form>
     </div>
+
+    <div class="desktop-footer">Smart College Bus Pass Verification And Management System &copy; 2025</div>
+
   </div>
 </div>
 
 <script>
-function togglePwd(){
-  const input=document.getElementById('password-m');
-  const eye=document.getElementById('pwd-eye');
-  if(input.type==='password'){
-    input.type='text';
-    eye.textContent='visibility_off';
+function togglePwd() {
+  const input = document.getElementById('password-m');
+  const eye   = document.getElementById('pwd-eye');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = 'visibility_off';
   } else {
-    input.type='password';
-    eye.textContent='visibility';
+    input.type = 'password';
+    eye.textContent = 'visibility';
   }
 }
 </script>
 
-{% endblock %}
+</body>
+</html>

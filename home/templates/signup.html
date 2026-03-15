@@ -98,6 +98,23 @@
   box-sizing:border-box;
 }
 
+
+/* Error banner */
+.signup-error-banner {
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.35);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+  color:#fca5a5;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  box-sizing:border-box;
+}
+
 /* Two column row for first/last name */
 .md-field-row {
   display:flex;
@@ -152,16 +169,27 @@
   border-color:var(--md-primary) !important;
 }
 
+/* After */
 .pwd-toggle {
   position:absolute;
-  right:14px;
+  right:12px;
   background:none;
   border:none;
   color:var(--md-muted);
   cursor:pointer;
-  padding:4px;
+  padding:0;
   display:flex;
   align-items:center;
+  justify-content:center;
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  flex-shrink:0;
+}
+
+.pwd-toggle .material-symbols-rounded {
+  font-size:20px;
+  pointer-events:none;
 }
 
 /* Signup button */
@@ -220,8 +248,8 @@
     <div class="brand-icon">
       <span class="material-symbols-rounded" style="color:#fff;font-size:36px;">directions_bus</span>
     </div>
-    <div class="brand-name"><span>SB</span>FS</div>
-    <div class="brand-tagline">Smart Bus Fare System</div>
+    <div class="brand-name"><span>Scan</span>Go</div>
+    <div class="brand-tagline">Smart College Bus Pass Verification And Management System</div>
   </div>
 
   <div class="signup-card">
@@ -229,11 +257,19 @@
     <div class="signup-card-sub">Register as a new student</div>
 
     {% if info %}
-    <div class="signup-info-banner">
-      <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
-      {{ info }}
-    </div>
-    {% endif %}
+<div class="signup-info-banner">
+  <span class="material-symbols-rounded" style="font-size:16px;">check_circle</span>
+  {{ info }}
+</div>
+{% endif %}
+
+{% if error %}
+<div class="signup-error-banner">
+  <span class="material-symbols-rounded" style="font-size:16px;">cancel</span>
+  {{ error }}
+</div>
+{% endif %}
+    
 
     <form method="post" style="width:100%;">
       {% csrf_token %}
@@ -276,7 +312,7 @@
         <label for="password_m">Password</label>
         <div class="md-input-wrap">
           <span class="material-symbols-rounded">lock</span>
-          <input type="password" name="password" id="password_m" placeholder="•••••••••••" required autocomplete="new-password" />
+          <input type="password" name="password" id="password_m" placeholder="Enter password" required autocomplete="new-password" />
           <button type="button" class="pwd-toggle" onclick="togglePwd('password_m','eye1')">
             <span class="material-symbols-rounded" id="eye1">visibility</span>
           </button>
@@ -286,8 +322,8 @@
       <div class="md-field">
         <label for="confirm_password_m">Confirm Password</label>
         <div class="md-input-wrap">
-          <span class="material-symbols-rounded">lock_check</span>
-          <input type="password" name="confirm_password" id="confirm_password_m" placeholder="•••••••••••" required autocomplete="new-password" />
+          <span class="material-symbols-rounded">lock</span>
+          <input type="password" name="confirm_password" id="confirm_password_m" placeholder="Confirm password" required autocomplete="new-password" />
           <button type="button" class="pwd-toggle" onclick="togglePwd('confirm_password_m','eye2')">
             <span class="material-symbols-rounded" id="eye2">visibility</span>
           </button>
@@ -313,10 +349,14 @@
       <header>
         <h2>SIGN UP</h2>
         {% if info %}
-        <p class="info">{{ info }}</p>
-        {% else %}
-        <p>Register Form for Student</p>
-        {% endif %}
+<p class="info">{{ info }}</p>
+{% else %}
+<p>Register Form for Student</p>
+{% endif %}
+
+{% if error %}
+<p style="color:#f87171;font-size:14px;margin-top:8px;">&#10007; {{ error }}</p>
+{% endif %}
       </header>
       <form method="post" class="form">
         {% csrf_token %}
@@ -338,11 +378,11 @@
         </div>
         <div class="field">
           <label for="password">Password</label>
-          <input type="password" name="password" id="password" placeholder="•••••••••••" required>
+          <input type="password" name="password" id="password" placeholder="Enter password" required>
         </div>
         <div class="field">
           <label for="confirm_password">Confirm Password</label>
-          <input type="password" name="confirm_password" id="confirm_password" placeholder="•••••••••••" required>
+          <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password" required>
         </div>
         <div>
           <button type="submit" class="button primary">Sign Up</button>
