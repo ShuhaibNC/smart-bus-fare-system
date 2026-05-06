@@ -24,7 +24,6 @@
   --app-muted:    #64748b;
   --app-muted2:   #94a3b8;
 
-  /* Safe area insets for notch/punch-hole devices */
   --safe-top:    env(safe-area-inset-top,    0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left:   env(safe-area-inset-left,   0px);
@@ -36,14 +35,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Kill all scrollbars globally */
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
 
 html {
   height: 100%;
   overflow: hidden;
-  /* Prevent text size adjustment on orientation change */
   -webkit-text-size-adjust: 100%;
 }
 
@@ -55,7 +52,6 @@ body {
   color: var(--app-text) !important;
   margin: 0;
   padding: 0;
-  /* Prevent overscroll bounce */
   overscroll-behavior: none;
   -webkit-overflow-scrolling: auto;
 }
@@ -64,19 +60,17 @@ body.dark input, body.dark select, body.dark textarea {
   background: #1a2235; color: #f2f2f7; border: 1px solid var(--app-border);
 }
 
-/* ── Full-screen app shell ── */
 .app-shell {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  height: 100dvh; /* dynamic viewport height */
+  height: 100dvh;
   overflow: hidden;
   padding-top: var(--safe-top);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
 }
 
-/* ── App header (sticky, app-native feel) ── */
 .app-header {
   flex-shrink: 0;
   background: var(--app-surface);
@@ -131,7 +125,6 @@ body.dark input, body.dark select, body.dark textarea {
 }
 .wb-badge .msym { font-size: 14px; }
 
-/* ── Stats row (horizontal scroll, no scrollbar) ── */
 .stats-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -173,7 +166,6 @@ body.dark input, body.dark select, body.dark textarea {
 .stat-info .label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--app-muted); margin-bottom: 2px; }
 .stat-info .value { font-size: 18px; font-weight: 700; color: var(--app-text); line-height: 1; }
 
-/* ── Toolbar ── */
 .table-toolbar {
   flex-shrink: 0;
   display: flex;
@@ -203,7 +195,6 @@ body.dark input, body.dark select, body.dark textarea {
   color: var(--app-text); font-size: 14px;
   font-family: 'DM Sans', sans-serif;
   padding: 10px 0; width: 100%; min-width: 0;
-  /* Prevent iOS zoom on focus */
   font-size: max(16px, 14px);
 }
 
@@ -228,7 +219,6 @@ body.dark input, body.dark select, body.dark textarea {
   transition: all .15s; background: var(--app-card2);
   color: var(--app-muted2); user-select: none;
   white-space: nowrap;
-  /* Larger tap target */
   min-height: 32px;
   touch-action: manipulation;
 }
@@ -246,24 +236,175 @@ body.dark input, body.dark select, body.dark textarea {
 }
 .toolbar-stat .msym { font-size: 13px; color: var(--app-accent); }
 
-/* ── Scrollable content area ── */
 .scroll-area {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  /* iOS momentum scroll */
   will-change: scroll-position;
 }
 
-/* ── Mobile transaction cards ── */
+/* ══════════════════════════════════════════════
+   COPY BUTTON — redesigned for maximum clarity
+   and compatibility across all Android devices
+══════════════════════════════════════════════ */
+
+/* Mobile transaction ID row — full pill with copy icon always visible */
+.mc-txnid-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  max-width: 220px;
+  /* Taller tap target */
+  min-height: 36px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: border-color .15s;
+  position: relative;
+}
+
+.mc-txnid-wrap:active {
+  border-color: rgba(59,130,246,0.5);
+  background: rgba(59,130,246,0.14);
+}
+
+/* The ID text segment */
+.mc-txnid-text {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mc-txnid-text .msym {
+  font-size: 13px;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.mc-txnid-text .chip-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #60a5fa;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The always-visible COPY button segment — separated by a border */
+.mc-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 10px;
+  min-width: 60px;
+  height: 36px;
+  background: rgba(59,130,246,0.15);
+  border-left: 1px solid rgba(59,130,246,0.25);
+  flex-shrink: 0;
+  transition: background .15s;
+}
+
+.mc-copy-btn .msym {
+  font-size: 14px;
+  color: #60a5fa;
+}
+
+.mc-copy-btn .copy-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #60a5fa;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* States */
+.mc-txnid-wrap.copied {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.4);
+}
+.mc-txnid-wrap.copied .mc-txnid-text .msym,
+.mc-txnid-wrap.copied .mc-txnid-text .chip-text { color: #4ade80; }
+.mc-txnid-wrap.copied .mc-copy-btn {
+  background: rgba(34,197,94,0.18);
+  border-left-color: rgba(34,197,94,0.3);
+}
+.mc-txnid-wrap.copied .mc-copy-btn .msym,
+.mc-txnid-wrap.copied .mc-copy-btn .copy-label { color: #4ade80; }
+
+/* Desktop chip — also always shows copy icon */
+.txn-id-chip {
+  display: inline-flex; align-items: center; gap: 0;
+  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 8px; overflow: hidden;
+  white-space: nowrap; max-width: 200px;
+  cursor: pointer; user-select: none;
+  touch-action: manipulation;
+  transition: border-color .15s, background .15s;
+  min-height: 30px;
+}
+
+.txn-id-chip:hover,
+.txn-id-chip:active {
+  background: rgba(59,130,246,0.14);
+  border-color: rgba(59,130,246,0.45);
+}
+
+.txn-id-chip .chip-inner {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 9px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.txn-id-chip .chip-inner .msym { font-size: 12px; color: #60a5fa; flex-shrink: 0; }
+.txn-id-chip .chip-inner .chip-text {
+  font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.txn-id-chip .dt-copy-btn {
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px 8px;
+  background: rgba(59,130,246,0.12);
+  border-left: 1px solid rgba(59,130,246,0.22);
+  flex-shrink: 0;
+  min-height: 30px;
+  transition: background .15s;
+}
+.txn-id-chip .dt-copy-btn .msym { font-size: 13px; color: #60a5fa; }
+
+.txn-id-chip.copied {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.4);
+}
+.txn-id-chip.copied .chip-inner .msym,
+.txn-id-chip.copied .chip-inner .chip-text { color: #4ade80; }
+.txn-id-chip.copied .dt-copy-btn {
+  background: rgba(34,197,94,0.15);
+  border-left-color: rgba(34,197,94,0.3);
+}
+.txn-id-chip.copied .dt-copy-btn .msym { color: #4ade80; }
+
+/* ══════════════════════════════════════════════ */
+
 .mobile-txn-card {
   background: var(--app-card);
   border-bottom: 1px solid var(--app-border);
   padding: 14px 16px;
   transition: background .1s;
-  /* Ensure full width touch */
   display: block;
 }
 
@@ -274,23 +415,6 @@ body.dark input, body.dark select, body.dark textarea {
   display: flex; align-items: center;
   justify-content: space-between; gap: 10px; margin-bottom: 10px;
 }
-
-.mc-txnid-wrap {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18);
-  border-radius: 7px; padding: 4px 10px;
-  font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
-  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  flex: 1; min-width: 0;
-  cursor: pointer; user-select: none;
-  transition: background .15s, border-color .15s;
-  min-height: 28px;
-  touch-action: manipulation;
-}
-
-.mc-txnid-wrap:active { background: rgba(59,130,246,0.16); }
-.mc-txnid-wrap.copied { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
-.mc-txnid-wrap .msym { font-size: 12px; flex-shrink: 0; }
 
 .mc-row-num {
   font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-muted);
@@ -333,7 +457,6 @@ body.dark input, body.dark select, body.dark textarea {
 }
 .mc-desc.empty { color: var(--app-muted); font-style: italic; }
 
-/* ── Shared badge styles ── */
 .msym {
   font-family: 'Material Symbols Rounded';
   line-height: 1;
@@ -362,7 +485,6 @@ body.dark input, body.dark select, body.dark textarea {
 .refundable-badge.no  { background: rgba(100,116,139,0.1); border: 1px solid rgba(100,116,139,0.2); color: var(--app-muted); }
 .refundable-badge .msym { font-size: 11px; }
 
-/* ── Empty state ── */
 .empty-state { padding: 56px 24px; text-align: center; }
 .empty-icon {
   width: 60px; height: 60px; border-radius: 18px;
@@ -373,7 +495,6 @@ body.dark input, body.dark select, body.dark textarea {
 .empty-state h4 { font-size: 15px; font-weight: 600; color: var(--app-muted2); margin-bottom: 6px; }
 .empty-state p  { font-size: 13px; color: var(--app-muted); margin: 0; }
 
-/* ── Footer (pinned bottom, respects safe area) ── */
 .app-footer {
   flex-shrink: 0;
   padding: 10px 16px;
@@ -386,32 +507,81 @@ body.dark input, body.dark select, body.dark textarea {
 .footer-info { font-size: 12px; color: var(--app-muted); display: flex; align-items: center; gap: 5px; }
 .footer-info .msym { font-size: 13px; }
 
-/* ── Toast notification ── */
+/* ══ Copy toast — larger, more prominent ══ */
 .copy-toast {
   position: fixed;
   bottom: calc(80px + var(--safe-bottom));
   left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(34,197,94,0.15);
-  border: 1px solid rgba(34,197,94,0.3);
+  background: #14532d;
+  border: 1px solid rgba(34,197,94,0.5);
   color: #4ade80;
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 13px; font-weight: 600;
-  display: flex; align-items: center; gap: 6px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
   pointer-events: none;
   opacity: 0;
   transition: opacity .2s, transform .2s;
-  z-index: 999;
+  z-index: 9999;
   white-space: nowrap;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 .copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.copy-toast .msym { font-size: 15px; }
+.copy-toast .msym { font-size: 18px; }
 
-/* ── Desktop table (shown only on large screens) ── */
+/* ══ Fallback modal for when all clipboard methods fail ══ */
+.copy-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 10000;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 var(--safe-bottom);
+}
+.copy-modal-overlay.show { display: flex; }
+.copy-modal {
+  background: var(--app-card);
+  border: 1px solid var(--app-border);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 28px;
+  width: 100%;
+  max-width: 480px;
+}
+.copy-modal-title {
+  font-size: 14px; font-weight: 700; color: var(--app-muted2);
+  margin-bottom: 12px; text-align: center;
+}
+.copy-modal-id {
+  background: var(--app-card2);
+  border: 2px solid var(--app-primary);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 600;
+  color: #60a5fa;
+  text-align: center;
+  letter-spacing: 0.5px;
+  /* Make text selectable for manual copy */
+  user-select: all;
+  -webkit-user-select: all;
+  cursor: text;
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+.copy-modal-hint { font-size: 12px; color: var(--app-muted); text-align: center; margin-bottom: 16px; }
+.copy-modal-close {
+  width: 100%; padding: 12px;
+  background: var(--app-border); border: none;
+  border-radius: 12px; color: var(--app-text);
+  font-size: 14px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; touch-action: manipulation;
+}
+
 .table-wrap { display: none; }
 .mobile-cards { display: block; }
 
-/* Only show desktop table on real desktop */
 @media (min-width: 900px) {
   body { overflow: auto; }
   html { overflow: auto; }
@@ -499,19 +669,7 @@ body.dark input, body.dark select, body.dark textarea {
   .txn-table tbody td:last-child  { padding-right: 20px; }
   .txn-table tbody tr:last-child td { border-bottom: none; }
   .cell-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--app-muted); width: 44px; }
-  .txn-id-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18);
-    border-radius: 8px; padding: 4px 9px;
-    font-family: 'DM Mono', monospace; font-size: 11px; color: #60a5fa;
-    white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis;
-    cursor: pointer; user-select: none; transition: background .15s, border-color .15s;
-  }
-  .txn-id-chip:hover { background: rgba(59,130,246,0.16); border-color: rgba(59,130,246,0.35); }
-  .txn-id-chip .msym { font-size: 12px; flex-shrink: 0; }
-  .txn-id-chip .copy-icon { font-size: 12px; flex-shrink: 0; margin-left: auto; opacity: 0; transition: opacity .15s; }
-  .txn-id-chip:hover .copy-icon { opacity: 1; }
-  .txn-id-chip.copied { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+
   .amount-cell { display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: var(--app-text); white-space: nowrap; }
   .amount-cell .currency { font-size: 10px; color: var(--app-muted); font-weight: 500; }
   .status-badge { font-size: 12px; }
@@ -535,10 +693,8 @@ body.dark input, body.dark select, body.dark textarea {
 
 <div class="app-shell">
 
-  <!-- ══ HEADER (sticky on mobile) ══ -->
+  <!-- ══ HEADER ══ -->
   <div class="app-header">
-
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
       <div class="wb-avatar">{{ username|slice:":1"|upper }}</div>
       <div class="wb-info">
@@ -551,7 +707,6 @@ body.dark input, body.dark select, body.dark textarea {
       </div>
     </div>
 
-    <!-- Stats (horizontal scroll on mobile) -->
     <div class="stats-scroll">
       <div class="stats-row">
         <div class="stat-card">
@@ -576,8 +731,7 @@ body.dark input, body.dark select, body.dark textarea {
         </div>
       </div>
     </div>
-
-  </div><!-- /app-header -->
+  </div>
 
   <!-- ══ TOOLBAR ══ -->
   <div class="table-toolbar">
@@ -604,11 +758,8 @@ body.dark input, body.dark select, body.dark textarea {
 
   <!-- ══ SCROLLABLE CONTENT ══ -->
   <div class="scroll-area">
-
-    <!-- Desktop wrapper (shown @900px+) -->
     <div class="txn-card" style="display:contents;">
 
-      <!-- Desktop card header -->
       <div class="txn-card-header" style="display:none;" id="desktopHeader">
         <div class="card-header-left">
           <div class="card-header-icon"><span class="msym">payments</span></div>
@@ -639,9 +790,13 @@ body.dark input, body.dark select, body.dark textarea {
               <td class="cell-id">{{ forloop.counter }}</td>
               <td>
                 <div class="txn-id-chip" data-id="{{ txn.transaction_id }}" title="Click to copy">
-                  <span class="msym">tag</span>
-                  <span class="chip-text">{{ txn.transaction_id }}</span>
-                  <span class="msym copy-icon">content_copy</span>
+                  <div class="chip-inner">
+                    <span class="msym">tag</span>
+                    <span class="chip-text">{{ txn.transaction_id }}</span>
+                  </div>
+                  <div class="dt-copy-btn">
+                    <span class="msym">content_copy</span>
+                  </div>
                 </div>
               </td>
               <td><div class="amount-cell"><span class="currency">INR</span>{{ txn.amount }}</div></td>
@@ -687,9 +842,16 @@ body.dark input, body.dark select, body.dark textarea {
         <div class="mobile-txn-card" data-status="{{ txn.status }}">
 
           <div class="mc-top">
-            <div class="mc-txnid-wrap" data-id="{{ txn.transaction_id }}" title="Tap to copy">
-              <span class="msym">tag</span>
-              <span class="chip-text">{{ txn.transaction_id }}</span>
+            <!-- Redesigned: split pill with always-visible COPY button -->
+            <div class="mc-txnid-wrap" data-id="{{ txn.transaction_id }}">
+              <div class="mc-txnid-text">
+                <span class="msym">tag</span>
+                <span class="chip-text">{{ txn.transaction_id }}</span>
+              </div>
+              <div class="mc-copy-btn">
+                <span class="msym">content_copy</span>
+                <span class="copy-label">Copy</span>
+              </div>
             </div>
             <span class="mc-row-num">#{{ forloop.counter }}</span>
           </div>
@@ -728,7 +890,6 @@ body.dark input, body.dark select, body.dark textarea {
         {% endfor %}
       </div>
 
-      <!-- Desktop footer (inside scroll area on desktop) -->
       <div class="table-footer" id="desktopFooter" style="display:none;">
         <div class="footer-info">
           <span class="msym">info</span>
@@ -737,10 +898,10 @@ body.dark input, body.dark select, body.dark textarea {
         <div class="footer-info"><span class="msym">person</span>{{ username }}</div>
       </div>
 
-    </div><!-- /txn-card contents -->
-  </div><!-- /scroll-area -->
+    </div>
+  </div>
 
-  <!-- ══ APP FOOTER (pinned bottom on mobile) ══ -->
+  <!-- ══ APP FOOTER ══ -->
   <div class="app-footer">
     <div class="footer-info">
       <span class="msym">info</span>
@@ -749,16 +910,29 @@ body.dark input, body.dark select, body.dark textarea {
     <div class="footer-info"><span class="msym">person</span>{{ username }}</div>
   </div>
 
-</div><!-- /app-shell -->
+</div>
 
 <!-- Copy toast -->
 <div class="copy-toast" id="copyToast">
   <span class="msym">check_circle</span>
-  ID copied!
+  Copied to clipboard!
+</div>
+
+<!-- Fallback modal (shown when clipboard APIs unavailable) -->
+<div class="copy-modal-overlay" id="copyModalOverlay">
+  <div class="copy-modal">
+    <div class="copy-modal-title">Transaction ID</div>
+    <div class="copy-modal-id" id="copyModalId"></div>
+    <div class="copy-modal-hint">Long press the ID above to copy, then tap Close</div>
+    <button class="copy-modal-close" id="copyModalClose">Close</button>
+  </div>
 </div>
 
 <script>
 (function () {
+  'use strict';
+
+  /* ── Filters & search ── */
   const searchInput  = document.getElementById('searchInput');
   const visibleCount = document.getElementById('visibleCount');
   const footerCount  = document.getElementById('footerCount');
@@ -766,8 +940,6 @@ body.dark input, body.dark select, body.dark textarea {
   const pills        = document.querySelectorAll('.filter-pill');
   const tableRows    = Array.from(document.querySelectorAll('#tableBody tr[data-status]'));
   const mobileRows   = Array.from(document.querySelectorAll('#mobileCards .mobile-txn-card[data-status]'));
-  const copyToast    = document.getElementById('copyToast');
-  let toastTimer;
 
   let activeFilter = 'all';
   let activeSearch = '';
@@ -809,7 +981,6 @@ body.dark input, body.dark select, body.dark textarea {
 
   window.addEventListener('resize', applyFilters);
 
-  // ── Desktop view tweaks ──
   function applyDesktopLayout() {
     const isDesktop = window.innerWidth >= 900;
     const dHeader = document.getElementById('desktopHeader');
@@ -820,83 +991,161 @@ body.dark input, body.dark select, body.dark textarea {
   window.addEventListener('resize', applyDesktopLayout);
   applyDesktopLayout();
 
-  // ── Copy to clipboard ──
+  /* ── Toast ── */
+  const copyToast = document.getElementById('copyToast');
+  let toastTimer;
+
   function showToast() {
     copyToast.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => copyToast.classList.remove('show'), 2000);
+    toastTimer = setTimeout(() => copyToast.classList.remove('show'), 2200);
   }
 
-  function onCopied(el, id) {
-    const chipText = el.querySelector('.chip-text');
-    const icon = el.querySelector('.copy-icon');
+  /* ── Fallback modal ── */
+  const copyModalOverlay = document.getElementById('copyModalOverlay');
+  const copyModalId      = document.getElementById('copyModalId');
+  const copyModalClose   = document.getElementById('copyModalClose');
+
+  copyModalClose.addEventListener('click', () => {
+    copyModalOverlay.classList.remove('show');
+  });
+  copyModalOverlay.addEventListener('click', (e) => {
+    if (e.target === copyModalOverlay) copyModalOverlay.classList.remove('show');
+  });
+
+  function showFallbackModal(id) {
+    copyModalId.textContent = id;
+    copyModalOverlay.classList.add('show');
+    /* Auto-select the text so user just needs to hit Copy */
+    setTimeout(() => {
+      const range = document.createRange();
+      range.selectNodeContents(copyModalId);
+      const sel = window.getSelection();
+      if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+    }, 80);
+  }
+
+  /* ── Visual feedback on the chip ── */
+  function markCopied(el) {
     el.classList.add('copied');
-    if (chipText) chipText.textContent = 'Copied!';
-    if (icon) { icon.textContent = 'check'; icon.style.opacity = '1'; }
+    const chipText = el.querySelector('.chip-text');
+    const copyLabel = el.querySelector('.copy-label');
+    const copyIcon = el.querySelector('.mc-copy-btn .msym, .dt-copy-btn .msym');
+
+    const origText = chipText ? chipText.textContent : null;
+
+    if (copyLabel) copyLabel.textContent = 'Done!';
+    if (copyIcon) copyIcon.textContent = 'check';
+
     showToast();
+
     setTimeout(() => {
       el.classList.remove('copied');
-      if (chipText) chipText.textContent = id;
-      if (icon) { icon.textContent = 'content_copy'; icon.style.opacity = ''; }
-    }, 1800);
+      if (copyLabel) copyLabel.textContent = 'Copy';
+      if (copyIcon) copyIcon.textContent = 'content_copy';
+    }, 2000);
   }
 
-  function copyId(el) {
-    const id = el.dataset.id;
-    if (!id) return;
+  /* ══════════════════════════════════════════════
+     BULLETPROOF COPY — 4 methods, deepest compat
+  ══════════════════════════════════════════════ */
+  function copyToClipboard(el, id) {
 
-    // Method 1: Android WebView JavascriptInterface (injected by AppActivity)
-    if (window.AndroidClipboard && window.AndroidClipboard.copy) {
+    /* ── Method 1: Android JavascriptInterface injected by AppActivity ── */
+    if (window.AndroidClipboard && typeof window.AndroidClipboard.copy === 'function') {
       try {
         window.AndroidClipboard.copy(id);
-        onCopied(el, id);
+        markCopied(el);
         return;
-      } catch(e) {}
+      } catch (e) { /* fall through */ }
     }
 
-    // Method 2: Modern Clipboard API (works on HTTPS or localhost)
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(id).then(() => {
-        onCopied(el, id);
-      }).catch(() => fallbackCopy(el, id));
+    /* ── Method 2: Clipboard API (needs HTTPS or localhost) ── */
+    if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(id).then(
+        () => { markCopied(el); },
+        () => { execCommandCopy(el, id); }
+      );
       return;
     }
 
-    // Method 3: execCommand fallback (works in older WebViews)
-    fallbackCopy(el, id);
+    /* Not a secure context — skip directly to execCommand */
+    execCommandCopy(el, id);
   }
 
-  function fallbackCopy(el, id) {
+  /* ── Method 3: execCommand (works in most Android WebViews) ── */
+  function execCommandCopy(el, id) {
+    /* We need a visible, focusable element — hidden ones get blocked on some devices */
+    const ta = document.createElement('textarea');
+    ta.value = id;
+
+    /* Position within viewport but invisible */
+    ta.style.cssText = [
+      'position:fixed',
+      'top:0',
+      'left:0',
+      'width:2em',
+      'height:2em',
+      'padding:0',
+      'border:none',
+      'outline:none',
+      'box-shadow:none',
+      'background:transparent',
+      'opacity:0',
+      'font-size:16px',   /* prevent iOS zoom */
+      'z-index:-1',
+      'pointer-events:none',
+    ].join(';');
+
+    document.body.appendChild(ta);
+
+    /* iOS needs readOnly false and specific selection range */
+    ta.readOnly = false;
+    ta.contentEditable = 'true';
+
+    const range = document.createRange();
+    range.selectNodeContents(ta);
+    const sel = window.getSelection();
+    if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, id.length);
+
+    let success = false;
     try {
-      const ta = document.createElement('textarea');
-      ta.value = id;
-      ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;border:none;outline:none;pointer-events:none;';
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      // setSelectionRange needed on iOS/some Android
-      ta.setSelectionRange(0, id.length);
-      const ok = document.execCommand('copy');
-      document.body.removeChild(ta);
-      if (ok) { onCopied(el, id); return; }
-    } catch(e) {}
+      success = document.execCommand('copy');
+    } catch (e) { success = false; }
 
-    // Method 4: Show the ID in a selectable prompt as last resort
-    window.prompt('Copy this transaction ID:', id);
+    document.body.removeChild(ta);
+
+    if (success) {
+      markCopied(el);
+    } else {
+      /* ── Method 4: Fallback modal with selectable text ── */
+      showFallbackModal(id);
+    }
   }
 
+  /* ── Attach listeners to all chips ── */
   document.querySelectorAll('.txn-id-chip, .mc-txnid-wrap').forEach(chip => {
-    chip.addEventListener('click', () => copyId(chip));
+    chip.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const id = this.dataset.id;
+      if (id) copyToClipboard(this, id);
+    });
+
+    /* Prevent text-selection gestures from firing inadvertently */
+    chip.addEventListener('touchstart', function () {}, { passive: true });
   });
 
-  // ── Prevent pull-to-refresh in WebView ──
+  /* ── Prevent pull-to-refresh ── */
   let startY = 0;
   const scrollArea = document.querySelector('.scroll-area');
   if (scrollArea) {
     scrollArea.addEventListener('touchstart', e => { startY = e.touches[0].pageY; }, { passive: true });
     scrollArea.addEventListener('touchmove', e => {
-      const deltaY = e.touches[0].pageY - startY;
-      if (scrollArea.scrollTop === 0 && deltaY > 0) {
+      if (scrollArea.scrollTop === 0 && e.touches[0].pageY - startY > 0) {
         e.preventDefault();
       }
     }, { passive: false });
