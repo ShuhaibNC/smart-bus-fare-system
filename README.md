@@ -69,7 +69,7 @@ The homepage features a modern responsive interface with desktop and mobile opti
 # Project Structure
 
 ```text
-shuhaibnc-smart-bus-fare-system/
+smart-bus-fare-system/
 │
 ├── hardware/
 │   ├── bus_scanner.py
@@ -120,8 +120,8 @@ Used for:
 ## Clone Repository
 
 ```bash
-git clone https://github.com/shuhaibnc/shuhaibnc-smart-bus-fare-system.git
-cd shuhaibnc-smart-bus-fare-system
+git clone https://github.com/shuhaibnc/smart-bus-fare-system.git
+cd smart-bus-fare-system
 ```
 
 ---
