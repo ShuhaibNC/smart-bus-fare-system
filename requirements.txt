@@ -1,2 +1,5 @@
+django
 reportlab
-pymysql
+mysqlclient
+serial
+email-validator

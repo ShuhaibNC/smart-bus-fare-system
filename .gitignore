@@ -17,3 +17,10 @@ student/migrations/0011_infosubmit_card_accepted_at_and_more.py
 student/migrations/0012_remove_studentnfccard_student_and_more.py
 student/migrations/0013_studentnfccard_balance.py
 student/migrations/0014_alter_infosubmit_options_infosubmit_blood_group_and_more.py
+__pycache__/
+*.py[cod]
+.vscode/
+cmsenv/
+venv/
+env/
+.db.sqlite3

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 import re
 from student.models import Login
+from email_validator import validate_email, EmailNotValidError
 
 def index(request):
     return render(request, 'index.html')
@@ -20,21 +21,34 @@ def signup(request):
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
-        # Email validation — must have @ and a domain with a dot
-        email_pattern = r'^[^@\s]+@[^@\s]+\.[^@\s]+$'
-        if not re.match(email_pattern, email):
-            return render(request, "signup.html", {"error": "Enter a valid email address."})
+        # Validate email format + check domain MX records
+        try:
+            valid = validate_email(email, check_deliverability=True)
+            email = valid.email
+        except EmailNotValidError as e:
+            return render(request, "signup.html", {
+                "error": str(e)
+            })
 
-        # Check for duplicate email
+        # Duplicate email check
         if Login.objects.filter(email=email).exists():
-            return render(request, "signup.html", {"error": "Email already registered."})
+            return render(request, "signup.html", {
+                "error": "Email already registered."
+            })
 
+        # Password match check
         if password != confirm_password:
-            return render(request, "signup.html", {"error": "Passwords do not match."})
+            return render(request, "signup.html", {
+                "error": "Passwords do not match."
+            })
 
+        # Username exists check
         if Login.objects.filter(username=username).exists():
-            return render(request, "signup.html", {"error": "Username already taken."})
+            return render(request, "signup.html", {
+                "error": "Username already taken."
+            })
 
+        # Create account
         Login.objects.create(
             firstname=firstname,
             lastname=lastname,
@@ -44,8 +58,9 @@ def signup(request):
             role="student"
         )
 
-        return render(request, "signup.html", {"info": "Account created successfully."})
+        return render(request, "signup.html", {
+            "info": "Account created successfully."
+        })
 
     return render(request, "signup.html")
-
 
