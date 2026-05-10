@@ -154,6 +154,8 @@ def view_balance(request):
     })
 
 
+
+
 def infosubmit(request):
     existing_info = InfoSubmit.objects.filter(user=request.user).first()
 
@@ -163,42 +165,152 @@ def infosubmit(request):
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
         guardian_name = request.POST.get("guardian_name", "").strip()
-        blood_group = request.POST.get("blood_group", "").strip()
+        blood_group = request.POST.get("blood_group", "").strip().upper()
         address = request.POST.get("address", "").strip()
         pin_code = request.POST.get("pin_code", "").strip()
         phone_no = request.POST.get("phone_no", "").strip()
         sphone_no = request.POST.get("sphone_no", "").strip()
+        email = request.POST.get("email", "").strip().lower()
         college_name = request.POST.get("college_name", "").strip()
         aadhaar_no = request.POST.get("aadhaar_no", "").strip()
 
+        # ---------------- REQUIRED FIELD VALIDATION ----------------
         if not all([
             first_name, last_name, guardian_name, blood_group,
             address, pin_code, phone_no, sphone_no,
-            college_name, aadhaar_no
+            email, college_name, aadhaar_no
         ]):
             messages.error(request, "All fields are required.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if not pin_code.isdigit() or len(pin_code) != 6:
-            messages.error(request, "Pin code must be 6 digits.")
+        # ---------------- NAME VALIDATION ----------------
+        name_pattern = r"^[A-Za-z ]+$"
+
+        if not re.match(name_pattern, first_name):
+            messages.error(request, "First name should contain only alphabets.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if not phone_no.isdigit() or len(phone_no) != 10:
-            messages.error(request, "Primary phone number must be 10 digits.")
+        if len(first_name) < 2 or len(first_name) > 50:
+            messages.error(request, "First name must be between 2 and 50 characters.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if not sphone_no.isdigit() or len(sphone_no) != 10:
-            messages.error(request, "Second phone number must be 10 digits.")
+        if not re.match(name_pattern, last_name):
+            messages.error(request, "Last name should contain only alphabets.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if not aadhaar_no.isdigit() or len(aadhaar_no) != 12:
-            messages.error(request, "Aadhaar number must be 12 digits.")
+        if not re.match(name_pattern, guardian_name):
+            messages.error(request, "Guardian name should contain only alphabets.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
-        if InfoSubmit.objects.filter(aadhaar_no=aadhaar_no).exclude(user=request.user).exists():
-            messages.error(request, "This Aadhaar number is already registered.")
+        # ---------------- BLOOD GROUP VALIDATION ----------------
+        valid_blood_groups = [
+            "A+", "A-", "B+", "B-",
+            "AB+", "AB-", "O+", "O-"
+        ]
+
+        if blood_group not in valid_blood_groups:
+            messages.error(request, "Invalid blood group.")
             return render(request, "addinfo.html", {"form_data": request.POST})
 
+        # ---------------- ADDRESS VALIDATION ----------------
+        if len(address) < 10:
+            messages.error(request, "Address is too short.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- PIN CODE VALIDATION ----------------
+        if not pin_code.isdigit():
+            messages.error(request, "Pin code must contain only digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if len(pin_code) != 6:
+            messages.error(request, "Pin code must be exactly 6 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if pin_code.startswith("0"):
+            messages.error(request, "Pin code cannot start with 0.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- MOBILE NUMBER VALIDATION ----------------
+        mobile_pattern = r"^[6-9]\d{9}$"
+
+        if not re.match(mobile_pattern, phone_no):
+            messages.error(
+                request,
+                "Primary mobile number must be a valid Indian mobile number."
+            )
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if not re.match(mobile_pattern, sphone_no):
+            messages.error(
+                request,
+                "Secondary mobile number must be a valid Indian mobile number."
+            )
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if phone_no == sphone_no:
+            messages.error(
+                request,
+                "Primary and secondary phone numbers cannot be the same."
+            )
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- EMAIL VALIDATION ----------------
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Invalid email address format.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # Extra email checks
+        blocked_domains = ["tempmail.com", "10minutemail.com", "mailinator.com"]
+
+        email_domain = email.split("@")[-1]
+
+        if email_domain in blocked_domains:
+            messages.error(request, "Temporary email addresses are not allowed.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if len(email) > 254:
+            messages.error(request, "Email address is too long.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # Email uniqueness
+        if InfoSubmit.objects.filter(email=email).exclude(user=request.user).exists():
+            messages.error(request, "This email is already registered.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- COLLEGE NAME VALIDATION ----------------
+        if len(college_name) < 3:
+            messages.error(request, "College name is too short.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- AADHAAR VALIDATION ----------------
+        if not aadhaar_no.isdigit():
+            messages.error(request, "Aadhaar number must contain only digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if len(aadhaar_no) != 12:
+            messages.error(request, "Aadhaar number must be exactly 12 digits.")
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        if aadhaar_no.startswith(("0", "1")):
+            messages.error(
+                request,
+                "Invalid Aadhaar number format."
+            )
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # Aadhaar uniqueness
+        if InfoSubmit.objects.filter(
+            aadhaar_no=aadhaar_no
+        ).exclude(user=request.user).exists():
+            messages.error(
+                request,
+                "This Aadhaar number is already registered."
+            )
+            return render(request, "addinfo.html", {"form_data": request.POST})
+
+        # ---------------- SAVE / UPDATE ----------------
         if existing_info:
             existing_info.first_name = first_name
             existing_info.last_name = last_name
@@ -208,10 +320,13 @@ def infosubmit(request):
             existing_info.pin_code = pin_code
             existing_info.phone_no = phone_no
             existing_info.sphone_no = sphone_no
+            existing_info.email = email
             existing_info.college_name = college_name
             existing_info.aadhaar_no = aadhaar_no
             existing_info.save()
+
             messages.success(request, "Information updated successfully.")
+
         else:
             InfoSubmit.objects.create(
                 user=user,
@@ -223,10 +338,12 @@ def infosubmit(request):
                 pin_code=pin_code,
                 phone_no=phone_no,
                 sphone_no=sphone_no,
+                email=email,
                 college_name=college_name,
                 aadhaar_no=aadhaar_no,
                 card_id=generate_card_id(user),
             )
+
             messages.success(request, "Information submitted successfully.")
 
         return redirect("nfcview")
